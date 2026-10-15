@@ -120,12 +120,19 @@
     <script src="js/i18n.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/components.js"></script>
+    <script src="js/curriculum-data.js"></script>
     <script src="js/game-state.js"></script>
     <script>
         IremeComponents.initPage('game-result.html', ['js/game-state.js']);
 
-        var originalShowResults = IremeGameUI.showResults;
-        IremeGameUI.showResults = function(record, resultText) {
+        IremeGame.init();
+
+        var record = IremeGame.getLastResult();
+        if (record) {
+            renderResults(record);
+        }
+
+        function renderResults(record) {
             var lang = localStorage.getItem('ireme-lang') || 'en';
             var container = document.getElementById('game-results-container');
             if (!container) return;
@@ -146,13 +153,13 @@
             var playerName = user ? user.fullName : 'You';
             var playerInitials = playerName.split(' ').map(function(n) { return n[0]; }).join('').slice(0, 2).toUpperCase();
             var oppName = record.opponent || 'Opponent';
-            var oppInitials = oppName.split('_').map(function(n) { return n[0]; }).join('').slice(0, 2).toUpperCase() || 'OP';
+            var oppInitials = oppName.split(' ').map(function(n) { return n[0]; }).join('').slice(0, 2).toUpperCase() || 'OP';
 
             var xpEarned = isWin ? 120 : isDraw ? 60 : 30;
-            var subjectLabel = (record.subject || 'N/A').toUpperCase();
+            var subjectLabel = (record.subjectName || record.subject || 'N/A').toUpperCase();
 
             var subtitleText = isWin
-                ? (lang === 'rw' ? 'Ubwenge bwawe bw\'imibare bwagufashe gutsinda.' : 'Your quick thinking and strong skills secured the win.')
+                ? (lang === 'rw' ? 'Ubwenge bwawe bwagufashe gutsinda.' : 'Your quick thinking and strong skills secured the win.')
                 : isDraw
                     ? (lang === 'rw' ? 'Umukino mwiza! Mwese mwakinnye neza.' : 'Great match! Both of you played well.')
                     : (lang === 'rw' ? 'Gerageza nanone, uzatsinda!' : 'Keep practicing, you\'ll get there!');
@@ -167,6 +174,13 @@
                 feedbackItems.unshift(lang === 'rw' ? 'Witwaye neza cyane! Komeza uko' : 'Excellent performance! Keep up the momentum');
             } else if (!isDraw) {
                 feedbackItems.unshift(lang === 'rw' ? 'Gerageza gusubiramo ibyo wibeshyeho' : 'Focus on reviewing the topics you missed');
+            }
+
+            var dashboardUrl = 'index.html';
+            if (user) {
+                if (user.role === 'student') dashboardUrl = 'student-dashboard.html';
+                else if (user.role === 'teacher') dashboardUrl = 'teacher-dashboard.html';
+                else if (user.role === 'headteacher') dashboardUrl = 'headteacher-dashboard.html';
             }
 
             container.innerHTML = '<span class="result-eyebrow"><i class="fa fa-trophy"></i> ' + (lang === 'rw' ? 'UMUKINO URANGIYE' : 'BATTLE COMPLETE') + '</span>' +
@@ -186,13 +200,13 @@
                         '<span class="final-score-big">' + record.playerScore + ' – ' + record.opponentScore + '</span>' +
                         '<small>' + (lang === 'rw' ? 'AMANOTA YA NYUMA' : 'FINAL SCORE') + '</small>' +
                     '</div>' +
-                    '<div class="podium-player ' + (isWin ? 'runner' : 'winner') + '">' +
+                    '<div class="podium-player ' + (isWin ? 'runner' : (isDraw ? 'runner' : 'winner')) + '">' +
                         (!isWin && !isDraw ? '<div class="crown"><i class="fa fa-trophy"></i></div>' : '') +
                         '<div class="p-avatar">' + oppInitials + '</div>' +
-                        '<h3>' + oppName.replace('_', ' ') + '</h3>' +
+                        '<h3>' + oppName + '</h3>' +
                         '<span class="result-label">' + (!isWin && !isDraw ? (lang === 'rw' ? 'INTSINZI' : 'WINNER') : (lang === 'rw' ? 'UWATSINTSWE' : 'RUNNER-UP')) + '</span>' +
                         '<div class="final-score">' + record.opponentScore + '</div>' +
-                        '<div class="accuracy-text">' + (100 - record.accuracy > 0 ? Math.round(record.accuracy * 0.85) : record.accuracy) + '% ' + (lang === 'rw' ? 'ukuri' : 'accuracy') + '</div>' +
+                        '<div class="accuracy-text">' + Math.round(record.opponentScore / Math.max(record.totalRounds * 3, 1) * 100) + '% ' + (lang === 'rw' ? 'ukuri' : 'accuracy') + '</div>' +
                     '</div>' +
                 '</div>' +
 
@@ -229,29 +243,9 @@
                 '<div class="result-actions">' +
                     '<a href="game-setup.html" class="btn-primary-cta"><span>' + (lang === 'rw' ? 'Subira Ukinire' : 'Play Again') + '</span> <i class="fa fa-arrow-right"></i></a>' +
                     '<a href="game-setup.html" class="btn-secondary-cta"><i class="fa fa-exchange-alt"></i> ' + (lang === 'rw' ? 'Hindura Isomo' : 'Change Subject') + '</a>' +
-                    '<a href="' + (user && user.role === 'student' ? 'student-dashboard.html' : 'index.html') + '" class="btn-secondary-cta"><i class="fa fa-home"></i> ' + (lang === 'rw' ? 'Subira ahabanza' : 'Dashboard') + '</a>' +
+                    '<a href="' + dashboardUrl + '" class="btn-secondary-cta"><i class="fa fa-home"></i> ' + (lang === 'rw' ? 'Subira ahabanza' : 'Dashboard') + '</a>' +
                 '</div>';
-
-            setTimeout(function() { window.location.href = 'game-result.html'; }, 100);
-        };
-
-        setTimeout(function() {
-            if (typeof IremeGame !== 'undefined' && IremeGame.state.phase === 'completed') {
-                var record = {
-                    date: new Date().toLocaleDateString(),
-                    subject: IremeGame.state.subject,
-                    level: IremeGame.state.level,
-                    opponent: IremeGame.state.opponent ? IremeGame.state.opponent.name : 'Opponent',
-                    playerScore: IremeGame.state.playerScore,
-                    opponentScore: IremeGame.state.opponentScore,
-                    result: IremeGame.state.playerScore > IremeGame.state.opponentScore ? 'win' : IremeGame.state.playerScore === IremeGame.state.opponentScore ? 'draw' : 'loss',
-                    accuracy: Math.round((IremeGame.state.playerScore / (IremeGame.state.totalRounds * 3)) * 100)
-                };
-                var lang = localStorage.getItem('ireme-lang') || 'en';
-                var resultText = record.result === 'win' ? (lang === 'rw' ? 'Watsinze!' : 'Victory!') : record.result === 'draw' ? (lang === 'rw' ? 'Manganye!' : "It's a Draw!") : (lang === 'rw' ? 'Watsinzwe' : 'Defeat');
-                IremeGameUI.showResults(record, resultText);
-            }
-        }, 300);
+        }
     </script>
 </body>
 </html>

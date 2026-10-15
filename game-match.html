@@ -106,7 +106,7 @@
                 <div class="logo-mark"><span>I</span></div>
                 <div><strong>IREME</strong><small>FIGHTING BY QUESTIONS</small></div>
             </div>
-            <span class="round-chip" data-i18n="game.roundLabel">ROUND <b id="game-round-num">1</b> OF <b id="game-total-rounds">10</b></span>
+            <span class="round-chip" id="round-chip-label">ROUND <b id="game-round-num">1</b> OF <b id="game-total-rounds">10</b></span>
             <button class="btn-leave" onclick="leaveMatch()" data-i18n="game.leaveMatch">Leave match</button>
         </div>
 
@@ -151,7 +151,7 @@
 
             <div class="question-meta">
                 <span class="topic-badge" id="game-topic">TOPIC</span>
-                <span class="streak-badge" id="game-streak"><i class="fa fa-fire"></i> <span data-i18n="game.streak">0 streak</span></span>
+                <span class="streak-badge" id="game-streak"><i class="fa fa-fire"></i> <span id="streak-count">0 streak</span></span>
             </div>
 
             <h1 class="question-text" id="game-question-text">Question will appear here...</h1>
@@ -176,201 +176,105 @@
     <script src="js/i18n.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/components.js"></script>
+    <script src="js/curriculum-data.js"></script>
     <script src="js/game-state.js"></script>
     <script>
         IremeComponents.initPage('game-match.html', ['js/game-state.js']);
 
         var answerStreak = 0;
 
+        IremeGame.init();
+
+        if (IremeGame.state.phase !== 'playing' || !IremeGame.state.currentQuestion) {
+            window.location.href = 'game-setup.html';
+        } else {
+            startMatchUI();
+        }
+
+        function startMatchUI() {
+            updateStreakDisplay();
+            updateRoundLabel();
+
+            var origUpdateUI = IremeGame.updateGameUI.bind(IremeGame);
+            IremeGame.updateGameUI = function() {
+                origUpdateUI();
+                updateRoundLabel();
+            };
+
+            var origSelectAnswer = IremeGame.selectAnswer.bind(IremeGame);
+            IremeGame.selectAnswer = function(index) {
+                var btns = document.querySelectorAll('.answer-btn');
+                btns.forEach(function(btn) {
+                    btn.classList.add('disabled');
+                    btn.onclick = null;
+                    btn.onmouseover = null;
+                    btn.onmouseout = null;
+                    btn.style.cursor = 'default';
+                });
+
+                var q = IremeGame.state.currentQuestion;
+                var isCorrect = index === q.correct;
+
+                if (isCorrect) {
+                    document.getElementById('answer-' + index).classList.add('correct');
+                    answerStreak++;
+                } else {
+                    document.getElementById('answer-' + index).classList.add('incorrect');
+                    document.getElementById('answer-' + q.correct).classList.add('correct');
+                    answerStreak = 0;
+                }
+
+                updateStreakDisplay();
+                IremeGame.submitAnswer(index);
+            };
+
+            var origEndMatch = IremeGame.endMatch.bind(IremeGame);
+            IremeGame.endMatch = function() {
+                var record = origEndMatch();
+                setTimeout(function() {
+                    window.location.href = 'game-result.html';
+                }, 500);
+                return record;
+            };
+
+            IremeGame.updateGameUI = function() {
+                origUpdateUI();
+                updateRoundLabel();
+            };
+
+            IremeGame.updateGameUI();
+        }
+
+        function updateStreakDisplay() {
+            var lang = localStorage.getItem('ireme-lang') || 'en';
+            var streakEl = document.getElementById('streak-count');
+            if (streakEl) {
+                streakEl.textContent = answerStreak + (lang === 'rw' ? ' ibisubizo bikurikirana' : ' answer streak');
+            }
+        }
+
+        function updateRoundLabel() {
+            var lang = localStorage.getItem('ireme-lang') || 'en';
+            var roundChip = document.getElementById('round-chip-label');
+            if (roundChip) {
+                var roundNum = document.getElementById('game-round-num');
+                var totalRounds = document.getElementById('game-total-rounds');
+                if (roundNum && totalRounds) {
+                    var roundText = lang === 'rw' ? 'UMUZINGI' : 'ROUND';
+                    var ofText = lang === 'rw' ? 'MURI' : 'OF';
+                    roundChip.innerHTML = roundText + ' <b id="game-round-num">' + roundNum.textContent + '</b> ' + ofText + ' <b id="game-total-rounds">' + totalRounds.textContent + '</b>';
+                }
+            }
+        }
+
         function leaveMatch() {
-            if (confirm('Leave this match? Your progress will be lost.')) {
+            var lang = localStorage.getItem('ireme-lang') || 'en';
+            var msg = lang === 'rw' ? 'Kuva mu mukino? Aho wageze hazasibangana.' : 'Leave this match? Your progress will be lost.';
+            if (confirm(msg)) {
                 IremeGame.cancelMatchmaking();
                 window.location.href = 'game-setup.html';
             }
         }
-
-        var originalUpdateUI = IremeGame.updateGameUI.bind(IremeGame);
-        IremeGame.updateGameUI = function() {
-            var q = this.state.currentQuestion;
-            if (!q) return;
-            var lang = localStorage.getItem('ireme-lang') || 'en';
-
-            var roundEl = document.getElementById('game-round-num');
-            if (roundEl) roundEl.textContent = this.state.currentRound;
-            var totalEl = document.getElementById('game-total-rounds');
-            if (totalEl) totalEl.textContent = this.state.totalRounds;
-
-            var progressPct = (this.state.currentRound / this.state.totalRounds) * 100;
-            var progressBar = document.getElementById('match-progress-bar');
-            if (progressBar) progressBar.style.width = progressPct + '%';
-
-            var topicEl = document.getElementById('game-topic');
-            if (topicEl) topicEl.textContent = q.topic.toUpperCase();
-
-            var diffEl = document.getElementById('game-difficulty-badge');
-            if (diffEl) {
-                var diffText = { easy: 'Easy', medium: 'Medium', hard: 'Hard' };
-                diffEl.textContent = diffText[q.difficulty] || q.difficulty;
-            }
-
-            var questionEl = document.getElementById('game-question-text');
-            if (questionEl) {
-                var qText = lang === 'rw' ? q.text_rw : q.text_en;
-                questionEl.innerHTML = qText.replace(/(\d+[\+\-\×\÷\=x][\d\+\-\×\÷\=\sx]+)/gi, '<em>$1</em>');
-            }
-
-            var optionsEl = document.getElementById('game-options');
-            if (optionsEl) {
-                var options = lang === 'rw' ? q.options_rw : q.options_en;
-                optionsEl.innerHTML = options.map(function(opt, i) {
-                    return '<button class="answer-btn" onclick="selectAnswer(' + i + ')" id="answer-' + i + '">' +
-                        '<span class="answer-letter">' + String.fromCharCode(65 + i) + '</span>' +
-                        '<span class="answer-text">' + opt + '</span>' +
-                        '<i class="fa fa-check answer-check"></i>' +
-                        '</button>';
-                }).join('');
-                if (!this.state.playerTurn) {
-                    optionsEl.querySelectorAll('.answer-btn').forEach(function(btn) { btn.classList.add('disabled'); });
-                }
-            }
-
-            var turnEl = document.getElementById('game-turn-indicator');
-            if (turnEl) {
-                if (this.state.playerTurn) {
-                    turnEl.innerHTML = '<span class="your-turn">' + (lang === 'rw' ? 'NI UKWAWE' : 'YOUR TURN') + '</span>';
-                } else {
-                    turnEl.innerHTML = '<span class="opp-turn">' + (lang === 'rw' ? 'UMUKINNYI ARIHITAMO...' : 'OPPONENT IS CHOOSING...') + '</span>';
-                }
-            }
-
-            var streakEl = document.getElementById('game-streak');
-            if (streakEl) {
-                streakEl.innerHTML = '<i class="fa fa-fire"></i> ' + answerStreak + (lang === 'rw' ? ' ibisubizo bikurikirana' : ' answer streak');
-            }
-
-            document.getElementById('p1-score').textContent = this.state.playerScore;
-            document.getElementById('p2-score').textContent = this.state.opponentScore;
-
-            var maxScore = Math.max(this.state.playerScore + this.state.opponentScore, 1);
-            var p1Pct = Math.max(20, (this.state.playerScore / (this.state.totalRounds * 3)) * 100);
-            var p2Pct = Math.max(20, (this.state.opponentScore / (this.state.totalRounds * 3)) * 100);
-            document.getElementById('p1-health').style.width = Math.min(100, p1Pct) + '%';
-            document.getElementById('p2-health').style.width = Math.min(100, p2Pct) + '%';
-
-            var user = null;
-            if (typeof IremeAuth !== 'undefined' && IremeAuth.getCurrentUser) {
-                user = IremeAuth.getCurrentUser();
-            }
-            if (user) {
-                var initials = user.fullName.split(' ').map(function(n) { return n[0]; }).join('').slice(0, 2).toUpperCase();
-                document.getElementById('p1-avatar').textContent = initials;
-                document.getElementById('p1-name').textContent = user.fullName;
-            }
-            if (this.state.opponent) {
-                var oppInitials = this.state.opponent.name.split('_').map(function(n) { return n[0]; }).join('').slice(0, 2).toUpperCase();
-                document.getElementById('p2-avatar').textContent = oppInitials || 'OP';
-                document.getElementById('p2-name').textContent = this.state.opponent.name.replace('_', ' ');
-            }
-
-            var feedbackEl = document.getElementById('game-result-feedback');
-            if (feedbackEl) feedbackEl.innerHTML = '';
-
-            var timerCircle = document.getElementById('timer-circle');
-            if (timerCircle) timerCircle.classList.remove('urgent');
-        };
-
-        var originalStartTimer = IremeGame.startTimer.bind(IremeGame);
-        IremeGame.startTimer = function() {
-            clearInterval(this.state.timerInterval);
-            var self = this;
-            this.state.timerInterval = setInterval(function() {
-                self.state.timer--;
-                var timerEl = document.getElementById('game-timer');
-                if (timerEl) timerEl.textContent = self.state.timer;
-
-                var arc = document.getElementById('timer-arc');
-                if (arc) {
-                    var pct = self.state.timer / 30;
-                    var dashLen = pct * 119;
-                    arc.setAttribute('stroke-dasharray', dashLen + ' 119');
-                }
-
-                var timerCircle = document.getElementById('timer-circle');
-                if (timerCircle) {
-                    if (self.state.timer <= 8) {
-                        timerCircle.classList.add('urgent');
-                    } else {
-                        timerCircle.classList.remove('urgent');
-                    }
-                }
-
-                if (self.state.timer <= 0) {
-                    clearInterval(self.state.timerInterval);
-                    self.submitAnswer(-1);
-                }
-            }, 1000);
-        };
-
-        function selectAnswer(index) {
-            if (!IremeGame.state.playerTurn) return;
-            var btns = document.querySelectorAll('.answer-btn');
-            btns.forEach(function(btn) { btn.classList.add('disabled'); });
-
-            var q = IremeGame.state.currentQuestion;
-            var isCorrect = index === q.correct;
-
-            if (isCorrect) {
-                document.getElementById('answer-' + index).classList.add('correct');
-                answerStreak++;
-            } else {
-                document.getElementById('answer-' + index).classList.add('incorrect');
-                document.getElementById('answer-' + q.correct).classList.add('correct');
-                answerStreak = 0;
-            }
-
-            IremeGame.submitAnswer(index);
-        }
-
-        var originalShowResult = IremeGame.showAnswerResult.bind(IremeGame);
-        IremeGame.showAnswerResult = function(isCorrect, isPlayerAnswering) {
-            var q = this.state.currentQuestion;
-            var lang = localStorage.getItem('ireme-lang') || 'en';
-            var feedbackEl = document.getElementById('game-result-feedback');
-            if (!feedbackEl) return;
-
-            var options = lang === 'rw' ? q.options_rw : q.options_en;
-            var explanation = lang === 'rw' ? q.explanation_rw : q.explanation_en;
-
-            var points = isCorrect ? (q.difficulty === 'hard' ? 3 : q.difficulty === 'medium' ? 2 : 1) : 0;
-            var titleText = isCorrect
-                ? (lang === 'rw' ? 'Igisubizo nyacyo! +' + points + ' amanota' : 'Correct! +' + points + ' points')
-                : (lang === 'rw' ? 'Igisubizo kitari cyo' : 'Incorrect');
-
-            var iconClass = isCorrect ? 'correct' : 'wrong';
-            var panelClass = isCorrect ? '' : ' wrong';
-            var iconFa = isCorrect ? 'fa-check-circle' : 'fa-times-circle';
-
-            feedbackEl.innerHTML = '<div class="explanation-panel' + panelClass + '">' +
-                '<span class="exp-icon ' + iconClass + '"><i class="fa ' + iconFa + '"></i></span>' +
-                '<div><strong>' + titleText + '</strong>' +
-                '<p>' + explanation + '</p></div></div>';
-
-            document.getElementById('p1-score').textContent = IremeGame.state.playerScore;
-            document.getElementById('p2-score').textContent = IremeGame.state.opponentScore;
-
-            setTimeout(function() {
-                IremeGame.state.playerTurn = !IremeGame.state.playerTurn;
-                IremeGame.nextRound();
-            }, 4000);
-        };
-
-        setTimeout(function() {
-            if (!IremeGame.state.currentQuestion) {
-                window.location.href = 'game-setup.html';
-                return;
-            }
-            IremeGame.updateGameUI();
-        }, 500);
     </script>
 </body>
 </html>
