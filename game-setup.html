@@ -26,20 +26,18 @@
         .gs-step-num{width:28px;height:28px;border-radius:8px;background:#e9f0ff;color:var(--ip);display:grid;place-items:center;font-size:9px;font-weight:800;flex:none}
         .gs-step-head h3{font-size:13px;margin:0;color:var(--id)}
         .gs-step-head p{font-size:9px;color:var(--im);margin:2px 0 0}
-        .gs-mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-        .gs-mode-btn{border:1px solid var(--iline);background:#fafbfe;border-radius:10px;padding:10px;text-align:left;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:10px}
+        .gs-mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+        .gs-mode-btn{border:1px solid var(--iline);background:#fafbfe;border-radius:8px;padding:7px 8px;text-align:left;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:7px}
         .gs-mode-btn:hover{border-color:var(--is);background:#f5f9ff}
         .gs-mode-btn.active{border-color:var(--ip);background:#e9f0ff;box-shadow:0 0 0 1px var(--ip)}
-        .gs-mode-btn .mode-icon{width:32px;height:32px;border-radius:8px;background:#e9f0ff;color:var(--ip);display:grid;place-items:center;font-size:14px;flex:none}
+        .gs-mode-btn .mode-icon{width:26px;height:26px;border-radius:7px;background:#e9f0ff;color:var(--ip);display:grid;place-items:center;font-size:12px;flex:none}
         .gs-mode-btn.active .mode-icon{background:var(--ip);color:#fff}
-        .gs-mode-btn strong{display:block;font-size:10px;color:var(--id)}
-        .gs-mode-btn small{font-size:7px;color:var(--im);display:block;margin-top:1px;line-height:1.3}
-        .gs-level-scroll{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
-        .gs-level-scroll::-webkit-scrollbar{height:3px}
-        .gs-level-scroll::-webkit-scrollbar-thumb{background:var(--iline);border-radius:3px}
-        .gs-level-btn{border:1px solid var(--iline);background:#fafbfe;border-radius:8px;padding:8px 14px;font-size:10px;font-weight:700;color:var(--im);cursor:pointer;transition:.2s;white-space:nowrap;flex:none}
-        .gs-level-btn:hover{border-color:var(--is);color:var(--ip)}
-        .gs-level-btn.active{border-color:var(--ip);background:var(--ip);color:#fff}
+        .gs-mode-btn strong{display:block;font-size:9px;color:var(--id);line-height:1.2}
+        .gs-mode-btn small{font-size:7px;color:var(--im);display:block;margin-top:1px;line-height:1.2}
+        .gs-level-dropdown{width:100%}
+        .gs-level-dropdown select{width:100%;height:40px;border:1px solid var(--iline);background:#fff;border-radius:9px;padding:0 35px 0 12px;font-size:11px;font-weight:600;color:var(--id);appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%236B7A99'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;cursor:pointer;transition:.2s}
+        .gs-level-dropdown select:hover{border-color:var(--is)}
+        .gs-level-dropdown select:focus{border-color:var(--ip);outline:none;box-shadow:0 0 0 2px rgba(19,99,198,.15)}
         .gs-diff-row{display:flex;gap:6px;flex-wrap:wrap}
         .gs-diff-btn{border:1px solid var(--iline);background:#fafbfe;border-radius:8px;padding:7px 12px;font-size:9px;font-weight:700;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:6px}
         .gs-diff-btn:hover{border-color:var(--is)}
@@ -195,7 +193,7 @@
                             <div><h3>Education Level</h3><p>Select your class or level</p></div>
                             <span style="margin-left:auto;font-size:7px;color:var(--igrn);background:#e9faf4;padding:4px 7px;border-radius:6px;font-weight:800"><i class="fa fa-check"></i> Verified</span>
                         </div>
-                        <div class="gs-level-scroll" id="gs-levels"></div>
+                        <div id="gs-level-dropdown"></div>
                     </div>
 
                     <!-- Step 3: Subject (searchable dropdown) -->
@@ -337,6 +335,7 @@
         var sel = { mode: 'quick', pathway: 'primary', level: 'P1', subject: null, subjectName: '', topic: 'all', difficulty: 'adaptive' };
         var subjectDropdown = null;
         var topicDropdown = null;
+        var levelDropdown = null;
 
         var subjectIcons = {
             mathematics:'fa-calculator',english:'fa-book',kinyarwanda:'fa-language',science:'fa-flask',
@@ -363,7 +362,6 @@
         }
 
         function renderLevels() {
-            var c = document.getElementById('gs-levels');
             var levels = [];
             if (typeof IremeCurriculum !== 'undefined') {
                 for (var pw in IremeCurriculum.pathways) {
@@ -376,21 +374,32 @@
                     return { level: l, pathway: l.startsWith('P') ? 'primary' : 'secondary' };
                 });
             }
-            c.innerHTML = levels.map(function(l) {
-                var active = l.level === sel.level ? ' active' : '';
-                return '<button class="gs-level-btn' + active + '" onclick="selectLevel(\'' + l.level + '\',\'' + l.pathway + '\')">' + l.level + '</button>';
-            }).join('');
+            var pathwayIcons = { primary: 'fa-school', secondary: 'fa-graduation-cap', tvet: 'fa-tools', ttc: 'fa-book-reader' };
+            var items = levels.map(function(l) {
+                return {
+                    value: l.level + '|' + l.pathway,
+                    label: l.level,
+                    sublabel: l.pathway.charAt(0).toUpperCase() + l.pathway.slice(1),
+                    icon: pathwayIcons[l.pathway] || 'fa-layer-group'
+                };
+            });
+            if (levelDropdown) {
+                IremeDropdown.setItems(levelDropdown, items);
+                var defaultItem = items.find(function(it) { return it.value === (sel.level + '|' + sel.pathway); });
+                if (defaultItem) IremeDropdown.setValue(levelDropdown, defaultItem.value);
+            }
         }
 
-        function selectLevel(level, pathway) {
-            sel.level = level;
-            sel.pathway = pathway;
-            sel.subject = null;
-            sel.subjectName = '';
-            sel.topic = 'all';
-            renderLevels();
+        function selectLevel(value) {
+            if (!value) {
+                sel.level = null;
+                sel.pathway = null;
+            } else {
+                var parts = value.split('|');
+                sel.level = parts[0];
+                sel.pathway = parts[1];
+            }
             loadSubjects();
-            loadTopics();
             updateSummary();
         }
 
@@ -527,6 +536,18 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             renderModes();
+
+            levelDropdown = IremeDropdown.create(document.getElementById('gs-level-dropdown'), {
+                placeholder: 'Select level...',
+                searchPlaceholder: 'Search levels...',
+                maxHeight: '240px',
+                emptyText: 'No levels available',
+                items: [],
+                onChange: function(value, item) {
+                    selectLevel(value);
+                }
+            });
+
             renderLevels();
             renderDifficulty();
 
