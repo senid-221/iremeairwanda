@@ -50,6 +50,32 @@ h6,
 .btn {
     font-weight: 500;
     transition: .5s;
+    line-height: 1.4;
+}
+
+.btn.rounded-pill {
+    min-height: 40px;
+}
+
+.btn.py-3 {
+    padding-top: 0.4rem !important;
+    padding-bottom: 0.4rem !important;
+}
+
+@media (min-width: 576px) {
+    .btn.py-sm-3 {
+        padding-top: 0.4rem !important;
+        padding-bottom: 0.4rem !important;
+    }
+    .btn.px-sm-5 {
+        padding-left: 1.5rem !important;
+        padding-right: 1.5rem !important;
+    }
+}
+
+.btn:not(.btn-sm):not(.btn-lg):not(.btn-square):not(.btn-sm-square):not(.btn-lg-square):not(.btn-social):not(.btn-link):not(.lang-btn) {
+    padding-top: 0.375rem;
+    padding-bottom: 0.375rem;
 }
 
 .btn-square {
@@ -112,6 +138,11 @@ h6,
 }
 
 @media (max-width: 991.98px) {
+    .navbar {
+        height: auto;
+        min-height: 60px;
+    }
+
     .navbar .navbar-nav {
         padding: 0 15px;
         background: var(--primary);
@@ -120,6 +151,24 @@ h6,
     .navbar .navbar-nav .nav-link  {
         margin-right: 0;
         padding: 10px 0;
+    }
+
+    .navbar .navbar-brand img {
+        height: 40px !important;
+    }
+
+    .navbar-header-controls {
+        display: flex;
+        align-items: center;
+        margin-left: auto;
+    }
+
+    .navbar-header-controls .lang-switcher {
+        margin-right: 8px;
+    }
+
+    .navbar-header-controls .navbar-toggler {
+        margin: 0;
     }
 }
 

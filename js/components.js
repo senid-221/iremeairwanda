@@ -45,13 +45,19 @@ const IremeComponents = {
                 <a href="index.html" class="navbar-brand">
                     <img src="img/ireme-logo.png" alt="IREME" style="height: 50px;">
                 </a>
-                <button type="button" class="navbar-toggler ms-auto me-0" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+                <div class="navbar-header-controls d-lg-none">
+                    <div class="lang-switcher d-flex rounded-pill border border-white-50 overflow-hidden">
+                        <button class="lang-btn btn btn-sm text-white px-2 py-0 active" data-lang="en" onclick="setLanguage('en')">EN</button>
+                        <button class="lang-btn btn btn-sm text-white-50 px-2 py-0" data-lang="rw" onclick="setLanguage('rw')">RW</button>
+                    </div>
+                    <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav ms-auto align-items-lg-center">
                         ${navLinks}
-                        <div class="lang-switcher ms-lg-3 d-flex rounded-pill border border-white-50 overflow-hidden">
+                        <div class="lang-switcher ms-lg-3 d-none d-lg-flex rounded-pill border border-white-50 overflow-hidden">
                             <button class="lang-btn btn btn-sm text-white px-3 py-1 active" data-lang="en" onclick="setLanguage('en')">EN</button>
                             <button class="lang-btn btn btn-sm text-white-50 px-3 py-1" data-lang="rw" onclick="setLanguage('rw')">RW</button>
                         </div>
