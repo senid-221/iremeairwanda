@@ -1,0 +1,211 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+  PARENT
+  HEADTEACHER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum AccountStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  DEACTIVATED
+}
+
+model User {
+  id            String        @id @default(uuid())
+  email         String        @unique
+  fullName      String
+  role          Role          @default(STUDENT)
+  status        AccountStatus @default(PENDING)
+  emailVerified Boolean       @default(false)
+  avatarUrl     String?
+  phone         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  lastLoginAt   DateTime?
+
+  googleAccount  GoogleAccount?
+  sessions       Session[]
+  studentRecord  StudentRecord?
+  teacherRecord  TeacherRecord?
+  parentRecord   ParentRecord?
+  gameMatches    GameMatch[]   @relation("Player1")
+  gameMatches2   GameMatch[]   @relation("Player2")
+  gameAnswers    GameAnswer[]
+  auditLogs      AuditLog[]    @relation("Creator")
+  auditLogsTarget AuditLog[]   @relation("Target")
+
+  @@index([email])
+  @@index([role])
+  @@index([status])
+}
+
+model GoogleAccount {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  googleId      String   @unique
+  email         String
+  displayName   String?
+  photoUrl      String?
+  accessToken   String?
+  refreshToken  String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([googleId])
+  @@index([userId])
+}
+
+model Session {
+  id        String   @id
+  sid       String   @unique
+  userId    String?
+  data      Json
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([sid])
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model StudentRecord {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  level           String?
+  pathway         String?
+  schoolId        String?
+  parentIds       String[]
+  totalXp         Int      @default(0)
+  matchesPlayed   Int      @default(0)
+  matchesWon      Int      @default(0)
+  currentStreak   Int      @default(0)
+  bestStreak      Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([schoolId])
+}
+
+model TeacherRecord {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  schoolId        String?
+  subjectsTaught  String[]
+  isVerified      Boolean  @default(false)
+  verifiedAt      DateTime?
+  verifiedBy      String?
+  classesManaged  String[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([schoolId])
+}
+
+model ParentRecord {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  childIds        String[]
+  isVerified      Boolean  @default(false)
+  verifiedAt      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model GameMatch {
+  id              String    @id @default(uuid())
+  player1Id       String
+  player2Id       String?
+  player1Score    Int       @default(0)
+  player2Score    Int       @default(0)
+  subject         String
+  subjectName     String?
+  level           String
+  pathway         String
+  topic           String    @default("all")
+  difficulty      String    @default("adaptive")
+  mode            String    @default("quick")
+  totalRounds     Int       @default(10)
+  result          String?
+  player1Accuracy Int?
+  player2Accuracy Int?
+  startedAt       DateTime  @default(now())
+  completedAt     DateTime?
+
+  player1     User         @relation("Player1", fields: [player1Id], references: [id])
+  player2     User?        @relation("Player2", fields: [player2Id], references: [id])
+  answers     GameAnswer[]
+
+  @@index([player1Id])
+  @@index([player2Id])
+  @@index([subject])
+  @@index([startedAt])
+  @@index([result])
+}
+
+model GameAnswer {
+  id              String   @id @default(uuid())
+  matchId         String
+  userId          String
+  questionId      String
+  questionText    String
+  selectedAnswer  Int
+  correctAnswer   Int
+  isCorrect       Boolean
+  points          Int      @default(0)
+  timeUsed        Int      @default(0)
+  createdAt       DateTime @default(now())
+
+  match GameMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  user  User      @relation(fields: [userId], references: [id])
+
+  @@index([matchId])
+  @@index([userId])
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  action      String
+  entityType  String
+  entityId    String?
+  creatorId   String?
+  targetId    String?
+  metadata    Json?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  creator User? @relation("Creator", fields: [creatorId], references: [id])
+  target  User? @relation("Target", fields: [targetId], references: [id])
+
+  @@index([action])
+  @@index([entityType])
+  @@index([creatorId])
+  @@index([createdAt])
+}

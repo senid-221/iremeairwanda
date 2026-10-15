@@ -1,0 +1,15 @@
+{
+  "buildCommand": null,
+  "outputDirectory": "AiTech",
+  "cleanUrls": true,
+  "headers": [
+    {
+      "source": "/js/api-client.js",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=3600" }
+      ]
+    }
+  ],
+  "rewrites": [],
+  "redirects": []
+}
