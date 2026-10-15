@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>IREME Game - Fighting by Questions</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="img/ireme-icon.png" rel="icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <style>
+        .game-card { background: #fff; border-radius: 15px; box-shadow: 0 2px 15px rgba(0,0,0,0.08); }
+        .game-timer { font-size: 2.5rem; font-weight: 700; color: var(--primary); }
+        .game-timer.warning { color: #dc3545; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+    </style>
+</head>
+<body>
+    <div id="component-spinner"></div>
+    <div id="component-navbar"></div>
+
+    <!-- Game Header -->
+    <div class="container-fluid pt-5 bg-primary hero-header">
+        <div class="container pt-5">
+            <div class="row g-5 pt-5">
+                <div class="col-lg-6 align-self-center text-center text-lg-start mb-lg-5">
+                    <h1 class="display-4 text-white mb-4 animated slideInRight" data-i18n="game.subtitle">Fighting by Questions</h1>
+                    <div class="d-flex gap-3 text-white">
+                        <span><i class="fa fa-clock me-1"></i><span id="game-timer" class="game-timer text-white">30s</span></span>
+                        <span class="ms-3"><i class="fa fa-layer-group me-1"></i><span id="game-round">Round 1/5</span></span>
+                    </div>
+                </div>
+                <div class="col-lg-6 align-self-end text-center text-lg-end">
+                    <div id="game-scores" class="text-white fw-bold fs-5"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gameplay Area -->
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="game-card p-4 p-lg-5 wow fadeIn">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge bg-primary px-3 py-2" id="game-topic">Topic</span>
+                            <span class="badge bg-secondary px-3 py-2" id="game-difficulty">Difficulty</span>
+                        </div>
+
+                        <div id="game-turn-indicator" class="text-center fw-bold mb-3 text-primary">Your turn!</div>
+
+                        <h3 class="text-center mb-4" id="game-question-text">Question text will appear here...</h3>
+
+                        <div id="game-options" class="mb-4">
+                            <!-- Options rendered by JS -->
+                        </div>
+
+                        <div id="game-result-feedback" class="mt-4">
+                            <!-- Feedback rendered by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="component-footer"></div>
+    <div id="component-backtotop"></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/game-state.js"></script>
+    <script>
+        IremeComponents.initPage('game-match.html', ['js/game-state.js']);
+
+        // Initialize gameplay UI
+        setTimeout(() => {
+            IremeGame.updateGameUI();
+        }, 500);
+    </script>
+</body>
+</html>

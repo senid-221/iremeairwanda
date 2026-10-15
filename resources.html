@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>IREME - Educational Resources</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="img/ireme-icon.png" rel="icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div id="component-spinner"></div>
+    <div id="component-navbar"></div>
+
+    <div class="container-fluid pt-5 bg-primary hero-header">
+        <div class="container pt-5">
+            <div class="row g-5 pt-5">
+                <div class="col-lg-6 align-self-center text-center text-lg-start mb-lg-5">
+                    <h1 class="display-4 text-white mb-4 animated slideInRight" data-i18n="resources.title">Educational Resources</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center justify-content-lg-start mb-0">
+                            <li class="breadcrumb-item"><a class="text-white" href="index.html" data-i18n="breadcrumb.home">Home</a></li>
+                            <li class="breadcrumb-item text-white active" data-i18n="resources.title">Resources</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 align-self-end text-center text-lg-end">
+                    <img class="img-fluid" src="img/hero-img.png" alt="" style="max-height: 300px;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <!-- Filters -->
+            <div class="row g-3 mb-4 wow fadeIn" data-wow-delay="0.1s">
+                <div class="col-md-4">
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="resource-search" data-i18n="resources.search" placeholder="Search resources...">
+                        <label for="resource-search" data-i18n="resources.search">Search resources...</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select py-3" id="filter-level">
+                        <option value="" data-i18n="resources.allLevels">All Levels</option>
+                        <option value="primary">Primary (P1-P6)</option>
+                        <option value="secondary">Secondary (S1-S6)</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select py-3" id="filter-subject">
+                        <option value="" data-i18n="resources.allSubjects">All Subjects</option>
+                        <option value="math">Mathematics</option>
+                        <option value="science">Science</option>
+                        <option value="english">English</option>
+                        <option value="kinyarwanda">Kinyarwanda</option>
+                        <option value="social">Social Studies</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select py-3" id="filter-type">
+                        <option value="" data-i18n="resources.allTypes">All Types</option>
+                        <option value="lesson" data-i18n="resources.lesson">Lesson</option>
+                        <option value="quiz" data-i18n="resources.quiz">Quiz</option>
+                        <option value="document" data-i18n="resources.document">Document</option>
+                        <option value="video" data-i18n="resources.video">Video</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Resources Grid -->
+            <div class="row g-4" id="resources-grid">
+                <div class="col-md-6 col-lg-4 wow fadeIn resource-card" data-level="primary" data-subject="math" data-type="lesson" data-wow-delay="0.1s">
+                    <div class="service-item rounded p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="badge bg-primary" data-i18n="resources.lesson">Lesson</span>
+                            <span class="badge bg-success" data-i18n="resources.official">Official REB Material</span>
+                        </div>
+                        <h5>Fractions - Introduction</h5>
+                        <p class="text-muted small">Primary P4-P5 • Mathematics • REB Curriculum 2024</p>
+                        <p>Learn the basics of fractions including numerators, denominators, and equivalent fractions.</p>
+                        <a href="#" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="resources.viewResource">View Resource</a>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4 wow fadeIn resource-card" data-level="primary" data-subject="science" data-type="lesson" data-wow-delay="0.2s">
+                    <div class="service-item rounded p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="badge bg-primary" data-i18n="resources.lesson">Lesson</span>
+                            <span class="badge bg-success" data-i18n="resources.official">Official REB Material</span>
+                        </div>
+                        <h5>Photosynthesis</h5>
+                        <p class="text-muted small">Primary P5-P6 • Science • REB Curriculum 2024</p>
+                        <p>Understand how plants make food using sunlight, water, and carbon dioxide.</p>
+                        <a href="#" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="resources.viewResource">View Resource</a>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4 wow fadeIn resource-card" data-level="secondary" data-subject="math" data-type="quiz" data-wow-delay="0.3s">
+                    <div class="service-item rounded p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="badge bg-info" data-i18n="resources.quiz">Quiz</span>
+                            <span class="badge bg-warning text-dark" data-i18n="resources.aiGenerated">AI-Generated Supplement</span>
+                        </div>
+                        <h5>Algebra Practice Quiz</h5>
+                        <p class="text-muted small">Secondary S1-S2 • Mathematics • AI-Generated</p>
+                        <p>Practice solving linear equations and simplifying algebraic expressions.</p>
+                        <a href="#" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="resources.viewResource">View Resource</a>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4 wow fadeIn resource-card" data-level="primary" data-subject="english" data-type="document" data-wow-delay="0.4s">
+                    <div class="service-item rounded p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="badge bg-secondary" data-i18n="resources.document">Document</span>
+                            <span class="badge bg-success" data-i18n="resources.official">Official REB Material</span>
+                        </div>
+                        <h5>English Grammar Guide</h5>
+                        <p class="text-muted small">Primary P4-P6 • English • REB Curriculum 2024</p>
+                        <p>Comprehensive guide to English grammar rules for primary school students.</p>
+                        <a href="#" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="resources.viewResource">View Resource</a>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4 wow fadeIn resource-card" data-level="secondary" data-subject="science" data-type="video" data-wow-delay="0.5s">
+                    <div class="service-item rounded p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="badge bg-danger" data-i18n="resources.video">Video</span>
+                            <span class="badge bg-warning text-dark" data-i18n="resources.aiGenerated">AI-Generated Supplement</span>
+                        </div>
+                        <h5>Cell Biology Explained</h5>
+                        <p class="text-muted small">Secondary S3-S4 • Science • AI-Generated</p>
+                        <p>Video lesson covering cell structure, organelles, and cell functions.</p>
+                        <a href="#" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="resources.viewResource">View Resource</a>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4 wow fadeIn resource-card" data-level="primary" data-subject="kinyarwanda" data-type="lesson" data-wow-delay="0.6s">
+                    <div class="service-item rounded p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="badge bg-primary" data-i18n="resources.lesson">Lesson</span>
+                            <span class="badge bg-success" data-i18n="resources.official">Official REB Material</span>
+                        </div>
+                        <h5>Imivugo n'Imigani</h5>
+                        <p class="text-muted small">Primary P5-P6 • Ikinyarwanda • REB Curriculum 2024</p>
+                        <p>Igishushanyo cy'indimi n'imigani by'Ikinyarwanda ku banyeshuri b'icyiciro cy'ibanze.</p>
+                        <a href="#" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="resources.viewResource">View Resource</a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="no-resources" class="text-center py-5 d-none">
+                <p class="text-muted" data-i18n="resources.noResults">No resources found matching your filters.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="component-footer"></div>
+    <div id="component-backtotop"></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+        IremeComponents.initPage('resources.html');
+
+        function filterResources() {
+            const search = document.getElementById('resource-search').value.toLowerCase();
+            const level = document.getElementById('filter-level').value;
+            const subject = document.getElementById('filter-subject').value;
+            const type = document.getElementById('filter-type').value;
+            let visible = 0;
+
+            document.querySelectorAll('.resource-card').forEach(card => {
+                const matchSearch = !search || card.textContent.toLowerCase().includes(search);
+                const matchLevel = !level || card.dataset.level === level;
+                const matchSubject = !subject || card.dataset.subject === subject;
+                const matchType = !type || card.dataset.type === type;
+                const show = matchSearch && matchLevel && matchSubject && matchType;
+                card.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+
+            document.getElementById('no-resources').classList.toggle('d-none', visible > 0);
+        }
+
+        ['resource-search','filter-level','filter-subject','filter-type'].forEach(id => {
+            document.getElementById(id).addEventListener('input', filterResources);
+            document.getElementById(id).addEventListener('change', filterResources);
+        });
+    </script>
+</body>
+</html>

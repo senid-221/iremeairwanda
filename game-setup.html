@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>IREME Learning Game - Fighting by Questions</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="img/ireme-icon.png" rel="icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div id="component-spinner"></div>
+    <div id="component-navbar"></div>
+
+    <!-- Hero -->
+    <div class="container-fluid pt-5 bg-primary hero-header">
+        <div class="container pt-5">
+            <div class="row g-5 pt-5">
+                <div class="col-lg-6 align-self-center text-center text-lg-start mb-lg-5">
+                    <h1 class="display-4 text-white mb-4 animated slideInRight" data-i18n="game.title">IREME Learning Game</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center justify-content-lg-start mb-0">
+                            <li class="breadcrumb-item"><a class="text-white" href="index.html" data-i18n="breadcrumb.home">Home</a></li>
+                            <li class="breadcrumb-item text-white active" data-i18n="game.subtitle">Fighting by Questions</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 align-self-end text-center text-lg-end">
+                    <img class="img-fluid" src="img/hero-img.png" alt="" style="max-height: 300px;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Setup -->
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <div class="mx-auto text-center wow fadeIn" data-wow-delay="0.1s" style="max-width: 600px;">
+                <div class="btn btn-sm border rounded-pill text-primary px-3 mb-3" data-i18n="game.subtitle">Fighting by Questions</div>
+                <h1 class="mb-4" data-i18n="game.desc">Challenge other students in curriculum-aligned academic competition. Learn while you play!</h1>
+            </div>
+
+            <div class="row justify-content-center mt-4">
+                <div class="col-lg-8">
+                    <div class="wow fadeIn" data-wow-delay="0.3s">
+                        <div class="bg-light rounded p-4 p-lg-5">
+                            <h4 class="mb-4" data-i18n="game.selectSubject">Select Subject</h4>
+                            <div class="row g-3 mb-4" id="game-subject-select">
+                                <div class="col-6 col-md-4">
+                                    <button class="btn btn-outline-primary w-100 py-3 subject-btn active" data-subject="math" data-i18n="game.subject.math">Mathematics</button>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <button class="btn btn-outline-primary w-100 py-3 subject-btn" data-subject="science" data-i18n="game.subject.science">Science</button>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <button class="btn btn-outline-primary w-100 py-3 subject-btn" data-subject="english" data-i18n="game.subject.english">English</button>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <button class="btn btn-outline-primary w-100 py-3 subject-btn" data-subject="kinyarwanda" data-i18n="game.subject.kinyarwanda">Kinyarwanda</button>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <button class="btn btn-outline-primary w-100 py-3 subject-btn" data-subject="social" data-i18n="game.subject.social">Social Studies</button>
+                                </div>
+                            </div>
+
+                            <h4 class="mb-3" data-i18n="game.selectLevel">Select Education Level</h4>
+                            <div class="row g-3 mb-4">
+                                <div class="col-6 col-md-3">
+                                    <button class="btn btn-outline-primary w-100 py-3 level-btn active" data-level="p1-p3" data-i18n="game.level.primary_low">Primary (P1-P3)</button>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <button class="btn btn-outline-primary w-100 py-3 level-btn" data-level="p4-p6" data-i18n="game.level.primary_high">Primary (P4-P6)</button>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <button class="btn btn-outline-primary w-100 py-3 level-btn" data-level="s1-s3" data-i18n="game.level.secondary_low">Secondary (S1-S3)</button>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <button class="btn btn-outline-primary w-100 py-3 level-btn" data-level="s4-s6" data-i18n="game.level.secondary_high">Secondary (S4-S6)</button>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <h4 class="mb-3" data-i18n="game.selectLanguage">Select Language</h4>
+                                    <select class="form-select py-3" id="game-language-select">
+                                        <option value="en">English</option>
+                                        <option value="rw">Ikinyarwanda</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <h4 class="mb-3" data-i18n="game.selectDuration">Select Duration</h4>
+                                    <select class="form-select py-3" id="game-duration-select">
+                                        <option value="5">5 <span data-i18n="game.minutes">minutes</span></option>
+                                        <option value="10" selected>10 <span data-i18n="game.minutes">minutes</span></option>
+                                        <option value="15">15 <span data-i18n="game.minutes">minutes</span></option>
+                                        <option value="20">20 <span data-i18n="game.minutes">minutes</span></option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-3">
+                                <button class="btn btn-primary rounded-pill py-3" id="btn-find-match" data-i18n="game.findMatch" onclick="startGameMatchmaking()">Find Match</button>
+                                <button class="btn btn-outline-primary rounded-pill py-3 d-none" id="btn-cancel-match" data-i18n="game.cancelSearch" onclick="IremeGame.cancelMatchmaking()">Cancel Search</button>
+                            </div>
+
+                            <div id="game-matchmaking-status" class="text-center mt-4 d-none">
+                                <div class="spinner-border text-primary mb-3" role="status"></div>
+                                <p class="fw-bold" id="game-phase"></p>
+                                <p id="game-message" class="text-muted"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Match History -->
+            <div class="row justify-content-center mt-5">
+                <div class="col-lg-8">
+                    <div class="wow fadeIn" data-wow-delay="0.5s">
+                        <h4 class="mb-3" data-i18n="game.history">Match History</h4>
+                        <div class="bg-light rounded" id="game-history-list">
+                            <p class="text-center text-muted py-4" data-i18n="game.noHistory">No matches played yet. Start playing!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="component-footer"></div>
+    <div id="component-backtotop"></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/game-state.js"></script>
+    <script>
+        IremeComponents.initPage('game-setup.html');
+
+        document.querySelectorAll('.subject-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.subject-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        document.querySelectorAll('.level-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        function startGameMatchmaking() {
+            const subject = document.querySelector('.subject-btn.active')?.dataset.subject || 'math';
+            const level = document.querySelector('.level-btn.active')?.dataset.level || 'p4-p6';
+            const language = document.getElementById('game-language-select').value;
+            const duration = parseInt(document.getElementById('game-duration-select').value);
+
+            document.getElementById('btn-find-match').classList.add('d-none');
+            document.getElementById('btn-cancel-match').classList.remove('d-none');
+            document.getElementById('game-matchmaking-status').classList.remove('d-none');
+
+            IremeGame.startMatchmaking(subject, level, language, duration);
+
+            setTimeout(() => {
+                if (IremeGame.state.phase === 'playing') {
+                    window.location.href = 'game-match.html';
+                }
+            }, 12000);
+        }
+
+        // Render history on load
+        if (typeof IremeGameUI !== 'undefined') {
+            setTimeout(() => IremeGameUI.renderHistory(), 500);
+        }
+    </script>
+</body>
+</html>
