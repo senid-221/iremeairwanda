@@ -168,6 +168,50 @@
                 <button id="load-more-btn" class="btn btn-outline-primary rounded-pill px-5 py-2 d-none" data-i18n="schools.loadMore">
                     <i class="fa fa-plus me-2"></i>Load More
                 </button>
+                <button id="show-all-btn" class="btn btn-primary rounded-pill px-5 py-2 ms-2 d-none" data-i18n="schools.showAll">
+                    <i class="fa fa-list me-2"></i>Show All
+                </button>
+            </div>
+
+            <!-- Coverage Statistics -->
+            <div class="row g-4 mt-5 wow fadeIn" data-wow-delay="0.2s" id="coverage-stats">
+                <div class="col-12">
+                    <h4 class="mb-4" data-i18n="schools.coverageTitle">Directory Coverage</h4>
+                </div>
+                <div class="col-md-3">
+                    <div class="service-item rounded p-4 text-center h-100">
+                        <i class="fa fa-school fa-2x text-primary mb-3"></i>
+                        <h3 class="mb-1" id="stat-total">0</h3>
+                        <p class="text-muted small mb-0" data-i18n="schools.totalSchools">Total Schools</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="service-item rounded p-4 text-center h-100">
+                        <i class="fa fa-tag fa-2x text-success mb-3"></i>
+                        <h3 class="mb-1" id="stat-named">0</h3>
+                        <p class="text-muted small mb-0" data-i18n="schools.namedSchools">Named Schools</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="service-item rounded p-4 text-center h-100">
+                        <i class="fa fa-map-marker-alt fa-2x text-info mb-3"></i>
+                        <h3 class="mb-1" id="stat-districts">0</h3>
+                        <p class="text-muted small mb-0" data-i18n="schools.districtsCovered">Districts Covered</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="service-item rounded p-4 text-center h-100">
+                        <i class="fa fa-map fa-2x text-warning mb-3"></i>
+                        <h3 class="mb-1" id="stat-sectors">0</h3>
+                        <p class="text-muted small mb-0" data-i18n="schools.sectorsCovered">Sectors Covered</p>
+                    </div>
+                </div>
+                <div class="col-12 mt-4">
+                    <h5 class="mb-3" data-i18n="schools.coverageByProvince">Coverage by Province</h5>
+                    <div class="row g-3" id="province-coverage">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -218,7 +262,7 @@
         /*  Constants                                                          */
         /* ------------------------------------------------------------------ */
 
-        var BATCH_SIZE = 30;
+        var BATCH_SIZE = 100;
 
         // Use Rwanda admin data for cascading filters
         var adminData = (typeof IremeRwandaAdmin !== 'undefined') ? IremeRwandaAdmin : null;
@@ -363,13 +407,24 @@
 
         function updateLoadMoreBtn() {
             var btn = document.getElementById('load-more-btn');
-            if (displayedCount < filteredList.length) {
+            var showAllBtn = document.getElementById('show-all-btn');
+            var remaining = filteredList.length - displayedCount;
+            
+            if (remaining > 0) {
                 btn.classList.remove('d-none');
-                var remaining = filteredList.length - displayedCount;
                 var nextBatch = Math.min(BATCH_SIZE, remaining);
                 btn.innerHTML = '<i class="fa fa-plus me-2"></i>Load More (' + nextBatch + ' of ' + remaining + ')';
+                
+                // Show "Show All" button if there are more than one batch remaining
+                if (remaining > BATCH_SIZE) {
+                    showAllBtn.classList.remove('d-none');
+                    showAllBtn.innerHTML = '<i class="fa fa-list me-2"></i>Show All (' + remaining + ' remaining)';
+                } else {
+                    showAllBtn.classList.add('d-none');
+                }
             } else {
                 btn.classList.add('d-none');
+                showAllBtn.classList.add('d-none');
             }
         }
 
@@ -573,6 +628,67 @@
             document.getElementById('load-more-btn').addEventListener('click', function () {
                 renderBatch();
             });
+
+            document.getElementById('show-all-btn').addEventListener('click', function () {
+                // Load all remaining schools at once
+                var grid = document.getElementById('schools-grid');
+                var html = '';
+                for (var i = displayedCount; i < filteredList.length; i++) {
+                    html += buildCardHtml(filteredList[i]);
+                }
+                grid.insertAdjacentHTML('beforeend', html);
+                displayedCount = filteredList.length;
+                updateLoadMoreBtn();
+                if (typeof WOW !== 'undefined') {
+                    new WOW({ boxClass: 'wow', animateClass: 'animated', offset: 0, mobile: true, live: true }).init();
+                }
+            });
+
+            // Populate coverage statistics
+            populateCoverageStats();
+        }
+
+        function populateCoverageStats() {
+            if (typeof IremeSchoolsData === 'undefined') return;
+            var schools = IremeSchoolsData.schools;
+            
+            // Total stats
+            document.getElementById('stat-total').textContent = schools.length;
+            document.getElementById('stat-named').textContent = schools.filter(function(s) { return s.name; }).length;
+            
+            // Unique districts and sectors
+            var districts = new Set();
+            var sectors = new Set();
+            schools.forEach(function(s) {
+                if (s.district) districts.add(s.district);
+                if (s.sector) sectors.add(s.sector);
+            });
+            document.getElementById('stat-districts').textContent = districts.size;
+            document.getElementById('stat-sectors').textContent = sectors.size;
+            
+            // By province
+            var byProvince = {};
+            schools.forEach(function(s) {
+                if (s.province) {
+                    if (!byProvince[s.province]) byProvince[s.province] = { total: 0, named: 0 };
+                    byProvince[s.province].total++;
+                    if (s.name) byProvince[s.province].named++;
+                }
+            });
+            
+            var provinceHtml = '';
+            Object.keys(byProvince).sort().forEach(function(p) {
+                var data = byProvince[p];
+                var pct = Math.round((data.named / data.total) * 100);
+                provinceHtml += '<div class="col-md-4 col-lg-2">' +
+                    '<div class="border rounded p-3 text-center">' +
+                        '<h6 class="mb-1 small">' + p + '</h6>' +
+                        '<p class="mb-1 fw-bold text-primary">' + data.total + '</p>' +
+                        '<p class="text-muted small mb-0">' + data.named + ' named (' + pct + '%)</p>' +
+                    '</div>' +
+                '</div>';
+            });
+            document.getElementById('province-coverage').innerHTML = provinceHtml;
         }
 
         // Run when DOM ready
