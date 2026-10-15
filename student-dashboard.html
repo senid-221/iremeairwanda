@@ -198,10 +198,17 @@
     <script src="lib/waypoints/waypoints.min.js"></script>
     <script src="js/main.js"></script>
     <script src="js/i18n.js"></script>
+    <script src="js/auth.js"></script>
     <script src="js/components.js"></script>
     <script src="js/game-state.js"></script>
     <script>
         IremeComponents.initPage('student-dashboard.html', ['js/game-state.js']);
+        if (!IremeAuth.requireRole('student')) { throw new Error('Access denied'); }
+        var user = IremeAuth.currentUser();
+        if (user) {
+            var welcomeEl = document.querySelector('[data-i18n="dashboard.welcome"]');
+            if (welcomeEl) welcomeEl.textContent = user.name;
+        }
         document.getElementById('dash-games-played').textContent = IremeGame.getMatchHistory().length;
     </script>
 </body>

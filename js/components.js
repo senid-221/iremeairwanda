@@ -14,6 +14,30 @@ const IremeComponents = {
             `<a href="${item.href}" class="nav-item nav-link${item.href === activePage ? ' active' : ''}" data-i18n="${item.key}"></a>`
         ).join('');
 
+        var authSection = '';
+        if (typeof IremeAuth !== 'undefined' && IremeAuth.isLoggedIn()) {
+            var session = IremeAuth.getSession();
+            var initials = session.name ? session.name.split(' ').map(function(n) { return n[0]; }).join('').toUpperCase().substr(0, 2) : 'U';
+            var dashboardUrl = IremeAuth.getDashboardUrl(session.role);
+            authSection = `
+                <div class="nav-item dropdown ms-lg-3">
+                    <a class="btn btn-sm btn-light rounded-pill px-3 dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="btn-square bg-primary text-white rounded-circle me-2 d-flex align-items-center justify-content-center" style="width:28px;height:28px;font-size:11px;font-weight:700;">${initials}</span>
+                        <span class="d-none d-lg-inline text-dark">${session.name.split(' ')[0]}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><h6 class="dropdown-header text-truncate" style="max-width:200px;">${session.name}</h6></li>
+                        <li><a class="dropdown-item" href="${dashboardUrl}"><i class="fa fa-tachometer-alt me-2"></i><span data-i18n="auth.goDashboard">Dashboard</span></a></li>
+                        <li><a class="dropdown-item" href="profile.html"><i class="fa fa-user me-2"></i><span data-i18n="auth.profile">Profile</span></a></li>
+                        <li><a class="dropdown-item" href="settings.html"><i class="fa fa-cog me-2"></i><span data-i18n="auth.settings">Settings</span></a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="#" onclick="IremeAuth.logout(); window.location.href='index.html'; return false;"><i class="fa fa-sign-out-alt me-2"></i><span data-i18n="auth.logout">Log Out</span></a></li>
+                    </ul>
+                </div>`;
+        } else {
+            authSection = `<a href="login.html" class="btn btn-sm btn-light rounded-pill px-3 ms-lg-3" data-i18n="auth.login">Log In</a>`;
+        }
+
         return `
     <div class="container-fluid sticky-top">
         <div class="container">
@@ -31,6 +55,7 @@ const IremeComponents = {
                             <button class="lang-btn btn btn-sm text-white px-3 py-1 active" data-lang="en" onclick="setLanguage('en')">EN</button>
                             <button class="lang-btn btn btn-sm text-white-50 px-3 py-1" data-lang="rw" onclick="setLanguage('rw')">RW</button>
                         </div>
+                        ${authSection}
                     </div>
                 </div>
             </nav>
@@ -149,6 +174,7 @@ const IremeComponents = {
             'lib/waypoints/waypoints.min.js',
             'js/main.js',
             'js/i18n.js',
+            'js/auth.js',
             'js/components.js',
         ];
         if (extraScripts) scripts.push(...extraScripts);

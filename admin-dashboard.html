@@ -108,12 +108,14 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="service-item rounded p-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="service-icon btn-square me-3"><i class="fa fa-book fa-lg"></i></div>
-                                        <div><h6 class="mb-1">Curriculum Management</h6><small class="text-muted">Manage curriculum versions</small></div>
+                                <a href="curriculum-management.html" class="text-decoration-none">
+                                    <div class="service-item rounded p-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="service-icon btn-square me-3"><i class="fa fa-book fa-lg"></i></div>
+                                            <div><h6 class="mb-1">Curriculum Management</h6><small class="text-muted">Manage subjects, levels, and programmes</small></div>
+                                        </div>
                                     </div>
-                                </div>
+                                </a>
                             </div>
                             <div class="col-md-6">
                                 <div class="service-item rounded p-3">
@@ -162,7 +164,11 @@
     <script src="lib/waypoints/waypoints.min.js"></script>
     <script src="js/main.js"></script>
     <script src="js/i18n.js"></script>
+    <script src="js/auth.js"></script>
     <script src="js/components.js"></script>
-    <script>IremeComponents.initPage('admin-dashboard.html');</script>
+    <script>
+        IremeComponents.initPage('admin-dashboard.html');
+        if (!IremeAuth.requireAnyRole(['admin', 'super_admin'])) { throw new Error('Access denied'); }
+    </script>
 </body>
 </html>

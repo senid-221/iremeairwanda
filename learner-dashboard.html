@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>IREME - Learner Dashboard</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="img/ireme-icon.png" rel="icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div id="component-spinner"></div>
+    <div id="component-navbar"></div>
+
+    <div class="container-fluid pt-5 bg-primary hero-header">
+        <div class="container pt-5">
+            <div class="row g-5 pt-5">
+                <div class="col-lg-6 align-self-center text-center text-lg-start mb-lg-5">
+                    <h1 class="display-4 text-white mb-4 animated slideInRight" data-i18n="auth.learnerPortal">TTC/TVET Learner Dashboard</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center justify-content-lg-start mb-0">
+                            <li class="breadcrumb-item"><a class="text-white" href="index.html" data-i18n="breadcrumb.home">Home</a></li>
+                            <li class="breadcrumb-item text-white active">Learner Dashboard</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 align-self-end text-center text-lg-end">
+                    <img class="img-fluid" src="img/hero-img.png" alt="" style="max-height: 300px;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Stats -->
+    <div class="container-fluid py-5">
+        <div class="container">
+
+            <!-- Welcome Section -->
+            <div class="row mb-4">
+                <div class="col-12 wow fadeIn" data-wow-delay="0.1s">
+                    <h3 class="fw-bold"><span data-i18n="dashboard.welcomeBack">Welcome back,</span> <span id="learner-welcome"></span></h3>
+                </div>
+            </div>
+
+            <!-- Stat Cards -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-3 wow fadeIn" data-wow-delay="0.1s">
+                    <div class="service-item rounded text-center p-4">
+                        <i class="fa fa-book-open fa-2x text-primary mb-3"></i>
+                        <h3 class="fw-bold">6</h3>
+                        <p class="mb-0" data-i18n="dashboard.myModules">My Modules</p>
+                    </div>
+                </div>
+                <div class="col-md-3 wow fadeIn" data-wow-delay="0.2s">
+                    <div class="service-item rounded text-center p-4">
+                        <i class="fa fa-clock fa-2x text-primary mb-3"></i>
+                        <h3 class="fw-bold">48</h3>
+                        <p class="mb-0" data-i18n="dashboard.practicalHours">Practical Hours</p>
+                    </div>
+                </div>
+                <div class="col-md-3 wow fadeIn" data-wow-delay="0.3s">
+                    <div class="service-item rounded text-center p-4">
+                        <i class="fa fa-clipboard-check fa-2x text-primary mb-3"></i>
+                        <h3 class="fw-bold">4</h3>
+                        <p class="mb-0" data-i18n="dashboard.assessments">Assessments</p>
+                    </div>
+                </div>
+                <div class="col-md-3 wow fadeIn" data-wow-delay="0.4s">
+                    <div class="service-item rounded text-center p-4">
+                        <i class="fa fa-award fa-2x text-primary mb-3"></i>
+                        <h3 class="fw-bold">12</h3>
+                        <p class="mb-0" data-i18n="dashboard.competencies">Competencies</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- My Training Modules -->
+                <div class="col-lg-8 wow fadeIn" data-wow-delay="0.1s">
+                    <div class="bg-light rounded p-4">
+                        <h4 class="mb-4" data-i18n="dashboard.myTrainingModules">My Training Modules</h4>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="service-item rounded p-3">
+                                    <h6 class="mb-1">Electrical Installation</h6>
+                                    <small class="text-muted">Trade: Electrical Engineering</small>
+                                    <div class="progress mt-2" style="height: 6px;"><div class="progress-bar bg-primary" style="width: 75%"></div></div>
+                                    <span class="badge bg-success mt-2" data-i18n="dashboard.inProgress">In Progress</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="service-item rounded p-3">
+                                    <h6 class="mb-1">Plumbing & Pipe Fitting</h6>
+                                    <small class="text-muted">Trade: Construction</small>
+                                    <div class="progress mt-2" style="height: 6px;"><div class="progress-bar bg-primary" style="width: 60%"></div></div>
+                                    <span class="badge bg-success mt-2" data-i18n="dashboard.inProgress">In Progress</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="service-item rounded p-3">
+                                    <h6 class="mb-1">Welding & Fabrication</h6>
+                                    <small class="text-muted">Trade: Metal Work</small>
+                                    <div class="progress mt-2" style="height: 6px;"><div class="progress-bar bg-success" style="width: 100%"></div></div>
+                                    <span class="badge bg-primary mt-2" data-i18n="dashboard.completed">Completed</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="service-item rounded p-3">
+                                    <h6 class="mb-1">Motor Vehicle Mechanics</h6>
+                                    <small class="text-muted">Trade: Automotive</small>
+                                    <div class="progress mt-2" style="height: 6px;"><div class="progress-bar bg-primary" style="width: 40%"></div></div>
+                                    <span class="badge bg-success mt-2" data-i18n="dashboard.inProgress">In Progress</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="service-item rounded p-3">
+                                    <h6 class="mb-1">Carpentry & Joinery</h6>
+                                    <small class="text-muted">Trade: Construction</small>
+                                    <div class="progress mt-2" style="height: 6px;"><div class="progress-bar bg-primary" style="width: 55%"></div></div>
+                                    <span class="badge bg-success mt-2" data-i18n="dashboard.inProgress">In Progress</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="service-item rounded p-3">
+                                    <h6 class="mb-1">Tailoring & Garment Making</h6>
+                                    <small class="text-muted">Trade: Fashion & Design</small>
+                                    <div class="progress mt-2" style="height: 6px;"><div class="progress-bar bg-warning" style="width: 20%"></div></div>
+                                    <span class="badge bg-warning text-dark mt-2" data-i18n="dashboard.notStarted">Not Started</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions Sidebar -->
+                <div class="col-lg-4 wow fadeIn" data-wow-delay="0.3s">
+                    <div class="bg-light rounded p-4">
+                        <h4 class="mb-4">Quick Actions</h4>
+                        <div class="d-grid gap-3">
+                            <a href="#" class="btn btn-primary rounded-pill py-3" data-i18n="dashboard.viewCompetencies"><i class="fa fa-award me-2"></i>View Competencies</a>
+                            <a href="#" class="btn btn-outline-primary rounded-pill py-3" data-i18n="dashboard.practicalLog"><i class="fa fa-clipboard me-2"></i>Practical Log</a>
+                            <a href="ai-tutor.html" class="btn btn-outline-primary rounded-pill py-3" data-i18n="dashboard.aiAssistant"><i class="fa fa-robot me-2"></i>AI Tutor</a>
+                            <a href="#" class="btn btn-outline-primary rounded-pill py-3" data-i18n="dashboard.trainingHistory"><i class="fa fa-history me-2"></i>Training History</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Practical Records -->
+            <div class="row mt-4">
+                <div class="col-12 wow fadeIn" data-wow-delay="0.1s">
+                    <div class="bg-light rounded p-4">
+                        <h4 class="mb-4" data-i18n="dashboard.practicalRecords">Practical Records</h4>
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th data-i18n="dashboard.date">Date</th>
+                                        <th data-i18n="dashboard.trade">Trade</th>
+                                        <th data-i18n="dashboard.hours">Hours</th>
+                                        <th data-i18n="dashboard.supervisor">Supervisor</th>
+                                        <th data-i18n="dashboard.status">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>2026-10-14</td>
+                                        <td>Electrical Engineering</td>
+                                        <td>4</td>
+                                        <td>Mr. Mugisha</td>
+                                        <td><span class="badge bg-success" data-i18n="dashboard.verified">Verified</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2026-10-12</td>
+                                        <td>Construction</td>
+                                        <td>3</td>
+                                        <td>Ms. Uwase</td>
+                                        <td><span class="badge bg-success" data-i18n="dashboard.verified">Verified</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2026-10-10</td>
+                                        <td>Metal Work</td>
+                                        <td>5</td>
+                                        <td>Mr. Habimana</td>
+                                        <td><span class="badge bg-success" data-i18n="dashboard.verified">Verified</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2026-10-08</td>
+                                        <td>Automotive</td>
+                                        <td>4</td>
+                                        <td>Mr. Niyonzima</td>
+                                        <td><span class="badge bg-warning text-dark" data-i18n="dashboard.pendingReview">Pending Review</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2026-10-06</td>
+                                        <td>Electrical Engineering</td>
+                                        <td>6</td>
+                                        <td>Mr. Mugisha</td>
+                                        <td><span class="badge bg-success" data-i18n="dashboard.verified">Verified</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="component-footer"></div>
+    <div id="component-backtotop"></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+        IremeComponents.initPage('learner-dashboard.html');
+        if (!IremeAuth.requireRole('learner')) { throw new Error('Access denied'); }
+        var user = IremeAuth.currentUser();
+        if (user) {
+            var el = document.getElementById('learner-welcome');
+            if (el) el.textContent = user.name;
+        }
+    </script>
+</body>
+</html>

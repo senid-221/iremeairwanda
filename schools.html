@@ -56,23 +56,6 @@
     </div>
     <!-- Hero End -->
 
-    <!-- Data Notice Start -->
-    <div class="container-fluid py-3 bg-info bg-opacity-10">
-        <div class="container">
-            <div class="row wow fadeIn" data-wow-delay="0.1s">
-                <div class="col-12">
-                    <div class="d-flex align-items-start p-3 rounded bg-white border">
-                        <i class="fa fa-database text-primary fa-lg me-3 mt-1"></i>
-                        <p class="mb-0 small text-muted">
-                            <span data-i18n="schools.dataNotice">This directory contains <strong id="notice-total">1,405</strong> education facilities from <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">OpenStreetMap</a> (snapshot: <strong id="notice-snapshot">2026-10-07</strong>). <strong id="notice-named">538</strong> schools have verified names. Data licensed under <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noopener">ODbL 1.0</a>. Coverage is expanding &mdash; not all schools may be listed.</span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Data Notice End -->
-
     <!-- Map/List Toggle -->
     <div class="container-fluid py-2 bg-light border-bottom">
         <div class="container">
@@ -291,6 +274,7 @@
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
     <script src="js/i18n.js"></script>
+    <script src="js/auth.js"></script>
     <script src="js/components.js"></script>
     <script>
     (function () {
@@ -592,18 +576,6 @@
         }
 
         /* ------------------------------------------------------------------ */
-        /*  Notice banner numbers                                              */
-        /* ------------------------------------------------------------------ */
-
-        function updateNoticeBanner() {
-            if (typeof IremeSchoolsData === 'undefined') return;
-            var d = IremeSchoolsData;
-            document.getElementById('notice-total').textContent  = d.totalFeatures;
-            document.getElementById('notice-named').textContent  = d.namedSchools;
-            document.getElementById('notice-snapshot').textContent = d.snapshot;
-        }
-
-        /* ------------------------------------------------------------------ */
         /*  Init                                                               */
         /* ------------------------------------------------------------------ */
 
@@ -615,8 +587,6 @@
                 console.warn('IremeSchoolsData not found. Ensure js/schools-data.js is loaded.');
                 allSchools = [];
             }
-
-            updateNoticeBanner();
 
             // Initial filter (show all, sorted by name)
             filteredList = allSchools.slice();

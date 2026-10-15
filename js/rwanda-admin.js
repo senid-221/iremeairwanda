@@ -1,4 +1,4 @@
-const IremeRwandaAdmin = {
+var IremeRwandaAdmin = {
   source: "Rwanda administrative divisions",
   totals: { provinces: 5, districts: 30, sectors: 416, cells: 2149, villages: 14837 },
   provinces: ["Eastern Province","Kigali City","Northern Province","Southern Province","Western Province"],

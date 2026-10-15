@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>IREME - Support Dashboard</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="img/ireme-icon.png" rel="icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div id="component-spinner"></div>
+    <div id="component-navbar"></div>
+
+    <div class="container-fluid pt-5 bg-primary hero-header">
+        <div class="container pt-5">
+            <div class="row g-5 pt-5">
+                <div class="col-lg-8 align-self-center text-center text-lg-start mb-lg-5">
+                    <h1 class="display-4 text-white mb-3 animated slideInRight">Support Dashboard</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center justify-content-lg-start mb-0">
+                            <li class="breadcrumb-item"><a class="text-white" href="index.html" data-i18n="breadcrumb.home">Home</a></li>
+                            <li class="breadcrumb-item text-white active">Support</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <div class="row g-4 mb-4">
+                <div class="col-md-3 col-sm-6 wow fadeIn" data-wow-delay="0.1s">
+                    <div class="service-item rounded p-4 text-center">
+                        <div class="service-icon btn-square rounded-circle mb-3 mx-auto"><i class="fa fa-ticket-alt fa-lg"></i></div>
+                        <h3 class="fw-bold mb-1">12</h3>
+                        <p class="text-muted mb-0">Open Tickets</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 wow fadeIn" data-wow-delay="0.2s">
+                    <div class="service-item rounded p-4 text-center">
+                        <div class="service-icon btn-square rounded-circle mb-3 mx-auto"><i class="fa fa-hourglass-half fa-lg"></i></div>
+                        <h3 class="fw-bold mb-1">5</h3>
+                        <p class="text-muted mb-0">Awaiting Response</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 wow fadeIn" data-wow-delay="0.3s">
+                    <div class="service-item rounded p-4 text-center">
+                        <div class="service-icon btn-square rounded-circle mb-3 mx-auto"><i class="fa fa-check-double fa-lg"></i></div>
+                        <h3 class="fw-bold mb-1">89</h3>
+                        <p class="text-muted mb-0">Resolved This Month</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 wow fadeIn" data-wow-delay="0.4s">
+                    <div class="service-item rounded p-4 text-center">
+                        <div class="service-icon btn-square rounded-circle mb-3 mx-auto"><i class="fa fa-star fa-lg"></i></div>
+                        <h3 class="fw-bold mb-1">4.8</h3>
+                        <p class="text-muted mb-0">Avg. Satisfaction</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="bg-light rounded p-4 wow fadeIn" data-wow-delay="0.1s">
+                        <h4 class="mb-4">Support Tickets</h4>
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Ticket</th>
+                                        <th>User</th>
+                                        <th>Issue</th>
+                                        <th>Priority</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>#1042</td>
+                                        <td>Jean P.</td>
+                                        <td>Cannot access student dashboard</td>
+                                        <td><span class="badge bg-danger">High</span></td>
+                                        <td><span class="badge bg-warning text-dark">Open</span></td>
+                                        <td><button class="btn btn-sm btn-outline-primary">Respond</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>#1041</td>
+                                        <td>Marie U.</td>
+                                        <td>Payment not processing</td>
+                                        <td><span class="badge bg-danger">High</span></td>
+                                        <td><span class="badge bg-info">In Progress</span></td>
+                                        <td><button class="btn btn-sm btn-outline-primary">Respond</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>#1040</td>
+                                        <td>Eric M.</td>
+                                        <td>Request to reset password</td>
+                                        <td><span class="badge bg-success">Low</span></td>
+                                        <td><span class="badge bg-warning text-dark">Open</span></td>
+                                        <td><button class="btn btn-sm btn-outline-primary">Respond</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>#1039</td>
+                                        <td>Ange T.</td>
+                                        <td>Wrong school assigned</td>
+                                        <td><span class="badge bg-warning text-dark">Medium</span></td>
+                                        <td><span class="badge bg-warning text-dark">Open</span></td>
+                                        <td><button class="btn btn-sm btn-outline-primary">Respond</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="bg-light rounded p-4 wow fadeIn" data-wow-delay="0.2s">
+                        <h4 class="mb-4">Quick Actions</h4>
+                        <div class="d-grid gap-3">
+                            <button class="btn btn-primary rounded-pill py-3">New Ticket</button>
+                            <button class="btn btn-outline-primary rounded-pill py-3">User Lookup</button>
+                            <button class="btn btn-outline-primary rounded-pill py-3">Knowledge Base</button>
+                            <button class="btn btn-outline-primary rounded-pill py-3">Escalate Issue</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="component-footer"></div>
+    <div id="component-backtotop"></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+        IremeComponents.initPage('support-dashboard.html');
+        if (!IremeAuth.requireRole('support')) { throw new Error('Access denied'); }
+    </script>
+</body>
+</html>

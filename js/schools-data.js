@@ -1,4 +1,4 @@
-const IremeSchoolsData = {
+var IremeSchoolsData = {
   source: "OpenStreetMap contributors",
   license: "ODbL 1.0",
   licenseUrl: "https://opendatacommons.org/licenses/odbl/1-0/",

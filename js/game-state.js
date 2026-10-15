@@ -3,6 +3,7 @@ const IremeGame = {
         phase: 'idle',
         subject: null,
         level: null,
+        pathway: null,
         language: 'en',
         duration: 10,
         opponent: null,
@@ -19,46 +20,127 @@ const IremeGame = {
         subscriptionActive: true,
     },
 
-    subjects: [
-        { id: 'math', key: 'game.subject.math' },
-        { id: 'science', key: 'game.subject.science' },
-        { id: 'english', key: 'game.subject.english' },
-        { id: 'kinyarwanda', key: 'game.subject.kinyarwanda' },
-        { id: 'social', key: 'game.subject.social' },
-    ],
+    // Dynamic subjects loaded from curriculum
+    get subjects() {
+        if (typeof IremeCurriculum === 'undefined') {
+            // Fallback if curriculum not loaded
+            return [
+                { id: 'math', key: 'game.subject.math' },
+                { id: 'science', key: 'game.subject.science' },
+                { id: 'english', key: 'game.subject.english' },
+                { id: 'kinyarwanda', key: 'game.subject.kinyarwanda' },
+                { id: 'social', key: 'game.subject.social' },
+            ];
+        }
+        
+        // Get subjects from curriculum based on selected pathway and level
+        var pathway = this.state.pathway || 'primary';
+        var level = this.state.level || 'P1';
+        var curriculumSubjects = IremeCurriculum.getSubjectsForLevel(pathway, level);
+        
+        return curriculumSubjects.map(function(s) {
+            return {
+                id: s.key,
+                code: s.code,
+                name: s.name,
+                nameRw: s.nameRw,
+                key: 'game.subject.' + s.key
+            };
+        });
+    },
 
-    levels: [
-        { id: 'p1-p3', key: 'game.level.primary_low' },
-        { id: 'p4-p6', key: 'game.level.primary_high' },
-        { id: 's1-s3', key: 'game.level.secondary_low' },
-        { id: 's4-s6', key: 'game.level.secondary_high' },
-    ],
+    // Dynamic levels loaded from curriculum
+    get levels() {
+        if (typeof IremeCurriculum === 'undefined') {
+            // Fallback if curriculum not loaded
+            return [
+                { id: 'p1-p3', key: 'game.level.primary_low' },
+                { id: 'p4-p6', key: 'game.level.primary_high' },
+                { id: 's1-s3', key: 'game.level.secondary_low' },
+                { id: 's4-s6', key: 'game.level.secondary_high' },
+            ];
+        }
+        
+        // Get all levels from all pathways
+        var allLevels = [];
+        for (var pathway in IremeCurriculum.pathways) {
+            var levels = IremeCurriculum.getPathwayLevels(pathway);
+            levels.forEach(function(level) {
+                allLevels.push({
+                    id: level.toLowerCase(),
+                    pathway: pathway,
+                    key: 'game.level.' + level.toLowerCase()
+                });
+            });
+        }
+        return allLevels;
+    },
+
+    // Pathways from curriculum
+    get pathways() {
+        if (typeof IremeCurriculum === 'undefined') {
+            return ['primary', 'secondary'];
+        }
+        return Object.keys(IremeCurriculum.pathways);
+    },
 
     durations: [5, 10, 15, 20],
 
     sampleQuestions: {
-        math: [
-            { id: 1, topic: 'Addition', difficulty: 'easy', text_en: 'What is 25 + 37?', text_rw: '25 + 37 ni iki?', options_en: ['52', '62', '72', '42'], options_rw: ['52', '62', '72', '42'], correct: 1, explanation_en: '25 + 37 = 62. Add the ones: 5+7=12, carry 1. Add the tens: 2+3+1=6.', explanation_rw: '25 + 37 = 62. Tera ibice: 5+7=12, twikubite 1. Tera ibice by\'ikumi: 2+3+1=6.' },
-            { id: 2, topic: 'Multiplication', difficulty: 'medium', text_en: 'What is 12 × 8?', text_rw: '12 × 8 ni iki?', options_en: ['86', '96', '106', '88'], options_rw: ['86', '96', '106', '88'], correct: 1, explanation_en: '12 × 8 = 96. Break it down: 10×8=80, 2×8=16, 80+16=96.', explanation_rw: '12 × 8 = 96. Gabanya: 10×8=80, 2×8=16, 80+16=96.' },
-            { id: 3, topic: 'Fractions', difficulty: 'hard', text_en: 'What is 3/4 + 1/2?', text_rw: '3/4 + 1/2 ni iki?', options_en: ['5/4', '4/6', '1', '7/4'], options_rw: ['5/4', '4/6', '1', '7/4'], correct: 0, explanation_en: '3/4 + 1/2 = 3/4 + 2/4 = 5/4. Find common denominator first.', explanation_rw: '3/4 + 1/2 = 3/4 + 2/4 = 5/4. Shaka umubare w\'ibanze umwe.' },
+        mathematics: [
+            { id: 1, topic: 'Addition', difficulty: 'easy', text_en: 'What is 25 + 37?', text_rw: '25 + 37 ni iki?', options_en: ['52', '62', '72', '42'], options_rw: ['52', '62', '72', '42'], correct: 1, explanation_en: '25 + 37 = 62. Add the ones: 5+7=12, carry 1. Add the tens: 2+3+1=6.', explanation_rw: '25 + 37 = 62. Tera ibice: 5+7=12, twikubite 1. Tera ibice by\'ikumi: 2+3+1=6.', subjectCode: 'MAT', level: 'P4' },
+            { id: 2, topic: 'Multiplication', difficulty: 'medium', text_en: 'What is 12 × 8?', text_rw: '12 × 8 ni iki?', options_en: ['86', '96', '106', '88'], options_rw: ['86', '96', '106', '88'], correct: 1, explanation_en: '12 × 8 = 96. Break it down: 10×8=80, 2×8=16, 80+16=96.', explanation_rw: '12 × 8 = 96. Gabanya: 10×8=80, 2×8=16, 80+16=96.', subjectCode: 'MAT', level: 'P5' },
+            { id: 3, topic: 'Fractions', difficulty: 'hard', text_en: 'What is 3/4 + 1/2?', text_rw: '3/4 + 1/2 ni iki?', options_en: ['5/4', '4/6', '1', '7/4'], options_rw: ['5/4', '4/6', '1', '7/4'], correct: 0, explanation_en: '3/4 + 1/2 = 3/4 + 2/4 = 5/4. Find common denominator first.', explanation_rw: '3/4 + 1/2 = 3/4 + 2/4 = 5/4. Shaka umubare w\'ibanze umwe.', subjectCode: 'MAT', level: 'P6' },
         ],
         science: [
-            { id: 4, topic: 'Photosynthesis', difficulty: 'medium', text_en: 'What gas do plants absorb during photosynthesis?', text_rw: 'Ni ikihe gazi ibimera binywa muri fotosinteze?', options_en: ['Oxygen', 'Carbon Dioxide', 'Nitrogen', 'Hydrogen'], options_rw: ['Ogizijeni', 'Karuboni Diyokisayidi', 'Nitirojeni', 'Hidrojeni'], correct: 1, explanation_en: 'Plants absorb Carbon Dioxide (CO2) and release Oxygen during photosynthesis.', explanation_rw: 'Ibimera binywa Karuboni Diyokisayidi (CO2) bigasohora Ogizijeni muri fotosinteze.' },
-            { id: 5, topic: 'Solar System', difficulty: 'easy', text_en: 'How many planets are in our solar system?', text_rw: 'Planete zingahe ziri mu sisitemu y\'izuba?', options_en: ['6', '7', '8', '9'], options_rw: ['6', '7', '8', '9'], correct: 2, explanation_en: 'There are 8 planets: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune.', explanation_rw: 'Hari planete 8: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune.' },
+            { id: 4, topic: 'Photosynthesis', difficulty: 'medium', text_en: 'What gas do plants absorb during photosynthesis?', text_rw: 'Ni ikihe gazi ibimera binywa muri fotosinteze?', options_en: ['Oxygen', 'Carbon Dioxide', 'Nitrogen', 'Hydrogen'], options_rw: ['Ogizijeni', 'Karuboni Diyokisayidi', 'Nitirojeni', 'Hidrojeni'], correct: 1, explanation_en: 'Plants absorb Carbon Dioxide (CO2) and release Oxygen during photosynthesis.', explanation_rw: 'Ibimera binywa Karuboni Diyokisayidi (CO2) bigasohora Ogizijeni muri fotosinteze.', subjectCode: 'SCI', level: 'P4' },
+            { id: 5, topic: 'Solar System', difficulty: 'easy', text_en: 'How many planets are in our solar system?', text_rw: 'Planete zingahe ziri mu sisitemu y\'izuba?', options_en: ['6', '7', '8', '9'], options_rw: ['6', '7', '8', '9'], correct: 2, explanation_en: 'There are 8 planets: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune.', explanation_rw: 'Hari planete 8: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune.', subjectCode: 'SCI', level: 'P5' },
         ],
         english: [
-            { id: 6, topic: 'Grammar', difficulty: 'easy', text_en: 'Which is a noun?', text_rw: 'Ni ikihe ari izina?', options_en: ['Run', 'Beautiful', 'Book', 'Quickly'], options_rw: ['Gukora', 'Kwiza', 'Igitabo', 'Vuba'], correct: 2, explanation_en: '"Book" is a noun — it names a thing. "Run" is a verb, "Beautiful" is an adjective.', explanation_rw: '"Igitabo" ni izina — rivuga ikintu. "Gukora" ni umugozo, "Kwiza" ni umuvugo.' },
+            { id: 6, topic: 'Grammar', difficulty: 'easy', text_en: 'Which is a noun?', text_rw: 'Ni ikihe ari izina?', options_en: ['Run', 'Beautiful', 'Book', 'Quickly'], options_rw: ['Gukora', 'Kwiza', 'Igitabo', 'Vuba'], correct: 2, explanation_en: '"Book" is a noun — it names a thing. "Run" is a verb, "Beautiful" is an adjective.', explanation_rw: '"Igitabo" ni izina — rivuga ikintu. "Gukora" ni umugozo, "Kwiza" ni umuvugo.', subjectCode: 'ENG', level: 'P4' },
         ],
         kinyarwanda: [
-            { id: 7, topic: 'Imibare', difficulty: 'easy', text_en: 'Ishyiramo ijambo ribereye: "Umwana ___ amazi."', text_rw: 'Ishyiramo ijambo ribereye: "Umwana ___ amazi."', options_en: ['Anywa', 'Arya', 'Asoma', 'Akorana'], options_rw: ['Anywa', 'Arya', 'Asoma', 'Akorana'], correct: 0, explanation_en: '"Anywa" means drinks. "Umwana anywa amazi" = The child drinks water.', explanation_rw: '"Anywa" bivuga kunywa. "Umwana anywa amazi" = umwana aranywa.' },
+            { id: 7, topic: 'Imibare', difficulty: 'easy', text_en: 'Ishyiramo ijambo ribereye: "Umwana ___ amazi."', text_rw: 'Ishyiramo ijambo ribereye: "Umwana ___ amazi."', options_en: ['Anywa', 'Arya', 'Asoma', 'Akorana'], options_rw: ['Anywa', 'Arya', 'Asoma', 'Akorana'], correct: 0, explanation_en: '"Anywa" means drinks. "Umwana anywa amazi" = The child drinks water.', explanation_rw: '"Anywa" bivuga kunywa. "Umwana anywa amazi" = umwana aranywa.', subjectCode: 'KIN', level: 'P4' },
         ],
-        social: [
-            { id: 8, topic: 'Rwanda Geography', difficulty: 'easy', text_en: 'What is the capital city of Rwanda?', text_rw: 'Umujyi mukuru w\'u Rwanda ni uwuhe?', options_en: ['Butare', 'Gisenyi', 'Kigali', 'Ruhengeri'], options_rw: ['Butare', 'Gisenyi', 'Kigali', 'Ruhengeri'], correct: 2, explanation_en: 'Kigali is the capital city of Rwanda, located in the center of the country.', explanation_rw: 'Kigali ni wo mujyi mukuru w\'u Rwanda, uherereye hagati mu gihugu.' },
+        socialStudies: [
+            { id: 8, topic: 'Rwanda Geography', difficulty: 'easy', text_en: 'What is the capital city of Rwanda?', text_rw: 'Umujyi mukuru w\'u Rwanda ni uwuhe?', options_en: ['Butare', 'Gisenyi', 'Kigali', 'Ruhengeri'], options_rw: ['Butare', 'Gisenyi', 'Kigali', 'Ruhengeri'], correct: 2, explanation_en: 'Kigali is the capital city of Rwanda, located in the center of the country.', explanation_rw: 'Kigali ni wo mujyi mukuru w\'u Rwanda, uherereye hagati mu gihugu.', subjectCode: 'SST', level: 'P4' },
+        ],
+        physics: [
+            { id: 9, topic: 'Mechanics', difficulty: 'medium', text_en: 'What is the unit of force?', text_rw: 'Igipimo cy\'imbaraga ni ikihe?', options_en: ['Joule', 'Newton', 'Watt', 'Pascal'], options_rw: ['Joule', 'Newton', 'Watt', 'Pascal'], correct: 1, explanation_en: 'The unit of force is Newton (N), named after Isaac Newton.', explanation_rw: 'Igipimo cy\'imbaraga ni Newton (N), cyitiriwe Isaac Newton.', subjectCode: 'PHY', level: 'S4' },
+        ],
+        chemistry: [
+            { id: 10, topic: 'Atomic Structure', difficulty: 'medium', text_en: 'What is the atomic number of Carbon?', text_rw: 'Nomero ya atome ya Karubone ni iyihe?', options_en: ['4', '6', '8', '12'], options_rw: ['4', '6', '8', '12'], correct: 1, explanation_en: 'Carbon has atomic number 6, meaning it has 6 protons.', explanation_rw: 'Karubone ifite nomero ya atome 6, bivuga ko ifite protoni 6.', subjectCode: 'CHE', level: 'S4' },
+        ],
+        biology: [
+            { id: 11, topic: 'Cell Biology', difficulty: 'medium', text_en: 'What is the powerhouse of the cell?', text_rw: 'Ni ikihe gice cy\'ingufu z\'akaremangingo?', options_en: ['Nucleus', 'Ribosome', 'Mitochondria', 'Golgi body'], options_rw: ['Nucleus', 'Ribosome', 'Mitochondria', 'Golgi body'], correct: 2, explanation_en: 'Mitochondria produce ATP, the energy currency of the cell.', explanation_rw: 'Mitochondria ikora ATP, amafaranga y\'ingufu z\'akaremangingo.', subjectCode: 'BIO', level: 'S4' },
         ],
     },
 
     getQuestions(subject) {
-        return this.sampleQuestions[subject] || this.sampleQuestions.math;
+        // Map subject ID to curriculum key
+        var subjectKey = subject;
+        
+        // Handle legacy subject IDs
+        if (subject === 'math') subjectKey = 'mathematics';
+        if (subject === 'social') subjectKey = 'socialStudies';
+        
+        return this.sampleQuestions[subjectKey] || this.sampleQuestions.mathematics;
+    },
+
+    getQuestionsByCode(subjectCode, level) {
+        // Get questions matching curriculum subject code and level
+        var questions = [];
+        for (var key in this.sampleQuestions) {
+            var subjectQuestions = this.sampleQuestions[key];
+            subjectQuestions.forEach(function(q) {
+                if (q.subjectCode === subjectCode) {
+                    if (!level || q.level === level) {
+                        questions.push(q);
+                    }
+                }
+            });
+        }
+        return questions.length > 0 ? questions : this.sampleQuestions.mathematics;
     },
 
     shuffle(arr) {
@@ -94,9 +176,10 @@ const IremeGame = {
         return texts[phase]?.[lang] || phase;
     },
 
-    startMatchmaking(subject, level, language, duration) {
-        this.state.subject = subject;
+    startMatchmaking(pathway, level, subject, language, duration) {
+        this.state.pathway = pathway;
         this.state.level = level;
+        this.state.subject = subject;
         this.state.language = language;
         this.state.duration = duration;
         this.state.totalRounds = Math.min(duration, 10);
@@ -113,7 +196,7 @@ const IremeGame = {
             }
             this.setPhase('searching');
             setTimeout(() => {
-                this.state.opponent = { name: 'Student_' + Math.floor(Math.random() * 9000 + 1000), level: level };
+                this.state.opponent = { name: 'Student_' + Math.floor(Math.random() * 9000 + 1000), level: level, pathway: pathway };
                 this.setPhase('found');
                 setTimeout(() => {
                     this.setPhase('preparing');
@@ -138,7 +221,21 @@ const IremeGame = {
     },
 
     startGameplay() {
-        this.state.questions = this.shuffle(this.getQuestions(this.state.subject));
+        // Try to get questions from curriculum first
+        var questions = [];
+        if (typeof IremeCurriculum !== 'undefined' && this.state.subject) {
+            var subjectData = IremeCurriculum.getSubjectByCode(this.state.subject);
+            if (subjectData) {
+                questions = this.getQuestionsByCode(subjectData.code, this.state.level);
+            }
+        }
+        
+        // Fallback to legacy subject-based questions
+        if (questions.length === 0) {
+            questions = this.getQuestions(this.state.subject);
+        }
+        
+        this.state.questions = this.shuffle(questions);
         this.state.playerTurn = Math.random() > 0.5;
         this.state.currentRound = 0;
         this.setPhase('playing');

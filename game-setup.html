@@ -13,6 +13,79 @@
     <link href="lib/animate/animate.min.css" rel="stylesheet">
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
+    <style>
+        :root { --ireme-primary: #1363C6; --ireme-secondary: #15ACE1; --ireme-light: #F4F7FE; --ireme-dark: #14183E; --ireme-gold: #F4A926; --ireme-muted: #6B7A99; --ireme-line: #E5EAF4; --ireme-green: #12B981; }
+        .game-page-intro { text-align: center; margin: 20px auto 28px; }
+        .game-page-intro .eyebrow-label { display: inline-flex; align-items: center; gap: 7px; color: var(--ireme-primary); font-weight: 800; letter-spacing: 1.7px; font-size: 10px; text-transform: uppercase; background: #e9f0ff; padding: 6px 14px; border-radius: 20px; }
+        .game-page-intro h1 { font-size: 36px; line-height: 1.2; margin: 15px 0 10px; letter-spacing: -1px; color: var(--ireme-dark); }
+        .game-page-intro p { color: var(--ireme-muted); font-size: 13px; max-width: 500px; margin: 0 auto; }
+        .game-setup-layout { display: grid; grid-template-columns: 1fr 300px; gap: 18px; max-width: 980px; margin: 0 auto; }
+        .game-setup-card { background: white; border: 1px solid var(--ireme-line); border-radius: 19px; padding: 28px; box-shadow: 0 5px 20px rgba(24,54,106,0.05); }
+        .game-setup-step { display: flex; align-items: center; gap: 12px; margin: 5px 0 13px; }
+        .game-setup-step .step-num { width: 30px; height: 30px; border-radius: 9px; background: #e9f0ff; color: var(--ireme-primary); display: grid; place-items: center; font-size: 9px; font-weight: 800; flex: none; }
+        .game-setup-step h3 { font-size: 13px; margin: 0; color: var(--ireme-dark); }
+        .game-setup-step p { font-size: 9px; color: var(--ireme-muted); margin: 3px 0 0; }
+        .game-verified { margin-left: auto; color: var(--ireme-green); background: #e9faf4; padding: 5px 7px; border-radius: 7px; font-size: 7px; font-weight: 800; display: flex; align-items: center; gap: 3px; }
+        .game-choice-row { display: flex; gap: 8px; margin: 0 0 25px 42px; flex-wrap: wrap; }
+        .game-choice-row button { border: 1px solid var(--ireme-line); background: #f8f9fc; color: #98a2b7; border-radius: 9px; padding: 9px 14px; font-size: 10px; font-weight: 600; cursor: pointer; transition: .2s; }
+        .game-choice-row button:hover { border-color: var(--ireme-secondary); color: var(--ireme-primary); }
+        .game-choice-row button.active { border-color: var(--ireme-primary); background: #e9f0ff; color: var(--ireme-primary); font-weight: 700; }
+        .game-subject-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 0 0 25px 42px; }
+        .game-subject-grid button { border: 1px solid var(--ireme-line); background: #fff; border-radius: 10px; padding: 12px 8px; text-align: left; color: #62718f; cursor: pointer; transition: .2s; }
+        .game-subject-grid button:hover { border-color: var(--ireme-secondary); }
+        .game-subject-grid button.active { border: 2px solid var(--ireme-primary); background: #f5f8ff; color: var(--ireme-primary); }
+        .game-subject-grid button i { font-size: 18px; }
+        .game-subject-grid button span { display: block; font-size: 9px; font-weight: 700; margin-top: 7px; color: var(--ireme-dark); }
+        .game-subject-grid button small { display: block; font-size: 7px; margin-top: 3px; color: var(--ireme-muted); }
+        .game-select-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-left: 42px; }
+        .game-select-grid label { font-size: 8px; font-weight: 700; color: var(--ireme-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .game-select-grid select { width: 100%; height: 37px; border: 1px solid var(--ireme-line); background: #fff; border-radius: 9px; margin-top: 6px; padding: 0 11px; color: #31415f; font-size: 10px; font-weight: 600; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%236B7A99'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 11px center; cursor: pointer; }
+        .game-match-summary { text-align: center; background: linear-gradient(160deg, #0a1c47, #1363C6); color: white; border: 0; border-radius: 19px; padding: 24px; box-shadow: 0 10px 30px rgba(19,99,198,0.25); }
+        .game-match-summary .summary-label { font-size: 8px; letter-spacing: 1.5px; color: #8fa6d5; font-weight: 800; }
+        .game-match-summary .summary-icon { width: 62px; height: 62px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14); border-radius: 19px; display: grid; place-items: center; margin: 18px auto 10px; color: var(--ireme-gold); }
+        .game-match-summary h2 { font-size: 19px; margin: 5px 0; }
+        .game-match-summary > p { font-size: 9px; color: #afbfdf; line-height: 1.6; }
+        .game-match-summary ul { list-style: none; padding: 8px 0; margin: 15px 0; border-block: 1px solid rgba(255,255,255,0.09); }
+        .game-match-summary li { display: grid; grid-template-columns: 20px 1fr auto; text-align: left; align-items: center; padding: 8px; color: #95a9d1; font-size: 8px; }
+        .game-match-summary li i { color: var(--ireme-secondary); }
+        .game-match-summary li b { color: white; font-size: 9px; }
+        .game-match-summary .btn-start { width: 100%; border: 0; background: linear-gradient(135deg, #ffd84e, #ffb900); color: #17213e; min-height: 48px; border-radius: 13px; padding: 0 22px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-weight: 800; font-size: 11px; cursor: pointer; transition: .2s; box-shadow: 0 10px 25px rgba(255,185,0,0.25); }
+        .game-match-summary .btn-start:hover { transform: translateY(-2px); box-shadow: 0 13px 30px rgba(255,185,0,0.35); }
+        .game-match-summary .safe-note { display: flex; align-items: center; justify-content: center; gap: 5px; color: #8ca0c8; font-size: 7px; margin-top: 13px; }
+        .game-history-section { max-width: 980px; margin: 30px auto 0; }
+        .game-history-section h3 { font-size: 15px; margin: 3px 0; color: var(--ireme-dark); }
+        .game-history-section .section-eyebrow { font-size: 8px; letter-spacing: 1.5px; color: var(--ireme-primary); font-weight: 800; }
+        .game-history-list { background: white; border: 1px solid var(--ireme-line); border-radius: 17px; overflow: hidden; box-shadow: 0 5px 20px rgba(24,54,106,0.05); }
+        .game-history-item { display: grid; grid-template-columns: 50px 1fr auto; align-items: center; padding: 14px 18px; border-bottom: 1px solid #f0f3f8; gap: 12px; }
+        .game-history-item:last-child { border-bottom: 0; }
+        .game-history-item .result-badge { font-size: 8px; font-weight: 800; border-radius: 6px; padding: 5px 8px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
+        .game-history-item .result-badge.win { background: #e9faf4; color: #0da170; }
+        .game-history-item .result-badge.loss { background: #fff0f0; color: #e35656; }
+        .game-history-item .result-badge.draw { background: #fff8dc; color: #b8860b; }
+        .game-history-item strong { font-size: 11px; display: block; }
+        .game-history-item small { font-size: 8px; color: var(--ireme-muted); }
+        .game-history-item .score { font-size: 14px; font-weight: 800; color: var(--ireme-dark); }
+        .game-matchmaking-overlay { position: fixed; inset: 0; background: rgba(20,24,62,0.85); z-index: 9999; display: none; align-items: center; justify-content: center; flex-direction: column; }
+        .game-matchmaking-overlay.active { display: flex; }
+        .game-search-rings { width: 180px; height: 180px; display: grid; place-items: center; position: relative; margin-bottom: 25px; }
+        .game-search-rings .ring { position: absolute; inset: 0; border: 2px solid rgba(21,172,225,0.3); border-radius: 50%; animation: gamePulse 2s infinite; }
+        .game-search-rings .ring:nth-child(2) { inset: 25px; animation-delay: .5s; }
+        .game-search-rings .avatar-center { width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(145deg, var(--ireme-primary), var(--ireme-secondary)); display: grid; place-items: center; color: white; font-weight: 800; font-size: 20px; z-index: 2; border: 3px solid rgba(255,255,255,0.3); }
+        @keyframes gamePulse { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.3); opacity: 0; } }
+        .game-matchmaking-overlay h2 { color: white; font-size: 24px; margin: 8px 0; }
+        .game-matchmaking-overlay p { color: #9eb1da; font-size: 12px; }
+        .game-matchmaking-overlay .search-tags { display: flex; gap: 7px; margin: 17px 0; }
+        .game-matchmaking-overlay .search-tags span { font-size: 9px; padding: 6px 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); border-radius: 7px; color: #c1ceea; font-weight: 600; }
+        .game-matchmaking-overlay .btn-cancel { border: 0; background: none; color: #ff7b7b; font-size: 10px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        .game-matchmaking-overlay .phase-text { color: var(--ireme-secondary); font-size: 9px; letter-spacing: 2px; font-weight: 800; text-transform: uppercase; }
+        @media (max-width: 768px) {
+            .game-setup-layout { grid-template-columns: 1fr; }
+            .game-subject-grid { grid-template-columns: repeat(2, 1fr); }
+            .game-select-grid { grid-template-columns: 1fr; margin-left: 0; }
+            .game-choice-row { margin-left: 0; }
+            .game-page-intro h1 { font-size: 26px; }
+        }
+    </style>
 </head>
 <body>
     <div id="component-spinner"></div>
@@ -39,98 +112,122 @@
     </div>
 
     <!-- Game Setup -->
-    <div class="container-fluid py-5">
-        <div class="container py-5">
-            <div class="mx-auto text-center wow fadeIn" data-wow-delay="0.1s" style="max-width: 600px;">
-                <div class="btn btn-sm border rounded-pill text-primary px-3 mb-3" data-i18n="game.subtitle">Fighting by Questions</div>
-                <h1 class="mb-4" data-i18n="game.desc">Challenge other students in curriculum-aligned academic competition. Learn while you play!</h1>
+    <div class="container-fluid py-5" style="background: var(--ireme-light);">
+        <div class="container py-4">
+            <div class="game-page-intro wow fadeIn" data-wow-delay="0.1s">
+                <span class="eyebrow-label"><i class="fa fa-bolt"></i> <span data-i18n="game.setupEyebrow">QUICK MATCH SETUP</span></span>
+                <h1 data-i18n="game.setupTitle">Prepare your battle</h1>
+                <p data-i18n="game.setupDesc">Questions are securely selected from your verified Rwanda curriculum.</p>
             </div>
 
-            <div class="row justify-content-center mt-4">
-                <div class="col-lg-8">
-                    <div class="wow fadeIn" data-wow-delay="0.3s">
-                        <div class="bg-light rounded p-4 p-lg-5">
-                            <h4 class="mb-4" data-i18n="game.selectSubject">Select Subject</h4>
-                            <div class="row g-3 mb-4" id="game-subject-select">
-                                <div class="col-6 col-md-4">
-                                    <button class="btn btn-outline-primary w-100 py-3 subject-btn active" data-subject="math" data-i18n="game.subject.math">Mathematics</button>
-                                </div>
-                                <div class="col-6 col-md-4">
-                                    <button class="btn btn-outline-primary w-100 py-3 subject-btn" data-subject="science" data-i18n="game.subject.science">Science</button>
-                                </div>
-                                <div class="col-6 col-md-4">
-                                    <button class="btn btn-outline-primary w-100 py-3 subject-btn" data-subject="english" data-i18n="game.subject.english">English</button>
-                                </div>
-                                <div class="col-6 col-md-4">
-                                    <button class="btn btn-outline-primary w-100 py-3 subject-btn" data-subject="kinyarwanda" data-i18n="game.subject.kinyarwanda">Kinyarwanda</button>
-                                </div>
-                                <div class="col-6 col-md-4">
-                                    <button class="btn btn-outline-primary w-100 py-3 subject-btn" data-subject="social" data-i18n="game.subject.social">Social Studies</button>
-                                </div>
-                            </div>
+            <div class="game-setup-layout wow fadeIn" data-wow-delay="0.2s">
+                <section class="game-setup-card">
+                    <div class="game-setup-step">
+                        <span class="step-num">01</span>
+                        <div>
+                            <h3 data-i18n="game.selectPathway">Education Pathway</h3>
+                            <p data-i18n="game.pathwayHint">Linked to your learner account</p>
+                        </div>
+                        <span class="game-verified"><i class="fa fa-check"></i> <span data-i18n="game.verified">Verified</span></span>
+                    </div>
+                    <div class="game-choice-row" id="pathway-tabs"></div>
 
-                            <h4 class="mb-3" data-i18n="game.selectLevel">Select Education Level</h4>
-                            <div class="row g-3 mb-4">
-                                <div class="col-6 col-md-3">
-                                    <button class="btn btn-outline-primary w-100 py-3 level-btn active" data-level="p1-p3" data-i18n="game.level.primary_low">Primary (P1-P3)</button>
-                                </div>
-                                <div class="col-6 col-md-3">
-                                    <button class="btn btn-outline-primary w-100 py-3 level-btn" data-level="p4-p6" data-i18n="game.level.primary_high">Primary (P4-P6)</button>
-                                </div>
-                                <div class="col-6 col-md-3">
-                                    <button class="btn btn-outline-primary w-100 py-3 level-btn" data-level="s1-s3" data-i18n="game.level.secondary_low">Secondary (S1-S3)</button>
-                                </div>
-                                <div class="col-6 col-md-3">
-                                    <button class="btn btn-outline-primary w-100 py-3 level-btn" data-level="s4-s6" data-i18n="game.level.secondary_high">Secondary (S4-S6)</button>
-                                </div>
-                            </div>
-
-                            <div class="row g-3 mb-4">
-                                <div class="col-md-6">
-                                    <h4 class="mb-3" data-i18n="game.selectLanguage">Select Language</h4>
-                                    <select class="form-select py-3" id="game-language-select">
-                                        <option value="en">English</option>
-                                        <option value="rw">Ikinyarwanda</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <h4 class="mb-3" data-i18n="game.selectDuration">Select Duration</h4>
-                                    <select class="form-select py-3" id="game-duration-select">
-                                        <option value="5">5 <span data-i18n="game.minutes">minutes</span></option>
-                                        <option value="10" selected>10 <span data-i18n="game.minutes">minutes</span></option>
-                                        <option value="15">15 <span data-i18n="game.minutes">minutes</span></option>
-                                        <option value="20">20 <span data-i18n="game.minutes">minutes</span></option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="d-grid gap-3">
-                                <button class="btn btn-primary rounded-pill py-3" id="btn-find-match" data-i18n="game.findMatch" onclick="startGameMatchmaking()">Find Match</button>
-                                <button class="btn btn-outline-primary rounded-pill py-3 d-none" id="btn-cancel-match" data-i18n="game.cancelSearch" onclick="IremeGame.cancelMatchmaking()">Cancel Search</button>
-                            </div>
-
-                            <div id="game-matchmaking-status" class="text-center mt-4 d-none">
-                                <div class="spinner-border text-primary mb-3" role="status"></div>
-                                <p class="fw-bold" id="game-phase"></p>
-                                <p id="game-message" class="text-muted"></p>
-                            </div>
+                    <div class="game-setup-step">
+                        <span class="step-num">02</span>
+                        <div>
+                            <h3 data-i18n="game.selectLevel">Education Level</h3>
+                            <p data-i18n="game.levelHint">Available for your pathway</p>
                         </div>
                     </div>
-                </div>
+                    <div class="game-choice-row" id="level-select"></div>
+
+                    <div class="game-setup-step">
+                        <span class="step-num">03</span>
+                        <div>
+                            <h3 data-i18n="game.selectSubject">Choose a subject</h3>
+                            <p data-i18n="game.subjectHint">Available for your level</p>
+                        </div>
+                    </div>
+                    <div class="game-subject-grid" id="subject-select"></div>
+
+                    <div class="game-setup-step">
+                        <span class="step-num">04</span>
+                        <div>
+                            <h3 data-i18n="game.settingsTitle">Language & Duration</h3>
+                            <p data-i18n="game.settingsHint">Fine-tune your challenge</p>
+                        </div>
+                    </div>
+                    <div class="game-select-grid">
+                        <div>
+                            <label data-i18n="game.selectLanguage">Language</label>
+                            <select id="game-language-select">
+                                <option value="en">English</option>
+                                <option value="rw">Ikinyarwanda</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label data-i18n="game.selectDuration">Duration</label>
+                            <select id="game-duration-select">
+                                <option value="5">5 minutes</option>
+                                <option value="10" selected>10 minutes</option>
+                                <option value="15">15 minutes</option>
+                                <option value="20">20 minutes</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <aside class="game-match-summary">
+                    <span class="summary-label" data-i18n="game.matchSummary">MATCH SUMMARY</span>
+                    <div class="summary-icon"><i class="fa fa-bolt fa-lg"></i></div>
+                    <h2 data-i18n="game.quickMatch">Quick Match</h2>
+                    <p data-i18n="game.summaryDesc">Find an equally matched learner and start a live academic battle.</p>
+                    <ul>
+                        <li><i class="fa fa-book"></i> <span data-i18n="game.summarySubject">Subject</span> <b id="summary-subject">Mathematics</b></li>
+                        <li><i class="fa fa-layer-group"></i> <span data-i18n="game.summaryLevel">Level</span> <b id="summary-level">P1</b></li>
+                        <li><i class="fa fa-clock"></i> <span data-i18n="game.summaryFormat">Format</span> <b id="summary-rounds">10 rounds</b></li>
+                        <li><i class="fa fa-language"></i> <span data-i18n="game.summaryLang">Language</span> <b id="summary-lang">English</b></li>
+                    </ul>
+                    <button class="btn-start" id="btn-find-match" onclick="startGameMatchmaking()">
+                        <span data-i18n="game.findMatch">Find Opponent</span> <i class="fa fa-search"></i>
+                    </button>
+                    <div class="safe-note"><i class="fa fa-shield-alt"></i> <span data-i18n="game.safeNote">Safe, curriculum-matched play</span></div>
+                </aside>
             </div>
 
             <!-- Match History -->
-            <div class="row justify-content-center mt-5">
-                <div class="col-lg-8">
-                    <div class="wow fadeIn" data-wow-delay="0.5s">
-                        <h4 class="mb-3" data-i18n="game.history">Match History</h4>
-                        <div class="bg-light rounded" id="game-history-list">
-                            <p class="text-center text-muted py-4" data-i18n="game.noHistory">No matches played yet. Start playing!</p>
-                        </div>
+            <div class="game-history-section wow fadeIn" data-wow-delay="0.3s">
+                <div class="d-flex justify-content-between align-items-end mb-3">
+                    <div>
+                        <span class="section-eyebrow" data-i18n="game.historyEyebrow">YOUR ACTIVITY</span>
+                        <h3 data-i18n="game.history">Recent battles</h3>
+                    </div>
+                </div>
+                <div class="game-history-list" id="game-history-list">
+                    <div class="text-center py-4">
+                        <p class="text-muted mb-0" style="font-size: 11px;" data-i18n="game.noHistory">No matches played yet. Start playing!</p>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Matchmaking Overlay -->
+    <div class="game-matchmaking-overlay" id="game-matchmaking-overlay">
+        <div class="game-search-rings">
+            <div class="ring"></div>
+            <div class="ring"></div>
+            <div class="avatar-center" id="matchmaking-avatar">KM</div>
+        </div>
+        <span class="phase-text" id="game-phase">SEARCHING THE ARENA</span>
+        <h2 data-i18n="game.searchingTitle">Finding your perfect match...</h2>
+        <p id="game-message" data-i18n="game.searchingDesc">Looking for a learner with a similar level</p>
+        <div class="search-tags" id="matchmaking-tags">
+            <span id="tag-subject">Mathematics</span>
+            <span id="tag-level">Medium</span>
+            <span id="tag-lang">English</span>
+        </div>
+        <button class="btn-cancel" id="btn-cancel-match" onclick="cancelMatchmaking()" data-i18n="game.cancelSearch">Cancel matchmaking</button>
     </div>
 
     <div id="component-footer"></div>
@@ -143,47 +240,165 @@
     <script src="lib/waypoints/waypoints.min.js"></script>
     <script src="js/main.js"></script>
     <script src="js/i18n.js"></script>
+    <script src="js/auth.js"></script>
     <script src="js/components.js"></script>
+    <script src="js/curriculum-data.js"></script>
     <script src="js/game-state.js"></script>
     <script>
         IremeComponents.initPage('game-setup.html');
 
-        document.querySelectorAll('.subject-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.subject-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
+        var selectedPathway = 'primary';
+        var selectedLevel = 'P1';
+        var selectedSubject = 'mathematics';
+        var selectedSubjectName = 'Mathematics';
+
+        var subjectIcons = {
+            mathematics: 'fa-calculator', science: 'fa-flask', english: 'fa-book',
+            kinyarwanda: 'fa-language', socialStudies: 'fa-globe-africa',
+            physics: 'fa-atom', chemistry: 'fa-vial', biology: 'fa-dna',
+            history: 'fa-landmark', geography: 'fa-map',
+            computerScience: 'fa-laptop-code', french: 'fa-flag',
+            swahili: 'fa-comments', arabic: 'fa-star-and-crescent',
+            music: 'fa-music', visualArts: 'fa-palette',
+            agriculture: 'fa-seedling', religiousStudies: 'fa-pray',
+            ethics: 'fa-balance-scale', physicalEducation: 'fa-running',
+            homeEconomics: 'fa-home', integratedScience: 'fa-leaf',
+            entrepreneurship: 'fa-briefcase', Kiswahili: 'fa-comments'
+        };
+
+        function renderPathwayTabs() {
+            var container = document.getElementById('pathway-tabs');
+            if (!container || typeof IremeCurriculum === 'undefined') return;
+            var html = '';
+            var pathways = IremeCurriculum.pathways;
+            for (var key in pathways) {
+                var pw = pathways[key];
+                var active = key === selectedPathway ? 'active' : '';
+                html += '<button class="' + active + '" data-pathway="' + key + '" onclick="selectPathway(\'' + key + '\')">';
+                html += pw.name;
+                html += '</button>';
+            }
+            container.innerHTML = html;
+        }
+
+        function selectPathway(key) {
+            selectedPathway = key;
+            renderPathwayTabs();
+            renderLevels();
+            renderSubjects();
+            updateSummary();
+        }
+
+        function renderLevels() {
+            var container = document.getElementById('level-select');
+            if (!container || typeof IremeCurriculum === 'undefined') return;
+            var levels = IremeCurriculum.getPathwayLevels(selectedPathway);
+            var html = '';
+            levels.forEach(function(level, index) {
+                var active = index === 0 ? 'active' : '';
+                if (index === 0) selectedLevel = level;
+                html += '<button class="' + active + '" data-level="' + level + '" onclick="selectLevel(\'' + level + '\')">';
+                html += level;
+                html += '</button>';
             });
-        });
-        document.querySelectorAll('.level-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
+            container.innerHTML = html;
+        }
+
+        function selectLevel(level) {
+            selectedLevel = level;
+            renderLevels();
+            renderSubjects();
+            updateSummary();
+        }
+
+        function renderSubjects() {
+            var container = document.getElementById('subject-select');
+            if (!container || typeof IremeCurriculum === 'undefined') return;
+            var subjects = IremeCurriculum.getSubjectsForLevel(selectedPathway, selectedLevel);
+            var html = '';
+            subjects.forEach(function(subject, index) {
+                var active = index === 0 ? 'active' : '';
+                if (index === 0) { selectedSubject = subject.key; selectedSubjectName = subject.name; }
+                var icon = subjectIcons[subject.key] || 'fa-book';
+                html += '<button class="' + active + '" data-subject="' + subject.key + '" data-code="' + subject.code + '" onclick="selectSubject(\'' + subject.key + '\', \'' + subject.name.replace(/'/g, "\\'") + '\')">';
+                html += '<i class="' + icon + '"></i>';
+                html += '<span>' + subject.name + '</span>';
+                html += '<small>' + subject.code + '</small>';
+                html += '</button>';
             });
-        });
+            container.innerHTML = html || '<div class="col-12"><p class="text-muted text-center">No subjects available</p></div>';
+        }
+
+        function selectSubject(key, name) {
+            selectedSubject = key;
+            selectedSubjectName = name;
+            renderSubjects();
+            updateSummary();
+        }
+
+        function updateSummary() {
+            var el;
+            el = document.getElementById('summary-subject');
+            if (el) el.textContent = selectedSubjectName;
+            el = document.getElementById('summary-level');
+            if (el) el.textContent = selectedLevel;
+            var dur = document.getElementById('game-duration-select');
+            el = document.getElementById('summary-rounds');
+            if (el && dur) el.textContent = dur.value + ' rounds';
+            var lang = document.getElementById('game-language-select');
+            el = document.getElementById('summary-lang');
+            if (el && lang) el.textContent = lang.value === 'rw' ? 'Ikinyarwanda' : 'English';
+        }
 
         function startGameMatchmaking() {
-            const subject = document.querySelector('.subject-btn.active')?.dataset.subject || 'math';
-            const level = document.querySelector('.level-btn.active')?.dataset.level || 'p4-p6';
-            const language = document.getElementById('game-language-select').value;
-            const duration = parseInt(document.getElementById('game-duration-select').value);
+            var language = document.getElementById('game-language-select').value;
+            var duration = parseInt(document.getElementById('game-duration-select').value);
 
-            document.getElementById('btn-find-match').classList.add('d-none');
-            document.getElementById('btn-cancel-match').classList.remove('d-none');
-            document.getElementById('game-matchmaking-status').classList.remove('d-none');
+            var overlay = document.getElementById('game-matchmaking-overlay');
+            overlay.classList.add('active');
 
-            IremeGame.startMatchmaking(subject, level, language, duration);
+            document.getElementById('tag-subject').textContent = selectedSubjectName;
+            document.getElementById('tag-level').textContent = selectedLevel;
+            document.getElementById('tag-lang').textContent = language === 'rw' ? 'Ikinyarwanda' : 'English';
 
-            setTimeout(() => {
+            var user = null;
+            if (typeof IremeAuth !== 'undefined' && IremeAuth.getCurrentUser) {
+                user = IremeAuth.getCurrentUser();
+            }
+            if (user) {
+                var initials = user.fullName.split(' ').map(function(n) { return n[0]; }).join('').slice(0, 2).toUpperCase();
+                document.getElementById('matchmaking-avatar').textContent = initials;
+            }
+
+            IremeGame.startMatchmaking(selectedPathway, selectedLevel, selectedSubject, language, duration);
+
+            setTimeout(function() {
                 if (IremeGame.state.phase === 'playing') {
+                    overlay.classList.remove('active');
                     window.location.href = 'game-match.html';
                 }
             }, 12000);
         }
 
-        // Render history on load
-        if (typeof IremeGameUI !== 'undefined') {
-            setTimeout(() => IremeGameUI.renderHistory(), 500);
+        function cancelMatchmaking() {
+            IremeGame.cancelMatchmaking();
+            document.getElementById('game-matchmaking-overlay').classList.remove('active');
         }
+
+        document.getElementById('game-duration-select').addEventListener('change', updateSummary);
+        document.getElementById('game-language-select').addEventListener('change', updateSummary);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof IremeCurriculum !== 'undefined') {
+                renderPathwayTabs();
+                renderLevels();
+                renderSubjects();
+                updateSummary();
+            }
+            if (typeof IremeGameUI !== 'undefined') {
+                setTimeout(function() { IremeGameUI.renderHistory(); }, 500);
+            }
+        });
     </script>
 </body>
 </html>

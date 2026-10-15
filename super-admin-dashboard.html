@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>IREME - Super Admin Dashboard</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="img/ireme-icon.png" rel="icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div id="component-spinner"></div>
+    <div id="component-navbar"></div>
+
+    <div class="container-fluid pt-5 bg-primary hero-header">
+        <div class="container pt-5">
+            <div class="row g-5 pt-5">
+                <div class="col-lg-8 align-self-center text-center text-lg-start mb-lg-5">
+                    <h1 class="display-4 text-white mb-3 animated slideInRight">Super Administrator Dashboard</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center justify-content-lg-start mb-0">
+                            <li class="breadcrumb-item"><a class="text-white" href="index.html" data-i18n="breadcrumb.home">Home</a></li>
+                            <li class="breadcrumb-item text-white active">Super Admin</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <div class="alert alert-danger rounded-pill text-center mb-4 wow fadeIn" data-wow-delay="0.1s">
+                <i class="fa fa-shield-alt me-2"></i>
+                <strong>Super Administrator Access</strong> &mdash; You have full system-level privileges. All actions are logged.
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-3 col-sm-6 wow fadeIn" data-wow-delay="0.1s">
+                    <div class="service-item rounded p-4 text-center">
+                        <div class="service-icon btn-square rounded-circle mb-3 mx-auto"><i class="fa fa-users fa-lg"></i></div>
+                        <h3 class="fw-bold mb-1" id="sa-total-users">0</h3>
+                        <p class="text-muted mb-0">Total Users</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 wow fadeIn" data-wow-delay="0.2s">
+                    <div class="service-item rounded p-4 text-center">
+                        <div class="service-icon btn-square rounded-circle mb-3 mx-auto"><i class="fa fa-user-shield fa-lg"></i></div>
+                        <h3 class="fw-bold mb-1" id="sa-admin-count">0</h3>
+                        <p class="text-muted mb-0">Administrators</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 wow fadeIn" data-wow-delay="0.3s">
+                    <div class="service-item rounded p-4 text-center">
+                        <div class="service-icon btn-square rounded-circle mb-3 mx-auto"><i class="fa fa-clock fa-lg"></i></div>
+                        <h3 class="fw-bold mb-1" id="sa-pending-count">0</h3>
+                        <p class="text-muted mb-0">Pending Approval</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 wow fadeIn" data-wow-delay="0.4s">
+                    <div class="service-item rounded p-4 text-center">
+                        <div class="service-icon btn-square rounded-circle mb-3 mx-auto"><i class="fa fa-exclamation-triangle fa-lg"></i></div>
+                        <h3 class="fw-bold mb-1" id="sa-suspended-count">0</h3>
+                        <p class="text-muted mb-0">Suspended</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="bg-light rounded p-4 wow fadeIn" data-wow-delay="0.1s">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="mb-0">User Management</h4>
+                            <div class="d-flex gap-2">
+                                <input type="text" class="form-control form-control-sm" placeholder="Search users..." id="sa-search" style="width:200px;">
+                                <select class="form-select form-select-sm" id="sa-role-filter" style="width:150px;">
+                                    <option value="">All Roles</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sa-users-table"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="bg-light rounded p-4 mb-4 wow fadeIn" data-wow-delay="0.2s">
+                        <h4 class="mb-4">System Health</h4>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between small mb-1"><span>Database</span><span class="text-success">Online</span></div>
+                            <div class="progress" style="height:6px;"><div class="progress-bar bg-success" style="width:100%"></div></div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between small mb-1"><span>Auth Service</span><span class="text-success">Online</span></div>
+                            <div class="progress" style="height:6px;"><div class="progress-bar bg-success" style="width:100%"></div></div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between small mb-1"><span>AI Service</span><span class="text-success">Online</span></div>
+                            <div class="progress" style="height:6px;"><div class="progress-bar bg-success" style="width:95%"></div></div>
+                        </div>
+                        <div>
+                            <div class="d-flex justify-content-between small mb-1"><span>Storage</span><span class="text-warning">78%</span></div>
+                            <div class="progress" style="height:6px;"><div class="progress-bar bg-warning" style="width:78%"></div></div>
+                        </div>
+                    </div>
+                    <div class="bg-light rounded p-4 wow fadeIn" data-wow-delay="0.3s">
+                        <h4 class="mb-4">Quick Actions</h4>
+                        <div class="d-grid gap-3">
+                            <button class="btn btn-danger rounded-pill py-3">Security Audit Log</button>
+                            <button class="btn btn-outline-primary rounded-pill py-3">Role Permissions</button>
+                            <button class="btn btn-outline-primary rounded-pill py-3">System Settings</button>
+                            <a href="admin-dashboard.html" class="btn btn-outline-primary rounded-pill py-3">Admin Dashboard</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="component-footer"></div>
+    <div id="component-backtotop"></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+        IremeComponents.initPage('super-admin-dashboard.html');
+        if (!IremeAuth.requireRole('super_admin')) { throw new Error('Access denied'); }
+
+        function renderSuperAdminDashboard() {
+            var stats = IremeAuth.getStats();
+            document.getElementById('sa-total-users').textContent = stats.total;
+            document.getElementById('sa-admin-count').textContent = (stats.byRole.admin || 0) + (stats.byRole.super_admin || 0);
+            document.getElementById('sa-pending-count').textContent = stats.byStatus.pending || 0;
+            document.getElementById('sa-suspended-count').textContent = stats.byStatus.suspended || 0;
+
+            var roleFilter = document.getElementById('sa-role-filter');
+            Object.keys(IremeAuth.ROLES).forEach(function(r) {
+                var opt = document.createElement('option');
+                opt.value = r;
+                opt.textContent = IremeAuth.ROLES[r].label;
+                roleFilter.appendChild(opt);
+            });
+
+            renderUsersTable();
+        }
+
+        function renderUsersTable() {
+            var search = document.getElementById('sa-search').value;
+            var roleFilter = document.getElementById('sa-role-filter').value;
+            var users = IremeAuth.getAllUsers({ search: search, role: roleFilter });
+            var tbody = document.getElementById('sa-users-table');
+            if (users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">No users found</td></tr>';
+                return;
+            }
+            tbody.innerHTML = users.map(function(u) {
+                var statusBadge = u.status === 'active' ? 'bg-success' : u.status === 'pending' ? 'bg-warning text-dark' : 'bg-danger';
+                return '<tr>' +
+                    '<td>' + u.name + '</td>' +
+                    '<td><small>' + u.email + '</small></td>' +
+                    '<td><span class="badge bg-primary">' + (IremeAuth.ROLES[u.role] ? IremeAuth.ROLES[u.role].label : u.role) + '</span></td>' +
+                    '<td><span class="badge ' + statusBadge + '">' + u.status + '</span></td>' +
+                    '<td>' +
+                    (u.status === 'pending' ? '<button class="btn btn-sm btn-outline-success me-1" onclick="approveUser(\'' + u.id + '\')">Approve</button>' : '') +
+                    (u.status === 'active' ? '<button class="btn btn-sm btn-outline-warning me-1" onclick="suspendUser(\'' + u.id + '\')">Suspend</button>' : '') +
+                    '<button class="btn btn-sm btn-outline-danger" onclick="removeUser(\'' + u.id + '\')">Delete</button>' +
+                    '</td></tr>';
+            }).join('');
+        }
+
+        function approveUser(id) { IremeAuth.approveUser(id); renderSuperAdminDashboard(); }
+        function suspendUser(id) { if (confirm('Suspend this user?')) { IremeAuth.suspendUser(id); renderSuperAdminDashboard(); } }
+        function removeUser(id) { if (confirm('Delete this user? This cannot be undone.')) { IremeAuth.deleteUser(id); renderSuperAdminDashboard(); } }
+
+        document.getElementById('sa-search').addEventListener('input', renderUsersTable);
+        document.getElementById('sa-role-filter').addEventListener('change', renderUsersTable);
+
+        renderSuperAdminDashboard();
+    </script>
+</body>
+</html>
