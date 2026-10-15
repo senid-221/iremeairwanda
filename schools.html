@@ -59,8 +59,10 @@
             <div class="row wow fadeIn" data-wow-delay="0.1s">
                 <div class="col-12">
                     <div class="d-flex align-items-start p-3 rounded bg-white border">
-                        <i class="fa fa-info-circle text-primary fa-lg me-3 mt-1"></i>
-                        <p class="mb-0 small text-muted" data-i18n="schools.dataNotice">This directory is being built from verified official records. Last verified data import: October 2026. Coverage is expanding — not all schools are listed yet. If your school is missing, you can request its addition.</p>
+                        <i class="fa fa-database text-primary fa-lg me-3 mt-1"></i>
+                        <p class="mb-0 small text-muted">
+                            <span data-i18n="schools.dataNotice">This directory contains <strong id="notice-total">1,405</strong> education facilities from <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">OpenStreetMap</a> (snapshot: <strong id="notice-snapshot">2026-10-07</strong>). <strong id="notice-named">538</strong> schools have verified names. Data licensed under <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noopener">ODbL 1.0</a>. Coverage is expanding &mdash; not all schools may be listed.</span>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -74,18 +76,18 @@
             <div class="row g-3 mb-4 wow fadeIn" data-wow-delay="0.1s">
                 <div class="col-md-4">
                     <div class="form-floating">
-                        <input type="text" class="form-control" id="school-search" data-i18n="schools.searchPlaceholder" placeholder="Search by school name or code...">
-                        <label for="school-search" data-i18n="schools.searchPlaceholder">Search by school name or code...</label>
+                        <input type="text" class="form-control" id="school-search" data-i18n="schools.searchPlaceholder" placeholder="Search by school name...">
+                        <label for="school-search" data-i18n="schools.searchPlaceholder">Search by school name...</label>
                     </div>
                 </div>
                 <div class="col-md-2">
                     <select class="form-select py-3" id="filter-province">
                         <option value="" data-i18n="schools.allProvinces">All Provinces</option>
-                        <option value="kigali" data-i18n="schools.province.kigali">Kigali City</option>
-                        <option value="eastern" data-i18n="schools.province.eastern">Eastern</option>
-                        <option value="western" data-i18n="schools.province.western">Western</option>
-                        <option value="northern" data-i18n="schools.province.northern">Northern</option>
-                        <option value="southern" data-i18n="schools.province.southern">Southern</option>
+                        <option value="Kigali City">Kigali City</option>
+                        <option value="Eastern Province">Eastern Province</option>
+                        <option value="Western Province">Western Province</option>
+                        <option value="Northern Province">Northern Province</option>
+                        <option value="Southern Province">Southern Province</option>
                     </select>
                 </div>
                 <div class="col-md-2">
@@ -96,255 +98,46 @@
                 <div class="col-md-2">
                     <select class="form-select py-3" id="filter-level">
                         <option value="" data-i18n="schools.allLevels">All Levels</option>
-                        <option value="pre-primary" data-i18n="schools.level.prePrimary">Pre-Primary</option>
-                        <option value="primary" data-i18n="schools.level.primary">Primary</option>
-                        <option value="ordinary-secondary" data-i18n="schools.level.ordinary">Ordinary Secondary</option>
-                        <option value="advanced-secondary" data-i18n="schools.level.advanced">Advanced Secondary</option>
-                        <option value="tvet" data-i18n="schools.level.tvet">TVET</option>
+                        <option value="school">School</option>
+                        <option value="university">University</option>
+                        <option value="college">College</option>
+                        <option value="kindergarten">Kindergarten</option>
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <select class="form-select py-3" id="filter-type">
-                        <option value="" data-i18n="schools.allTypes">All Types</option>
+                    <select class="form-select py-3" id="filter-ownership">
+                        <option value="" data-i18n="schools.allOwnership">All Ownership</option>
                         <option value="public" data-i18n="schools.public">Public</option>
-                        <option value="government-aided" data-i18n="schools.governmentAided">Government-Aided</option>
                         <option value="private" data-i18n="schools.private">Private</option>
+                        <option value="government-aided" data-i18n="schools.governmentAided">Government-Aided</option>
                     </select>
                 </div>
             </div>
 
             <div class="row g-3 mb-4 wow fadeIn" data-wow-delay="0.15s">
-                <div class="col-md-2">
-                    <select class="form-select py-3" id="filter-verification">
-                        <option value="" data-i18n="schools.allVerification">All Verification</option>
-                        <option value="verified" data-i18n="schools.verified">Verified</option>
-                        <option value="pending" data-i18n="schools.pendingVerification">Pending Verification</option>
-                    </select>
+                <div class="col-md-3 d-flex align-items-center">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="filter-named-only">
+                        <label class="form-check-label text-muted small" for="filter-named-only" data-i18n="schools.namedOnly">Show only named schools</label>
+                    </div>
                 </div>
-                <div class="col-md-6 d-flex align-items-center">
-                    <span class="text-muted small" id="results-summary" data-i18n="schools.showing">Showing 9 of 9 schools</span>
+                <div class="col-md-5 d-flex align-items-center">
+                    <span class="text-muted small" id="results-summary" data-i18n="schools.showing">Showing 0 of 0 schools</span>
                 </div>
                 <div class="col-md-4 d-flex align-items-center justify-content-end">
-                    <label class="text-muted small me-2 mb-0" data-i18n="schools.sortBy">Sort by:</label>
-                    <select class="form-select py-2" id="sort-schools" style="max-width: 180px;">
-                        <option value="name-asc">Name (A-Z)</option>
-                        <option value="name-desc">Name (Z-A)</option>
-                        <option value="province">Province</option>
-                        <option value="level">Level</option>
+                    <label class="text-muted small me-2 mb-0" for="sort-schools" data-i18n="schools.sortBy">Sort by:</label>
+                    <select class="form-select py-2" id="sort-schools" style="max-width: 200px;">
+                        <option value="name-asc" data-i18n="schools.sortNameAsc">Name (A-Z)</option>
+                        <option value="name-desc" data-i18n="schools.sortNameDesc">Name (Z-A)</option>
+                        <option value="province" data-i18n="schools.sortProvince">Province</option>
+                        <option value="district" data-i18n="schools.sortDistrict">District</option>
                     </select>
                 </div>
             </div>
 
             <!-- Schools Grid -->
             <div class="row g-4" id="schools-grid">
-
-                <!-- School 1: GS Kigali -->
-                <div class="col-md-6 col-lg-4 wow fadeIn school-card" data-wow-delay="0.1s"
-                     data-name="GS Kigali" data-code="SCH-KGL-001" data-province="kigali" data-district="gasabo" data-sector="Gasabo" data-level="ordinary-secondary" data-type="public" data-verification="verified">
-                    <div class="service-item rounded p-4 h-100">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <span class="badge bg-success" data-i18n="schools.verified">Verified</span>
-                            <span class="badge bg-light text-dark border">SCH-KGL-001</span>
-                        </div>
-                        <h5 class="mb-1">GS Kigali</h5>
-                        <span class="badge bg-warning text-dark small mb-3" data-i18n="schools.demoData">DEMO DATA — NOT VERIFIED — FOR TESTING ONLY</span>
-                        <p class="text-muted small mb-2">
-                            <i class="fa fa-map-marker-alt me-1"></i> Kigali City &gt; Gasabo &gt; Kicukiro Sector
-                        </p>
-                        <p class="text-muted small mb-1">
-                            <i class="fa fa-graduation-cap me-1"></i> Ordinary Secondary (S1-S3)
-                        </p>
-                        <p class="text-muted small mb-3">
-                            <i class="fa fa-building me-1"></i> <span data-i18n="schools.public">Public</span>
-                        </p>
-                        <a href="school-profile.html" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="schools.viewProfile">View Profile</a>
-                    </div>
-                </div>
-
-                <!-- School 2: EP Nyarugenge -->
-                <div class="col-md-6 col-lg-4 wow fadeIn school-card" data-wow-delay="0.2s"
-                     data-name="EP Nyarugenge" data-code="SCH-NYG-002" data-province="kigali" data-district="nyarugenge" data-sector="Nyarugenge" data-level="primary" data-type="public" data-verification="verified">
-                    <div class="service-item rounded p-4 h-100">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <span class="badge bg-success" data-i18n="schools.verified">Verified</span>
-                            <span class="badge bg-light text-dark border">SCH-NYG-002</span>
-                        </div>
-                        <h5 class="mb-1">EP Nyarugenge</h5>
-                        <span class="badge bg-warning text-dark small mb-3" data-i18n="schools.demoData">DEMO DATA — NOT VERIFIED — FOR TESTING ONLY</span>
-                        <p class="text-muted small mb-2">
-                            <i class="fa fa-map-marker-alt me-1"></i> Kigali City &gt; Nyarugenge &gt; Nyarugenge Sector
-                        </p>
-                        <p class="text-muted small mb-1">
-                            <i class="fa fa-graduation-cap me-1"></i> Primary (P1-P6)
-                        </p>
-                        <p class="text-muted small mb-3">
-                            <i class="fa fa-building me-1"></i> <span data-i18n="schools.public">Public</span>
-                        </p>
-                        <a href="school-profile.html" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="schools.viewProfile">View Profile</a>
-                    </div>
-                </div>
-
-                <!-- School 3: FAWE Girls School -->
-                <div class="col-md-6 col-lg-4 wow fadeIn school-card" data-wow-delay="0.3s"
-                     data-name="FAWE Girls School" data-code="SCH-KCK-003" data-province="kigali" data-district="kicukiro" data-sector="Kicukiro" data-level="ordinary-secondary" data-type="private" data-verification="verified">
-                    <div class="service-item rounded p-4 h-100">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <span class="badge bg-success" data-i18n="schools.verified">Verified</span>
-                            <span class="badge bg-light text-dark border">SCH-KCK-003</span>
-                        </div>
-                        <h5 class="mb-1">FAWE Girls School</h5>
-                        <span class="badge bg-warning text-dark small mb-3" data-i18n="schools.demoData">DEMO DATA — NOT VERIFIED — FOR TESTING ONLY</span>
-                        <p class="text-muted small mb-2">
-                            <i class="fa fa-map-marker-alt me-1"></i> Kigali City &gt; Kicukiro &gt; Kicukiro Sector
-                        </p>
-                        <p class="text-muted small mb-1">
-                            <i class="fa fa-graduation-cap me-1"></i> Ordinary Secondary (S1-S3)
-                        </p>
-                        <p class="text-muted small mb-3">
-                            <i class="fa fa-building me-1"></i> <span data-i18n="schools.private">Private</span>
-                        </p>
-                        <a href="school-profile.html" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="schools.viewProfile">View Profile</a>
-                    </div>
-                </div>
-
-                <!-- School 4: EP Huye -->
-                <div class="col-md-6 col-lg-4 wow fadeIn school-card" data-wow-delay="0.4s"
-                     data-name="EP Huye" data-code="SCH-HUY-004" data-province="southern" data-district="huye" data-sector="Huye" data-level="primary" data-type="public" data-verification="verified">
-                    <div class="service-item rounded p-4 h-100">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <span class="badge bg-success" data-i18n="schools.verified">Verified</span>
-                            <span class="badge bg-light text-dark border">SCH-HUY-004</span>
-                        </div>
-                        <h5 class="mb-1">EP Huye</h5>
-                        <span class="badge bg-warning text-dark small mb-3" data-i18n="schools.demoData">DEMO DATA — NOT VERIFIED — FOR TESTING ONLY</span>
-                        <p class="text-muted small mb-2">
-                            <i class="fa fa-map-marker-alt me-1"></i> Southern &gt; Huye &gt; Huye Sector
-                        </p>
-                        <p class="text-muted small mb-1">
-                            <i class="fa fa-graduation-cap me-1"></i> Primary (P1-P6)
-                        </p>
-                        <p class="text-muted small mb-3">
-                            <i class="fa fa-building me-1"></i> <span data-i18n="schools.public">Public</span>
-                        </p>
-                        <a href="school-profile.html" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="schools.viewProfile">View Profile</a>
-                    </div>
-                </div>
-
-                <!-- School 5: GS Musanze -->
-                <div class="col-md-6 col-lg-4 wow fadeIn school-card" data-wow-delay="0.5s"
-                     data-name="GS Musanze" data-code="SCH-MUS-005" data-province="northern" data-district="musanze" data-sector="Musanze" data-level="ordinary-secondary" data-type="public" data-verification="pending">
-                    <div class="service-item rounded p-4 h-100">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <span class="badge bg-warning text-dark" data-i18n="schools.pendingVerification">Pending Verification</span>
-                            <span class="badge bg-light text-dark border">SCH-MUS-005</span>
-                        </div>
-                        <h5 class="mb-1">GS Musanze</h5>
-                        <span class="badge bg-warning text-dark small mb-3" data-i18n="schools.demoData">DEMO DATA — NOT VERIFIED — FOR TESTING ONLY</span>
-                        <p class="text-muted small mb-2">
-                            <i class="fa fa-map-marker-alt me-1"></i> Northern &gt; Musanze &gt; Musanze Sector
-                        </p>
-                        <p class="text-muted small mb-1">
-                            <i class="fa fa-graduation-cap me-1"></i> Ordinary Secondary (S1-S3)
-                        </p>
-                        <p class="text-muted small mb-3">
-                            <i class="fa fa-building me-1"></i> <span data-i18n="schools.public">Public</span>
-                        </p>
-                        <a href="school-profile.html" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="schools.viewProfile">View Profile</a>
-                    </div>
-                </div>
-
-                <!-- School 6: EP Rubavu -->
-                <div class="col-md-6 col-lg-4 wow fadeIn school-card" data-wow-delay="0.6s"
-                     data-name="EP Rubavu" data-code="SCH-RBA-006" data-province="western" data-district="rubavu" data-sector="Rubavu" data-level="primary" data-type="public" data-verification="verified">
-                    <div class="service-item rounded p-4 h-100">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <span class="badge bg-success" data-i18n="schools.verified">Verified</span>
-                            <span class="badge bg-light text-dark border">SCH-RBA-006</span>
-                        </div>
-                        <h5 class="mb-1">EP Rubavu</h5>
-                        <span class="badge bg-warning text-dark small mb-3" data-i18n="schools.demoData">DEMO DATA — NOT VERIFIED — FOR TESTING ONLY</span>
-                        <p class="text-muted small mb-2">
-                            <i class="fa fa-map-marker-alt me-1"></i> Western &gt; Rubavu &gt; Rubavu Sector
-                        </p>
-                        <p class="text-muted small mb-1">
-                            <i class="fa fa-graduation-cap me-1"></i> Primary (P1-P6)
-                        </p>
-                        <p class="text-muted small mb-3">
-                            <i class="fa fa-building me-1"></i> <span data-i18n="schools.public">Public</span>
-                        </p>
-                        <a href="school-profile.html" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="schools.viewProfile">View Profile</a>
-                    </div>
-                </div>
-
-                <!-- School 7: Lycée de Kigali -->
-                <div class="col-md-6 col-lg-4 wow fadeIn school-card" data-wow-delay="0.7s"
-                     data-name="Lycée de Kigali" data-code="SCH-KGL-007" data-province="kigali" data-district="gasabo" data-sector="Gasabo" data-level="advanced-secondary" data-type="public" data-verification="verified">
-                    <div class="service-item rounded p-4 h-100">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <span class="badge bg-success" data-i18n="schools.verified">Verified</span>
-                            <span class="badge bg-light text-dark border">SCH-KGL-007</span>
-                        </div>
-                        <h5 class="mb-1">Lycée de Kigali</h5>
-                        <span class="badge bg-warning text-dark small mb-3" data-i18n="schools.demoData">DEMO DATA — NOT VERIFIED — FOR TESTING ONLY</span>
-                        <p class="text-muted small mb-2">
-                            <i class="fa fa-map-marker-alt me-1"></i> Kigali City &gt; Gasabo &gt; Gasabo Sector
-                        </p>
-                        <p class="text-muted small mb-1">
-                            <i class="fa fa-graduation-cap me-1"></i> Advanced Secondary (S4-S6)
-                        </p>
-                        <p class="text-muted small mb-3">
-                            <i class="fa fa-building me-1"></i> <span data-i18n="schools.public">Public</span>
-                        </p>
-                        <a href="school-profile.html" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="schools.viewProfile">View Profile</a>
-                    </div>
-                </div>
-
-                <!-- School 8: EP Nyagatare -->
-                <div class="col-md-6 col-lg-4 wow fadeIn school-card" data-wow-delay="0.8s"
-                     data-name="EP Nyagatare" data-code="SCH-NYG-008" data-province="eastern" data-district="nyagatare" data-sector="Nyagatare" data-level="primary" data-type="public" data-verification="pending">
-                    <div class="service-item rounded p-4 h-100">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <span class="badge bg-warning text-dark" data-i18n="schools.pendingVerification">Pending Verification</span>
-                            <span class="badge bg-light text-dark border">SCH-NYG-008</span>
-                        </div>
-                        <h5 class="mb-1">EP Nyagatare</h5>
-                        <span class="badge bg-warning text-dark small mb-3" data-i18n="schools.demoData">DEMO DATA — NOT VERIFIED — FOR TESTING ONLY</span>
-                        <p class="text-muted small mb-2">
-                            <i class="fa fa-map-marker-alt me-1"></i> Eastern &gt; Nyagatare &gt; Nyagatare Sector
-                        </p>
-                        <p class="text-muted small mb-1">
-                            <i class="fa fa-graduation-cap me-1"></i> Primary (P1-P6)
-                        </p>
-                        <p class="text-muted small mb-3">
-                            <i class="fa fa-building me-1"></i> <span data-i18n="schools.public">Public</span>
-                        </p>
-                        <a href="school-profile.html" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="schools.viewProfile">View Profile</a>
-                    </div>
-                </div>
-
-                <!-- School 9: TVET Kigali -->
-                <div class="col-md-6 col-lg-4 wow fadeIn school-card" data-wow-delay="0.9s"
-                     data-name="TVET Kigali" data-code="SCH-KCK-009" data-province="kigali" data-district="kicukiro" data-sector="Kicukiro" data-level="tvet" data-type="public" data-verification="verified">
-                    <div class="service-item rounded p-4 h-100">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <span class="badge bg-success" data-i18n="schools.verified">Verified</span>
-                            <span class="badge bg-light text-dark border">SCH-KCK-009</span>
-                        </div>
-                        <h5 class="mb-1">TVET Kigali</h5>
-                        <span class="badge bg-warning text-dark small mb-3" data-i18n="schools.demoData">DEMO DATA — NOT VERIFIED — FOR TESTING ONLY</span>
-                        <p class="text-muted small mb-2">
-                            <i class="fa fa-map-marker-alt me-1"></i> Kigali City &gt; Kicukiro &gt; Kicukiro Sector
-                        </p>
-                        <p class="text-muted small mb-1">
-                            <i class="fa fa-graduation-cap me-1"></i> TVET (Technical &amp; Vocational)
-                        </p>
-                        <p class="text-muted small mb-3">
-                            <i class="fa fa-building me-1"></i> <span data-i18n="schools.public">Public</span>
-                        </p>
-                        <a href="school-profile.html" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="schools.viewProfile">View Profile</a>
-                    </div>
-                </div>
-
+                <!-- Dynamically rendered -->
             </div>
 
             <!-- No Results -->
@@ -353,20 +146,12 @@
                 <p class="text-muted" data-i18n="schools.noResults">No schools found matching your filters.</p>
             </div>
 
-            <!-- Pagination -->
-            <nav class="mt-5 wow fadeIn" data-wow-delay="0.3s" aria-label="Schools pagination">
-                <ul class="pagination justify-content-center" id="schools-pagination">
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#" tabindex="-1"><i class="fa fa-chevron-left"></i></a>
-                    </li>
-                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item">
-                        <a class="page-link" href="#"><i class="fa fa-chevron-right"></i></a>
-                    </li>
-                </ul>
-            </nav>
+            <!-- Load More -->
+            <div class="text-center mt-4 wow fadeIn" data-wow-delay="0.3s">
+                <button id="load-more-btn" class="btn btn-outline-primary rounded-pill px-5 py-2 d-none" data-i18n="schools.loadMore">
+                    <i class="fa fa-plus me-2"></i>Load More
+                </button>
+            </div>
         </div>
     </div>
     <!-- Search and Filters End -->
@@ -377,10 +162,13 @@
             <div class="row align-items-center">
                 <div class="col-lg-8 wow fadeIn" data-wow-delay="0.1s">
                     <h2 class="text-white mb-2" data-i18n="schools.addSchool">Is your school not listed?</h2>
-                    <p class="text-white mb-0" data-i18n="schools.addSchoolDesc">Contact us to request its addition to the directory. We are actively expanding our coverage to include all schools across Rwanda.</p>
+                    <p class="text-white mb-0" data-i18n="schools.addSchoolDesc">Add it to OpenStreetMap so it appears in this directory and helps thousands of students find it. Or contact us to request its addition.</p>
                 </div>
                 <div class="col-lg-4 text-lg-end wow fadeIn" data-wow-delay="0.3s">
-                    <a href="contact.html" class="btn btn-light rounded-pill px-5 py-3" data-i18n="schools.requestAddition">Request Addition</a>
+                    <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener" class="btn btn-light rounded-pill px-4 py-3 me-2 mb-2">
+                        <i class="fa fa-map-marker-alt me-1"></i> <span data-i18n="schools.addOnOSM">Add on OpenStreetMap</span>
+                    </a>
+                    <a href="contact.html" class="btn btn-outline-light rounded-pill px-4 py-3 mb-2" data-i18n="schools.requestAddition">Request Addition</a>
                 </div>
             </div>
         </div>
@@ -397,104 +185,335 @@
     <script src="lib/easing/easing.min.js"></script>
     <script src="lib/waypoints/waypoints.min.js"></script>
 
+    <!-- School Data from OpenStreetMap -->
+    <script src="js/schools-data.js"></script>
+
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/components.js"></script>
     <script>
-        IremeComponents.initPage('schools.html');
+    (function () {
+        'use strict';
 
-        // District data mapped to provinces
-        var districtData = {
-            kigali: ['Gasabo', 'Kicukiro', 'Nyarugenge'],
-            eastern: ['Bugesera', 'Gatsibo', 'Kayonza', 'Kirehe', 'Ngoma', 'Nyagatare', 'Rwamagana'],
-            western: ['Karongi', 'Ngororero', 'Nyabihu', 'Nyamasheke', 'Rubavu', 'Rusizi', 'Rutsiro'],
-            northern: ['Burera', 'Gakenke', 'Gicumbi', 'Musanze', 'Rulindo'],
-            southern: ['Gisagara', 'Huye', 'Kamonyi', 'Muhanga', 'Nyamagabe', 'Nyanza', 'Nyaruguru', 'Ruhango']
+        /* ------------------------------------------------------------------ */
+        /*  Constants                                                          */
+        /* ------------------------------------------------------------------ */
+
+        var BATCH_SIZE = 30;
+
+        // Districts keyed by province (must match data.province values)
+        var districtsByProvince = {
+            'Eastern Province':  ['Bugesera', 'Gatsibo', 'Kayonza', 'Kirehe', 'Ngoma', 'Nyagatare', 'Rwamagana'],
+            'Kigali City':      ['Gasabo', 'Kicukiro', 'Nyarugenge'],
+            'Northern Province':['Burera', 'Gakenke', 'Gicumbi', 'Musanze', 'Rulindo'],
+            'Southern Province':['Gisagara', 'Huye', 'Kamonyi', 'Muhanga', 'Nyamagabe', 'Nyanza', 'Nyaruguru', 'Ruhango'],
+            'Western Province': ['Karongi', 'Ngororero', 'Nyabihu', 'Nyamasheke', 'Rubavu', 'Rusizi', 'Rutsiro']
         };
 
-        // Update district dropdown based on selected province
-        document.getElementById('filter-province').addEventListener('change', function () {
-            var districtSelect = document.getElementById('filter-district');
-            districtSelect.innerHTML = '<option value="" data-i18n="schools.allDistricts">All Districts</option>';
+        // Badge colour maps
+        var levelBadgeClass = {
+            'school':       'bg-primary',
+            'university':   'bg-danger',
+            'college':      'bg-info',
+            'kindergarten': 'bg-warning text-dark'
+        };
 
-            var province = this.value;
-            if (province && districtData[province]) {
-                districtData[province].forEach(function (district) {
-                    var option = document.createElement('option');
-                    option.value = district.toLowerCase();
-                    option.textContent = district;
-                    districtSelect.appendChild(option);
-                });
-            }
-            filterSchools();
-        });
+        var ownershipBadgeClass = {
+            'public':            'bg-success',
+            'private':           'bg-secondary',
+            'government-aided':  'bg-info'
+        };
 
-        // Main filter function
-        function filterSchools() {
-            var search = document.getElementById('school-search').value.toLowerCase();
-            var province = document.getElementById('filter-province').value;
-            var district = document.getElementById('filter-district').value;
-            var level = document.getElementById('filter-level').value;
-            var type = document.getElementById('filter-type').value;
-            var verification = document.getElementById('filter-verification').value;
-            var visible = 0;
-            var total = 0;
+        var levelLabels = {
+            'school':       'School',
+            'university':   'University',
+            'college':      'College',
+            'kindergarten': 'Kindergarten'
+        };
 
-            var cards = document.querySelectorAll('.school-card');
-            total = cards.length;
+        var ownershipLabels = {
+            'public':            'Public',
+            'private':           'Private',
+            'government-aided':  'Government-Aided'
+        };
 
-            cards.forEach(function (card) {
-                var matchSearch = !search || card.dataset.name.toLowerCase().includes(search) || (card.dataset.code && card.dataset.code.toLowerCase().includes(search));
-                var matchProvince = !province || card.dataset.province === province;
-                var matchDistrict = !district || card.dataset.district === district;
-                var matchLevel = !level || card.dataset.level === level;
-                var matchType = !type || card.dataset.type === type;
-                var matchVerification = !verification || card.dataset.verification === verification;
+        /* ------------------------------------------------------------------ */
+        /*  State                                                              */
+        /* ------------------------------------------------------------------ */
 
-                var show = matchSearch && matchProvince && matchDistrict && matchLevel && matchType && matchVerification;
-                card.style.display = show ? '' : 'none';
-                if (show) visible++;
-            });
+        var allSchools     = [];   // full list from data file
+        var filteredList   = [];   // after filters applied
+        var displayedCount = 0;    // how many cards currently in DOM
 
-            // Update results summary
-            var summary = document.getElementById('results-summary');
-            summary.textContent = 'Showing ' + visible + ' of ' + total + ' schools';
+        /* ------------------------------------------------------------------ */
+        /*  Helpers                                                            */
+        /* ------------------------------------------------------------------ */
 
-            // Toggle no results message
-            document.getElementById('no-schools').classList.toggle('d-none', visible > 0);
+        function escapeHtml(str) {
+            if (!str) return '';
+            var div = document.createElement('div');
+            div.appendChild(document.createTextNode(str));
+            return div.innerHTML;
         }
 
-        // Sort function
-        document.getElementById('sort-schools').addEventListener('change', function () {
+        function schoolDisplayName(s) {
+            if (s.name) return s.name;
+            return 'Unnamed School \u2014 ' + (s.sector || '?') + ', ' + (s.district || '?');
+        }
+
+        function buildCardHtml(s) {
+            var name = escapeHtml(schoolDisplayName(s));
+            var hasName = !!s.name;
+
+            // Level badge
+            var lvl = s.level || 'school';
+            var lvlClass = levelBadgeClass[lvl] || 'bg-secondary';
+            var lvlLabel = escapeHtml(levelLabels[lvl] || lvl);
+
+            // Ownership badge (optional)
+            var ownBadge = '';
+            if (s.ownership && ownershipLabels[s.ownership]) {
+                var ownClass = ownershipBadgeClass[s.ownership] || 'bg-secondary';
+                ownBadge = '<span class="badge ' + ownClass + ' ms-1">' + escapeHtml(ownershipLabels[s.ownership]) + '</span>';
+            }
+
+            // Location line
+            var locParts = [];
+            if (s.province) locParts.push(escapeHtml(s.province));
+            if (s.district) locParts.push(escapeHtml(s.district));
+            if (s.sector)   locParts.push(escapeHtml(s.sector));
+            var locText = locParts.join(' &gt; ');
+
+            // Coordinates
+            var coordsText = '';
+            if (s.lat != null && s.lng != null) {
+                coordsText = '<span class="text-muted" style="font-size:.7rem;">' +
+                    '<i class="fa fa-crosshairs me-1"></i>' +
+                    Number(s.lat).toFixed(4) + ', ' + Number(s.lng).toFixed(4) +
+                    '</span>';
+            }
+
+            // Named / unnamed indicator
+            var namedBadge = hasName
+                ? ''
+                : '<span class="badge bg-light text-muted border small ms-1" data-i18n="schools.unnamedBadge">Unnamed</span>';
+
+            // Profile link
+            var profileUrl = 'school-profile.html?id=' + encodeURIComponent(s.id);
+
+            return '' +
+                '<div class="col-md-6 col-lg-4 wow fadeIn school-card" data-wow-delay="0.1s" data-school-id="' + escapeHtml(s.id) + '">' +
+                    '<div class="service-item rounded p-4 h-100">' +
+                        '<div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-1">' +
+                            '<span class="badge ' + lvlClass + '">' + lvlLabel + '</span>' +
+                            ownBadge +
+                            namedBadge +
+                        '</div>' +
+                        '<h5 class="mb-1">' + name + '</h5>' +
+                        '<p class="text-muted small mb-2">' +
+                            '<i class="fa fa-map-marker-alt me-1"></i> ' + locText +
+                        '</p>' +
+                        (coordsText ? '<p class="mb-3">' + coordsText + '</p>' : '<div class="mb-3"></div>') +
+                        '<a href="' + profileUrl + '" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="schools.viewProfile">View Profile</a>' +
+                    '</div>' +
+                '</div>';
+        }
+
+        /* ------------------------------------------------------------------ */
+        /*  Rendering                                                          */
+        /* ------------------------------------------------------------------ */
+
+        function renderBatch() {
             var grid = document.getElementById('schools-grid');
-            var cards = Array.from(grid.querySelectorAll('.school-card'));
-            var sortBy = this.value;
+            var end = Math.min(displayedCount + BATCH_SIZE, filteredList.length);
+            var html = '';
+            for (var i = displayedCount; i < end; i++) {
+                html += buildCardHtml(filteredList[i]);
+            }
+            grid.insertAdjacentHTML('beforeend', html);
+            displayedCount = end;
+            updateLoadMoreBtn();
+            // Re-init WOW for newly added elements
+            if (typeof WOW !== 'undefined') {
+                new WOW({ boxClass: 'wow', animateClass: 'animated', offset: 0, mobile: true, live: true }).init();
+            }
+        }
 
-            cards.sort(function (a, b) {
-                if (sortBy === 'name-asc') {
-                    return a.dataset.name.localeCompare(b.dataset.name);
-                } else if (sortBy === 'name-desc') {
-                    return b.dataset.name.localeCompare(a.dataset.name);
-                } else if (sortBy === 'province') {
-                    return a.dataset.province.localeCompare(b.dataset.province);
-                } else if (sortBy === 'level') {
-                    return a.dataset.level.localeCompare(b.dataset.level);
+        function resetAndRender() {
+            var grid = document.getElementById('schools-grid');
+            grid.innerHTML = '';
+            displayedCount = 0;
+            renderBatch();
+            updateResultsSummary();
+            toggleNoResults();
+        }
+
+        function updateLoadMoreBtn() {
+            var btn = document.getElementById('load-more-btn');
+            if (displayedCount < filteredList.length) {
+                btn.classList.remove('d-none');
+                var remaining = filteredList.length - displayedCount;
+                var nextBatch = Math.min(BATCH_SIZE, remaining);
+                btn.innerHTML = '<i class="fa fa-plus me-2"></i>Load More (' + nextBatch + ' of ' + remaining + ')';
+            } else {
+                btn.classList.add('d-none');
+            }
+        }
+
+        function updateResultsSummary() {
+            var total = typeof IremeSchoolsData !== 'undefined' ? IremeSchoolsData.totalFeatures : allSchools.length;
+            document.getElementById('results-summary').textContent =
+                'Showing ' + filteredList.length + ' of ' + total + ' schools';
+        }
+
+        function toggleNoResults() {
+            document.getElementById('no-schools').classList.toggle('d-none', filteredList.length > 0);
+        }
+
+        /* ------------------------------------------------------------------ */
+        /*  Filtering & Sorting                                                */
+        /* ------------------------------------------------------------------ */
+
+        function filterSchools() {
+            var search     = document.getElementById('school-search').value.toLowerCase().trim();
+            var province   = document.getElementById('filter-province').value;
+            var district   = document.getElementById('filter-district').value;
+            var level      = document.getElementById('filter-level').value;
+            var ownership  = document.getElementById('filter-ownership').value;
+            var namedOnly  = document.getElementById('filter-named-only').checked;
+
+            filteredList = allSchools.filter(function (s) {
+                // Search (by name)
+                if (search) {
+                    var haystack = (s.name || '').toLowerCase();
+                    if (haystack.indexOf(search) === -1) return false;
                 }
-                return 0;
+                // Province
+                if (province && s.province !== province) return false;
+                // District
+                if (district && s.district !== district) return false;
+                // Level
+                if (level && s.level !== level) return false;
+                // Ownership
+                if (ownership && s.ownership !== ownership) return false;
+                // Named only
+                if (namedOnly && !s.name) return false;
+                return true;
             });
 
-            cards.forEach(function (card) {
-                grid.appendChild(card);
-            });
-        });
+            // Sort
+            sortFiltered();
+            resetAndRender();
+        }
 
-        // Attach filter listeners
-        ['school-search', 'filter-province', 'filter-district', 'filter-level', 'filter-type', 'filter-verification'].forEach(function (id) {
-            var el = document.getElementById(id);
-            el.addEventListener('input', filterSchools);
-            el.addEventListener('change', filterSchools);
-        });
+        function sortFiltered() {
+            var sortBy = document.getElementById('sort-schools').value;
+            filteredList.sort(function (a, b) {
+                switch (sortBy) {
+                    case 'name-asc':
+                        return schoolDisplayName(a).localeCompare(schoolDisplayName(b));
+                    case 'name-desc':
+                        return schoolDisplayName(b).localeCompare(schoolDisplayName(a));
+                    case 'province':
+                        return (a.province || '').localeCompare(b.province || '') ||
+                               (a.district || '').localeCompare(b.district || '');
+                    case 'district':
+                        return (a.district || '').localeCompare(b.district || '') ||
+                               (a.province || '').localeCompare(b.province || '');
+                    default:
+                        return 0;
+                }
+            });
+        }
+
+        /* ------------------------------------------------------------------ */
+        /*  District dropdown                                                  */
+        /* ------------------------------------------------------------------ */
+
+        function populateDistricts(province) {
+            var sel = document.getElementById('filter-district');
+            sel.innerHTML = '<option value="" data-i18n="schools.allDistricts">All Districts</option>';
+            if (province && districtsByProvince[province]) {
+                districtsByProvince[province].forEach(function (d) {
+                    var opt = document.createElement('option');
+                    opt.value = d;
+                    opt.textContent = d;
+                    sel.appendChild(opt);
+                });
+            }
+        }
+
+        /* ------------------------------------------------------------------ */
+        /*  Notice banner numbers                                              */
+        /* ------------------------------------------------------------------ */
+
+        function updateNoticeBanner() {
+            if (typeof IremeSchoolsData === 'undefined') return;
+            var d = IremeSchoolsData;
+            document.getElementById('notice-total').textContent  = d.totalFeatures;
+            document.getElementById('notice-named').textContent  = d.namedSchools;
+            document.getElementById('notice-snapshot').textContent = d.snapshot;
+        }
+
+        /* ------------------------------------------------------------------ */
+        /*  Init                                                               */
+        /* ------------------------------------------------------------------ */
+
+        function init() {
+            // Load data
+            if (typeof IremeSchoolsData !== 'undefined' && IremeSchoolsData.schools) {
+                allSchools = IremeSchoolsData.schools;
+            } else {
+                console.warn('IremeSchoolsData not found. Ensure js/schools-data.js is loaded.');
+                allSchools = [];
+            }
+
+            updateNoticeBanner();
+
+            // Initial filter (show all, sorted by name)
+            filteredList = allSchools.slice();
+            sortFiltered();
+            resetAndRender();
+
+            // Event listeners
+            document.getElementById('filter-province').addEventListener('change', function () {
+                populateDistricts(this.value);
+                document.getElementById('filter-district').value = '';
+                filterSchools();
+            });
+
+            ['school-search', 'filter-district', 'filter-level', 'filter-ownership'].forEach(function (id) {
+                var el = document.getElementById(id);
+                el.addEventListener('input', filterSchools);
+                el.addEventListener('change', filterSchools);
+            });
+
+            document.getElementById('filter-named-only').addEventListener('change', filterSchools);
+
+            document.getElementById('sort-schools').addEventListener('change', function () {
+                sortFiltered();
+                resetAndRender();
+            });
+
+            document.getElementById('load-more-btn').addEventListener('click', function () {
+                renderBatch();
+            });
+        }
+
+        // Run when DOM ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+        /* ------------------------------------------------------------------ */
+        /*  Component init (must be last)                                      */
+        /* ------------------------------------------------------------------ */
+
+        IremeComponents.initPage('schools.html');
+    })();
     </script>
 </body>
 </html>

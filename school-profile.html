@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <title>School Profile - IREME Rwanda Schools Directory</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="School Profile, Rwanda Schools, IREME Directory, GS Kigali" name="keywords">
-    <meta content="View the profile of GS Kigali on the IREME Rwanda Schools Directory. Find school information, location, academics, leadership and contact details." name="description">
+    <meta content="School Profile, Rwanda Schools, IREME Directory, OpenStreetMap" name="keywords">
+    <meta content="View the profile of a Rwanda school on the IREME Rwanda Schools Directory. Data sourced from OpenStreetMap." name="description">
 
     <!-- Favicon -->
     <link href="img/ireme-icon.png" rel="icon">
@@ -47,8 +47,8 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb justify-content-center justify-content-lg-start mb-0">
                             <li class="breadcrumb-item"><a class="text-white" href="index.html" data-i18n="breadcrumb.home">Home</a></li>
-                            <li class="breadcrumb-item"><a class="text-white" href="schools-directory.html" data-i18n="breadcrumb.schools">Schools</a></li>
-                            <li class="breadcrumb-item text-white active" aria-current="page">GS Kigali</li>
+                            <li class="breadcrumb-item"><a class="text-white" href="schools.html" data-i18n="breadcrumb.schools">Schools</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page" id="breadcrumb-school-name">School</li>
                         </ol>
                     </nav>
                 </div>
@@ -61,8 +61,25 @@
     <!-- Hero End -->
 
 
-    <!-- School Header Start -->
-    <div class="container-fluid py-5">
+    <!-- School Not Found (hidden by default) -->
+    <div class="container-fluid py-5 d-none" id="school-not-found">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center wow fadeIn" data-wow-delay="0.1s">
+                    <i class="fa fa-search fa-3x text-muted mb-4"></i>
+                    <h3 class="mb-3" data-i18n="schoolProfile.notFoundTitle">School Not Found</h3>
+                    <p class="text-muted mb-4" data-i18n="schoolProfile.notFoundMessage">The school you are looking for could not be found in our database. It may have an invalid ID or is not yet included in the OpenStreetMap data.</p>
+                    <a href="schools.html" class="btn btn-primary rounded-pill px-4" data-i18n="schoolProfile.backToDirectory">
+                        <i class="fa fa-arrow-left me-2"></i>Back to Schools Directory
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- School Content (hidden until data loads) -->
+    <div class="container-fluid py-5 d-none" id="school-content">
         <div class="container py-5">
             <div class="row g-5">
                 <!-- Main Content -->
@@ -71,32 +88,28 @@
                     <div class="rounded shadow-sm p-4 mb-4" style="background: #fff; border: 1px solid rgba(0,0,0,.06);">
                         <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-3">
                             <div>
-                                <h3 class="mb-1" data-i18n="schoolProfile.schoolName">GS Kigali</h3>
+                                <h3 class="mb-1" id="school-name-heading"></h3>
                                 <p class="text-muted mb-1">
-                                    <span data-i18n="schoolProfile.schoolCode">Code: SCH-KGL-001</span>
+                                    <span data-i18n="schoolProfile.schoolId">OSM ID:</span> <span id="school-osm-id"></span>
                                 </p>
                             </div>
-                            <div class="mt-2 mt-md-0">
-                                <span class="badge bg-warning text-dark px-3 py-2" data-i18n="schoolProfile.pendingVerification">
-                                    <i class="fa fa-clock me-1"></i> Pending Verification
-                                </span>
-                            </div>
+                            <div class="mt-2 mt-md-0" id="school-badges"></div>
                         </div>
 
-                        <!-- Demo Data Notice -->
-                        <div class="alert alert-warning d-flex align-items-center mb-3" role="alert">
-                            <i class="fa fa-exclamation-triangle me-2"></i>
-                            <span data-i18n="schoolProfile.demoData">DEMO DATA — NOT VERIFIED — FOR TESTING ONLY</span>
+                        <!-- OSM Data Source Notice -->
+                        <div class="alert alert-info d-flex align-items-center mb-3" role="alert">
+                            <i class="fa fa-database me-2"></i>
+                            <span data-i18n="schoolProfile.osmSourceNotice">This school's data comes from OpenStreetMap. Additional details (description, enrollment, facilities) are not yet available and can be added by authorized school representatives.</span>
                         </div>
 
-                        <div class="row g-3">
+                        <div class="row g-3" id="school-header-facts">
                             <div class="col-sm-6">
-                                <p class="mb-1"><strong data-i18n="schoolProfile.type">School Type:</strong></p>
-                                <p class="text-muted" data-i18n="schoolProfile.typeValue">Public Secondary School</p>
+                                <p class="mb-1"><strong data-i18n="schoolProfile.level">Level:</strong></p>
+                                <p class="text-muted" id="school-level-text"></p>
                             </div>
                             <div class="col-sm-6">
-                                <p class="mb-1"><strong data-i18n="schoolProfile.levels">Levels Offered:</strong></p>
-                                <p class="text-muted" data-i18n="schoolProfile.levelsValue">Ordinary Level (S1-S3), Advanced Level (S4-S6)</p>
+                                <p class="mb-1"><strong data-i18n="schoolProfile.ownership">Ownership:</strong></p>
+                                <p class="text-muted" id="school-ownership-text"></p>
                             </div>
                         </div>
 
@@ -104,9 +117,11 @@
 
                         <p class="text-muted small mb-0">
                             <i class="fa fa-database me-1"></i>
-                            <span data-i18n="schoolProfile.sourceInfo">Source: MINEDUC School Register</span>
+                            <span data-i18n="schoolProfile.sourceLabel">Source:</span> OpenStreetMap contributors
                             &bull;
-                            <span data-i18n="schoolProfile.lastVerified">Last verified: 2024</span>
+                            <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noopener" class="text-muted">ODbL 1.0</a>
+                            &bull;
+                            <span data-i18n="schoolProfile.snapshotLabel">Snapshot:</span> <span id="school-snapshot"></span>
                         </p>
                     </div>
 
@@ -139,31 +154,35 @@
                         <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
                             <div class="wow fadeIn" data-wow-delay="0.2s">
                                 <h5 class="mb-3" data-i18n="schoolProfile.overview">Overview</h5>
-                                <p class="text-muted mb-4" data-i18n="schoolProfile.description">GS Kigali is a public secondary school located in the Gasabo District of Kigali City. The school offers both Ordinary Level and Advanced Level education, with a focus on sciences and mathematics combinations. The school is committed to providing quality education aligned with the Rwandan national curriculum.</p>
+                                <p class="text-muted mb-4" id="school-overview-description"></p>
 
                                 <!-- Quick Facts Card -->
                                 <div class="rounded shadow-sm p-4" style="background: #f8f9fa; border: 1px solid rgba(0,0,0,.06);">
                                     <h6 class="mb-3"><i class="fa fa-info-circle text-primary me-2"></i><span data-i18n="schoolProfile.quickFacts">Quick Facts</span></h6>
                                     <div class="row g-3">
                                         <div class="col-sm-6">
+                                            <p class="mb-1"><strong data-i18n="schoolProfile.schoolNameLabel">School Name:</strong></p>
+                                            <p class="text-muted" id="overview-school-name"></p>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <p class="mb-1"><strong data-i18n="schoolProfile.level">Level:</strong></p>
+                                            <p class="text-muted" id="overview-school-level"></p>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <p class="mb-1"><strong data-i18n="schoolProfile.ownership">Ownership:</strong></p>
+                                            <p class="text-muted" id="overview-school-ownership"></p>
+                                        </div>
+                                        <div class="col-sm-6">
                                             <p class="mb-1"><strong data-i18n="schoolProfile.established">Established:</strong></p>
-                                            <p class="text-muted" data-i18n="schoolProfile.notYetVerified">Not yet verified</p>
+                                            <p class="text-muted" data-i18n="schoolProfile.notYetAvailable">Not yet available</p>
                                         </div>
                                         <div class="col-sm-6">
                                             <p class="mb-1"><strong data-i18n="schoolProfile.enrollment">Enrollment:</strong></p>
-                                            <p class="text-muted" data-i18n="schoolProfile.notYetVerified">Not yet verified</p>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <p class="mb-1"><strong data-i18n="schoolProfile.languages">Languages of Instruction:</strong></p>
-                                            <p class="text-muted">English, Kinyarwanda</p>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <p class="mb-1"><strong data-i18n="schoolProfile.owner">Owner:</strong></p>
-                                            <p class="text-muted" data-i18n="schoolProfile.ownerValue">Ministry of Education</p>
+                                            <p class="text-muted" data-i18n="schoolProfile.notYetAvailable">Not yet available</p>
                                         </div>
                                         <div class="col-sm-6">
                                             <p class="mb-1"><strong data-i18n="schoolProfile.category">Category:</strong></p>
-                                            <p class="text-muted" data-i18n="schoolProfile.categoryValue">Public</p>
+                                            <p class="text-muted" id="overview-school-category"></p>
                                         </div>
                                     </div>
                                 </div>
@@ -177,31 +196,47 @@
                                 <div class="row g-3 mb-4">
                                     <div class="col-sm-6">
                                         <p class="mb-1"><strong data-i18n="schoolProfile.province">Province:</strong></p>
-                                        <p class="text-muted">Kigali City</p>
+                                        <p class="text-muted" id="location-province"></p>
                                     </div>
                                     <div class="col-sm-6">
                                         <p class="mb-1"><strong data-i18n="schoolProfile.district">District:</strong></p>
-                                        <p class="text-muted">Gasabo</p>
+                                        <p class="text-muted" id="location-district"></p>
                                     </div>
                                     <div class="col-sm-6">
                                         <p class="mb-1"><strong data-i18n="schoolProfile.sector">Sector:</strong></p>
-                                        <p class="text-muted">Kimironko</p>
+                                        <p class="text-muted" id="location-sector"></p>
                                     </div>
                                     <div class="col-sm-6">
-                                        <p class="mb-1"><strong data-i18n="schoolProfile.address">Address:</strong></p>
-                                        <p class="text-muted" data-i18n="schoolProfile.notYetVerified">Not yet verified</p>
+                                        <p class="mb-1"><strong data-i18n="schoolProfile.city">City:</strong></p>
+                                        <p class="text-muted" id="location-city"></p>
+                                    </div>
+                                </div>
+
+                                <!-- GPS Coordinates -->
+                                <div class="rounded shadow-sm p-4 mb-3" style="background: #f8f9fa; border: 1px solid rgba(0,0,0,.06);">
+                                    <h6 class="mb-3"><i class="fa fa-map-marker-alt text-primary me-2"></i><span data-i18n="schoolProfile.gpsCoordinates">GPS Coordinates</span></h6>
+                                    <div class="row g-3">
+                                        <div class="col-sm-6">
+                                            <p class="mb-1"><strong data-i18n="schoolProfile.latitude">Latitude:</strong></p>
+                                            <p class="text-muted" id="location-lat"></p>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <p class="mb-1"><strong data-i18n="schoolProfile.longitude">Longitude:</strong></p>
+                                            <p class="text-muted" id="location-lng"></p>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <!-- Map Placeholder -->
                                 <div class="rounded p-4 text-center mb-3" style="background: #e9ecef; border: 2px dashed #adb5bd;">
                                     <i class="fa fa-map-marker-alt fa-2x text-muted mb-2"></i>
-                                    <p class="text-muted mb-0" data-i18n="schoolProfile.mapPending">Map coordinates pending verification</p>
+                                    <p class="text-muted mb-1" id="map-coordinates-display"></p>
+                                    <p class="text-muted small mb-0" data-i18n="schoolProfile.gpsFromOSM">Coordinates verified from OpenStreetMap</p>
                                 </div>
 
                                 <div class="alert alert-info d-flex align-items-center" role="alert">
                                     <i class="fa fa-info-circle me-2"></i>
-                                    <span data-i18n="schoolProfile.gpsNotice">GPS coordinates are only displayed when reliably sourced from official records</span>
+                                    <span data-i18n="schoolProfile.gpsNotice">GPS coordinates are sourced from OpenStreetMap and represent the mapped position of this school.</span>
                                 </div>
                             </div>
                         </div>
@@ -211,36 +246,20 @@
                             <div class="wow fadeIn" data-wow-delay="0.2s">
                                 <h5 class="mb-3" data-i18n="schoolProfile.academics">Academics</h5>
 
-                                <!-- Subjects Offered -->
-                                <h6 class="mb-2" data-i18n="schoolProfile.subjects">Subjects Offered:</h6>
                                 <div class="mb-4">
-                                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 me-1 mb-2">Mathematics</span>
-                                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 me-1 mb-2">Physics</span>
-                                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 me-1 mb-2">Chemistry</span>
-                                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 me-1 mb-2">Biology</span>
-                                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 me-1 mb-2">English</span>
-                                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 me-1 mb-2">Kinyarwanda</span>
-                                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 me-1 mb-2">French</span>
-                                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 me-1 mb-2">Economics</span>
-                                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 me-1 mb-2">Geography</span>
-                                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 me-1 mb-2">Computer Science</span>
-                                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 me-1 mb-2">Entrepreneurship</span>
+                                    <p class="mb-1"><strong data-i18n="schoolProfile.level">Level:</strong></p>
+                                    <p class="text-muted" id="academics-level"></p>
                                 </div>
 
-                                <!-- Programs -->
-                                <h6 class="mb-2" data-i18n="schoolProfile.programs">Programs:</h6>
-                                <ul class="text-muted mb-4">
-                                    <li data-i18n="schoolProfile.programOL">Ordinary Level</li>
-                                    <li data-i18n="schoolProfile.programAL">Advanced Level (Sciences, Mathematics Combination)</li>
-                                </ul>
+                                <div class="alert alert-info d-flex align-items-center mb-3" role="alert">
+                                    <i class="fa fa-info-circle me-2"></i>
+                                    <span data-i18n="schoolProfile.academicsNotice">Subject and program details are not yet available from the current data source.</span>
+                                </div>
 
-                                <!-- Academic Resources -->
-                                <h6 class="mb-2" data-i18n="schoolProfile.resources">Academic Resources:</h6>
-                                <p class="text-muted mb-4" data-i18n="schoolProfile.resourcesValue">Library, Science Laboratories, Computer Lab</p>
-
-                                <!-- Facilities -->
-                                <h6 class="mb-2" data-i18n="schoolProfile.facilities">Facilities:</h6>
-                                <p class="text-muted" data-i18n="schoolProfile.facilitiesValue">Not yet fully verified</p>
+                                <div class="rounded p-4 text-center" style="background: #f8f9fa; border: 1px solid rgba(0,0,0,.06);">
+                                    <i class="fa fa-graduation-cap fa-2x text-muted mb-2"></i>
+                                    <p class="text-muted mb-0" data-i18n="schoolProfile.academicsPending">Academic details can be added by authorized school representatives after claiming this profile.</p>
+                                </div>
                             </div>
                         </div>
 
@@ -249,14 +268,9 @@
                             <div class="wow fadeIn" data-wow-delay="0.2s">
                                 <h5 class="mb-3" data-i18n="schoolProfile.leadership">Leadership</h5>
 
-                                <div class="mb-4">
-                                    <p class="mb-1"><strong data-i18n="schoolProfile.headteacher">Headteacher:</strong></p>
-                                    <p class="text-muted" data-i18n="schoolProfile.notYetVerified">Not yet verified</p>
-                                </div>
-
                                 <div class="alert alert-info d-flex align-items-center mb-3" role="alert">
                                     <i class="fa fa-info-circle me-2"></i>
-                                    <span data-i18n="schoolProfile.staffNotice">Staff information is only displayed when authorized for publication</span>
+                                    <span data-i18n="schoolProfile.leadershipNotice">Leadership information is not yet available. School representatives can claim this profile to add details.</span>
                                 </div>
 
                                 <div class="rounded p-4 text-center" style="background: #f8f9fa; border: 1px solid rgba(0,0,0,.06);">
@@ -276,28 +290,28 @@
                                         <div class="rounded p-3 text-center" style="background: #f8f9fa; border: 1px solid rgba(0,0,0,.06);">
                                             <i class="fa fa-phone text-primary mb-2"></i>
                                             <p class="mb-1"><strong data-i18n="schoolProfile.phone">Phone:</strong></p>
-                                            <p class="text-muted small mb-0" data-i18n="schoolProfile.notYetVerified">Not yet verified</p>
+                                            <p class="text-muted small mb-0" data-i18n="schoolProfile.notYetAvailable">Not yet available</p>
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <div class="rounded p-3 text-center" style="background: #f8f9fa; border: 1px solid rgba(0,0,0,.06);">
                                             <i class="fa fa-envelope text-primary mb-2"></i>
                                             <p class="mb-1"><strong data-i18n="schoolProfile.email">Email:</strong></p>
-                                            <p class="text-muted small mb-0" data-i18n="schoolProfile.notYetVerified">Not yet verified</p>
+                                            <p class="text-muted small mb-0" data-i18n="schoolProfile.notYetAvailable">Not yet available</p>
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <div class="rounded p-3 text-center" style="background: #f8f9fa; border: 1px solid rgba(0,0,0,.06);">
                                             <i class="fa fa-globe text-primary mb-2"></i>
                                             <p class="mb-1"><strong data-i18n="schoolProfile.website">Website:</strong></p>
-                                            <p class="text-muted small mb-0" data-i18n="schoolProfile.notYetVerified">Not yet verified</p>
+                                            <p class="text-muted small mb-0" data-i18n="schoolProfile.notYetAvailable">Not yet available</p>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="alert alert-info d-flex align-items-center" role="alert">
                                     <i class="fa fa-info-circle me-2"></i>
-                                    <span data-i18n="schoolProfile.contactNotice">Contact details are only shown when verified and authorized by the school</span>
+                                    <span data-i18n="schoolProfile.contactNotice">Contact details are not yet available. School representatives can claim this profile to add verified contact information.</span>
                                 </div>
                             </div>
                         </div>
@@ -307,27 +321,9 @@
                             <div class="wow fadeIn" data-wow-delay="0.2s">
                                 <h5 class="mb-3" data-i18n="schoolProfile.gallery">Gallery</h5>
 
-                                <p class="text-muted mb-4" data-i18n="schoolProfile.galleryNotice">Awaiting official school photographs</p>
+                                <p class="text-muted mb-4" data-i18n="schoolProfile.galleryNotice">No photographs available yet. Authorized school representatives can upload genuine school photographs after claiming this profile.</p>
 
                                 <div class="row g-3 mb-4">
-                                    <div class="col-sm-4">
-                                        <div class="rounded p-4 text-center" style="background: #e9ecef; border: 2px dashed #adb5bd; min-height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                                            <i class="fa fa-camera fa-2x text-muted mb-2"></i>
-                                            <span class="text-muted small" data-i18n="schoolProfile.photoPending">Photo pending</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <div class="rounded p-4 text-center" style="background: #e9ecef; border: 2px dashed #adb5bd; min-height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                                            <i class="fa fa-camera fa-2x text-muted mb-2"></i>
-                                            <span class="text-muted small" data-i18n="schoolProfile.photoPending">Photo pending</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <div class="rounded p-4 text-center" style="background: #e9ecef; border: 2px dashed #adb5bd; min-height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                                            <i class="fa fa-camera fa-2x text-muted mb-2"></i>
-                                            <span class="text-muted small" data-i18n="schoolProfile.photoPending">Photo pending</span>
-                                        </div>
-                                    </div>
                                     <div class="col-sm-4">
                                         <div class="rounded p-4 text-center" style="background: #e9ecef; border: 2px dashed #adb5bd; min-height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
                                             <i class="fa fa-camera fa-2x text-muted mb-2"></i>
@@ -350,7 +346,7 @@
 
                                 <div class="alert alert-warning d-flex align-items-start" role="alert">
                                     <i class="fa fa-exclamation-triangle me-2 mt-1"></i>
-                                    <span data-i18n="schoolProfile.galleryDisclaimer">Photographs must be genuine images supplied by the school or from authorized official sources. AI-generated images are not used to represent real schools.</span>
+                                    <span data-i18n="schoolProfile.galleryDisclaimer">AI-generated images are not used to represent real schools. Photographs must be genuine images supplied by the school or from authorized official sources.</span>
                                 </div>
                             </div>
                         </div>
@@ -367,8 +363,11 @@
                                 <a href="#" class="text-muted text-decoration-none me-3 mb-2 mb-md-0 d-inline-block" data-i18n="schoolProfile.reportInfo">
                                     <i class="fa fa-flag me-1"></i>Report incorrect information
                                 </a>
-                                <a href="schools-directory.html" class="text-primary text-decoration-none d-inline-block" data-i18n="schoolProfile.backToDirectory">
+                                <a href="schools.html" class="text-primary text-decoration-none me-3 d-inline-block mb-2 mb-md-0" data-i18n="schoolProfile.backToDirectory">
                                     <i class="fa fa-arrow-left me-1"></i>Back to Schools Directory
+                                </a>
+                                <a href="#" id="view-on-osm-link" target="_blank" rel="noopener" class="text-primary text-decoration-none d-inline-block">
+                                    <i class="fa fa-external-link-alt me-1"></i><span data-i18n="schoolProfile.viewOnOSM">View on OpenStreetMap</span>
                                 </a>
                             </div>
                         </div>
@@ -387,33 +386,31 @@
                             <a href="#" class="btn btn-outline-primary rounded-pill disabled" data-i18n="schoolProfile.contactSchool">
                                 <i class="fa fa-envelope me-2"></i>Contact School
                             </a>
-                            <a href="#" class="btn btn-outline-primary rounded-pill disabled" data-i18n="schoolProfile.viewOnMap">
-                                <i class="fa fa-map me-2"></i>View on Map
+                            <a href="#" id="sidebar-view-osm" target="_blank" rel="noopener" class="btn btn-outline-primary rounded-pill">
+                                <i class="fa fa-map me-2"></i>View on OpenStreetMap
                             </a>
                         </div>
                     </div>
 
-                    <!-- Related Schools -->
+                    <!-- Data Source Info -->
                     <div class="rounded shadow-sm p-4" style="background: #fff; border: 1px solid rgba(0,0,0,.06);">
-                        <h6 class="mb-3"><i class="fa fa-school text-primary me-2"></i><span data-i18n="schoolProfile.relatedSchools">Related Schools in Gasabo</span></h6>
-                        <ul class="list-unstyled mb-0">
+                        <h6 class="mb-3"><i class="fa fa-database text-primary me-2"></i><span data-i18n="schoolProfile.dataSource">Data Source</span></h6>
+                        <ul class="list-unstyled mb-0 small">
                             <li class="mb-2">
-                                <a href="#" class="text-decoration-none text-dark d-flex align-items-center">
-                                    <i class="fa fa-chevron-right text-primary me-2 small"></i>
-                                    <span data-i18n="schoolProfile.related1">GS Kimironko</span>
-                                </a>
+                                <strong data-i18n="schoolProfile.sourceLabel">Source:</strong>
+                                <span class="text-muted">OpenStreetMap contributors</span>
                             </li>
                             <li class="mb-2">
-                                <a href="#" class="text-decoration-none text-dark d-flex align-items-center">
-                                    <i class="fa fa-chevron-right text-primary me-2 small"></i>
-                                    <span data-i18n="schoolProfile.related2">EP Remera</span>
-                                </a>
+                                <strong data-i18n="schoolProfile.licenseLabel">License:</strong>
+                                <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noopener" class="text-muted">ODbL 1.0</a>
+                            </li>
+                            <li class="mb-2">
+                                <strong data-i18n="schoolProfile.snapshotLabel">Snapshot:</strong>
+                                <span class="text-muted" id="sidebar-snapshot"></span>
                             </li>
                             <li class="mb-0">
-                                <a href="#" class="text-decoration-none text-dark d-flex align-items-center">
-                                    <i class="fa fa-chevron-right text-primary me-2 small"></i>
-                                    <span data-i18n="schoolProfile.related3">GS Gatsata</span>
-                                </a>
+                                <strong data-i18n="schoolProfile.osmIdLabel">OSM ID:</strong>
+                                <span class="text-muted" id="sidebar-osm-id"></span>
                             </li>
                         </ul>
                     </div>
@@ -421,7 +418,7 @@
             </div>
         </div>
     </div>
-    <!-- School Header End -->
+    <!-- School Content End -->
 
 
     <div id="component-footer"></div>
@@ -437,11 +434,129 @@
     <script src="lib/easing/easing.min.js"></script>
     <script src="lib/waypoints/waypoints.min.js"></script>
 
+    <!-- Schools Data -->
+    <script src="js/schools-data.js"></script>
+
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/components.js"></script>
-    <script>IremeComponents.initPage('school-profile.html');</script>
+    <script>
+        (function () {
+            // Read the ?id= URL parameter
+            var params = new URLSearchParams(window.location.search);
+            var schoolId = params.get('id');
+
+            // Find the matching school in IremeSchoolsData
+            var school = null;
+            if (schoolId && typeof IremeSchoolsData !== 'undefined' && IremeSchoolsData.schools) {
+                for (var i = 0; i < IremeSchoolsData.schools.length; i++) {
+                    if (IremeSchoolsData.schools[i].id === schoolId) {
+                        school = IremeSchoolsData.schools[i];
+                        break;
+                    }
+                }
+            }
+
+            if (!school) {
+                // Show "not found" message
+                document.getElementById('school-not-found').classList.remove('d-none');
+                document.getElementById('school-content').classList.add('d-none');
+                document.getElementById('breadcrumb-school-name').textContent = 'Not Found';
+                IremeComponents.initPage('school-profile.html');
+                return;
+            }
+
+            // Display name: use name, name_en, or "Unnamed School"
+            var displayName = school.name || school.name_en || 'Unnamed School';
+
+            // Human-readable level
+            var levelLabels = {
+                'school': 'School',
+                'university': 'University',
+                'college': 'College',
+                'kindergarten': 'Kindergarten'
+            };
+            var levelLabel = levelLabels[school.level] || school.level || 'Not specified';
+
+            // Human-readable ownership
+            var ownershipLabels = {
+                'public': 'Public',
+                'private': 'Private',
+                'government-aided': 'Government-Aided'
+            };
+            var ownershipLabel = school.ownership ? (ownershipLabels[school.ownership] || school.ownership) : null;
+
+            // --- Populate breadcrumb ---
+            document.getElementById('breadcrumb-school-name').textContent = displayName;
+
+            // --- Populate header ---
+            document.getElementById('school-name-heading').textContent = displayName;
+            document.getElementById('school-osm-id').textContent = school.id;
+
+            // Badges
+            var badgesHtml = '';
+            var levelBadgeClass = 'bg-primary';
+            if (school.level === 'kindergarten') levelBadgeClass = 'bg-info text-dark';
+            else if (school.level === 'university') levelBadgeClass = 'bg-success';
+            else if (school.level === 'college') levelBadgeClass = 'bg-secondary';
+            badgesHtml += '<span class="badge ' + levelBadgeClass + ' px-3 py-2 me-1"><i class="fa fa-graduation-cap me-1"></i>' + levelLabel + '</span>';
+            if (ownershipLabel) {
+                var ownershipBadgeClass = 'bg-warning text-dark';
+                if (school.ownership === 'private') ownershipBadgeClass = 'bg-info text-dark';
+                else if (school.ownership === 'government-aided') ownershipBadgeClass = 'bg-success';
+                badgesHtml += '<span class="badge ' + ownershipBadgeClass + ' px-3 py-2"><i class="fa fa-building me-1"></i>' + ownershipLabel + '</span>';
+            }
+            document.getElementById('school-badges').innerHTML = badgesHtml;
+
+            // Header facts
+            document.getElementById('school-level-text').textContent = levelLabel;
+            document.getElementById('school-ownership-text').textContent = ownershipLabel || 'Not specified';
+
+            // Snapshot
+            document.getElementById('school-snapshot').textContent = IremeSchoolsData.snapshot;
+            document.getElementById('sidebar-snapshot').textContent = IremeSchoolsData.snapshot;
+            document.getElementById('sidebar-osm-id').textContent = school.id;
+
+            // OSM link
+            var osmUrl = 'https://www.openstreetmap.org/' + school.id;
+            document.getElementById('view-on-osm-link').href = osmUrl;
+            document.getElementById('sidebar-view-osm').href = osmUrl;
+
+            // --- Overview Tab ---
+            document.getElementById('school-overview-description').textContent =
+                displayName + ' is a ' + levelLabel.toLowerCase() + ' located in ' +
+                (school.district || 'Rwanda') + '. This school\'s basic information comes from OpenStreetMap. ' +
+                'Additional details (description, enrollment, facilities) are not yet available and can be added by authorized school representatives.';
+            document.getElementById('overview-school-name').textContent = displayName;
+            document.getElementById('overview-school-level').textContent = levelLabel;
+            document.getElementById('overview-school-ownership').textContent = ownershipLabel || 'Not specified';
+            document.getElementById('overview-school-category').textContent = ownershipLabel || 'Not specified';
+
+            // --- Location Tab ---
+            document.getElementById('location-province').textContent = school.province || 'Not specified';
+            document.getElementById('location-district').textContent = school.district || 'Not specified';
+            document.getElementById('location-sector').textContent = school.sector || 'Not specified';
+            document.getElementById('location-city').textContent = school.city || 'Not specified';
+            document.getElementById('location-lat').textContent = school.lat != null ? school.lat.toFixed(6) : 'Not available';
+            document.getElementById('location-lng').textContent = school.lng != null ? school.lng.toFixed(6) : 'Not available';
+            if (school.lat != null && school.lng != null) {
+                document.getElementById('map-coordinates-display').textContent = school.lat.toFixed(6) + ', ' + school.lng.toFixed(6);
+            } else {
+                document.getElementById('map-coordinates-display').textContent = 'Coordinates not available';
+            }
+
+            // --- Academics Tab ---
+            document.getElementById('academics-level').textContent = levelLabel;
+
+            // Show content, hide not-found
+            document.getElementById('school-content').classList.remove('d-none');
+            document.getElementById('school-not-found').classList.add('d-none');
+
+            // Initialize page components
+            IremeComponents.initPage('school-profile.html');
+        })();
+    </script>
 </body>
 
 </html>
