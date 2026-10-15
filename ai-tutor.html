@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>IREME - AI Tutor</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="IREME AI Tutor, AI Learning Assistant Rwanda, Ireme AI Education" name="keywords">
+    <meta content="Ireme AI Tutor - Your intelligent learning assistant for Rwandan education. Get help with subjects, revision notes, practice exercises, and more." name="description">
+
+    <!-- Favicon -->
+    <link href="img/ireme-icon.png" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+
+    <style>
+        .chat-container {
+            min-height: 400px;
+            max-height: 600px;
+            overflow-y: auto;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            border-radius: 0.5rem;
+        }
+
+        .chat-message {
+            margin-bottom: 1.25rem;
+            display: flex;
+        }
+
+        .chat-message.student {
+            justify-content: flex-end;
+        }
+
+        .chat-message.ai {
+            justify-content: flex-start;
+        }
+
+        .chat-message .message-bubble {
+            max-width: 75%;
+            padding: 1rem 1.25rem;
+            border-radius: 1rem;
+            position: relative;
+        }
+
+        .chat-message.student .message-bubble {
+            background-color: #00785a;
+            color: #fff;
+            border-bottom-right-radius: 0.25rem;
+        }
+
+        .chat-message.ai .message-bubble {
+            background-color: #e9ecef;
+            color: #212529;
+            border-bottom-left-radius: 0.25rem;
+        }
+
+        .chat-message .message-sender {
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .chat-message.student .message-sender {
+            text-align: right;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .chat-message.ai .message-sender {
+            color: #6c757d;
+        }
+
+        .chat-message .source-citation {
+            display: block;
+            margin-top: 0.75rem;
+            padding-left: 0.75rem;
+            border-left: 3px solid #00785a;
+            font-size: 0.8rem;
+            font-style: italic;
+            color: #6c757d;
+        }
+
+        .chat-message .message-text ol,
+        .chat-message .message-text ul {
+            padding-left: 1.25rem;
+            margin-bottom: 0;
+        }
+
+        .chat-message .message-text ol li,
+        .chat-message .message-text ul li {
+            margin-bottom: 0.35rem;
+        }
+
+        .conversation-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .conversation-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            margin-bottom: 0.25rem;
+            text-decoration: none;
+            color: #212529;
+        }
+
+        .conversation-item:hover {
+            background-color: #e9ecef;
+            color: #212529;
+        }
+
+        .conversation-item.active {
+            background-color: #d1e7dd;
+            color: #00785a;
+            font-weight: 600;
+        }
+
+        .conversation-item .conversation-date {
+            font-size: 0.7rem;
+            color: #6c757d;
+            margin-left: auto;
+            white-space: nowrap;
+        }
+
+        .conversation-item .conversation-title {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+            margin-right: 0.5rem;
+        }
+
+        .subject-btn {
+            display: inline-block;
+            padding: 0.35rem 0.85rem;
+            border-radius: 50rem;
+            border: 1px solid #dee2e6;
+            background-color: #fff;
+            color: #495057;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            margin: 0.2rem;
+        }
+
+        .subject-btn:hover,
+        .subject-btn.active {
+            background-color: #00785a;
+            color: #fff;
+            border-color: #00785a;
+        }
+
+        .chat-header {
+            background-color: #fff;
+            border-bottom: 1px solid #dee2e6;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem 0.5rem 0 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-header .context-badge {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.75rem;
+        }
+
+        .chat-input-area {
+            background-color: #fff;
+            border-top: 1px solid #dee2e6;
+            padding: 1rem 1.5rem;
+            border-radius: 0 0 0.5rem 0.5rem;
+        }
+
+        .welcome-card {
+            background: linear-gradient(135deg, #d1e7dd 0%, #e8f5e9 100%);
+            border: 1px solid #b7dfc9;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .welcome-card h5 {
+            color: #00785a;
+        }
+
+        .welcome-card ul {
+            padding-left: 1.25rem;
+        }
+
+        .welcome-card ul li {
+            margin-bottom: 0.35rem;
+        }
+
+        .disclaimer-notice {
+            background-color: #fff3cd;
+            border: 1px solid #ffecb5;
+            border-radius: 0.5rem;
+            padding: 1rem 1.5rem;
+        }
+
+        .language-note {
+            font-size: 0.78rem;
+            color: #6c757d;
+        }
+
+        .sidebar-section {
+            margin-bottom: 1.75rem;
+        }
+
+        .sidebar-section h6 {
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: #495057;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="component-spinner"></div>
+    <div id="component-navbar"></div>
+
+    <!-- Hero Start -->
+    <div class="container-fluid pt-5 bg-primary hero-header">
+        <div class="container pt-5">
+            <div class="row g-5 pt-5">
+                <div class="col-lg-6 align-self-center text-center text-lg-start mb-lg-5">
+                    <h1 class="display-4 text-white mb-4 animated slideInRight" data-i18n="aiTutor.title">Ireme AI Tutor</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center justify-content-lg-start mb-0">
+                            <li class="breadcrumb-item"><a class="text-white" href="index.html" data-i18n="breadcrumb.home">Home</a></li>
+                            <li class="breadcrumb-item text-white active" data-i18n="aiTutor.title">Ireme AI Tutor</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 align-self-end text-center text-lg-end">
+                    <img class="img-fluid" src="img/hero-img.png" alt="" style="max-height: 300px;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Hero End -->
+
+    <!-- AI Tutor Content Start -->
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <div class="row g-4">
+
+                <!-- Left Sidebar -->
+                <div class="col-lg-3 wow fadeIn" data-wow-delay="0.1s">
+                    <!-- New Conversation -->
+                    <div class="sidebar-section">
+                        <button class="btn btn-primary w-100 rounded-pill py-2" data-i18n="aiTutor.newConversation">
+                            <i class="fa fa-plus me-2"></i>New Conversation
+                        </button>
+                    </div>
+
+                    <!-- Conversation History -->
+                    <div class="sidebar-section">
+                        <h6 data-i18n="aiTutor.conversationHistory">Conversation History</h6>
+                        <ul class="conversation-list">
+                            <li>
+                                <a href="#" class="conversation-item active">
+                                    <i class="fa fa-comment-dots me-2 text-primary"></i>
+                                    <span class="conversation-title">Photosynthesis Help</span>
+                                    <span class="conversation-date">Today</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="conversation-item">
+                                    <i class="fa fa-comment-dots me-2 text-muted"></i>
+                                    <span class="conversation-title">Algebra Equations</span>
+                                    <span class="conversation-date">Yesterday</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="conversation-item">
+                                    <i class="fa fa-comment-dots me-2 text-muted"></i>
+                                    <span class="conversation-title">English Grammar Rules</span>
+                                    <span class="conversation-date">Oct 12</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="conversation-item">
+                                    <i class="fa fa-comment-dots me-2 text-muted"></i>
+                                    <span class="conversation-title">Rwanda History Notes</span>
+                                    <span class="conversation-date">Oct 10</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Quick Subjects -->
+                    <div class="sidebar-section">
+                        <h6 data-i18n="aiTutor.quickSubjects">Quick Subjects</h6>
+                        <div class="d-flex flex-wrap">
+                            <a href="#" class="subject-btn active" data-subject="general" data-i18n="aiTutor.generalHelp">General Help</a>
+                            <a href="#" class="subject-btn" data-subject="math">Math</a>
+                            <a href="#" class="subject-btn" data-subject="science">Science</a>
+                            <a href="#" class="subject-btn" data-subject="english">English</a>
+                            <a href="#" class="subject-btn" data-subject="kinyarwanda">Kinyarwanda</a>
+                            <a href="#" class="subject-btn" data-subject="social">Social Studies</a>
+                        </div>
+                    </div>
+
+                    <!-- Ask About Resource -->
+                    <div class="sidebar-section">
+                        <a href="resources.html" class="text-decoration-none" data-i18n="aiTutor.askAboutResource">
+                            <i class="fa fa-book me-2"></i>Ask about a resource
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Main Chat Area -->
+                <div class="col-lg-9 wow fadeIn" data-wow-delay="0.3s">
+                    <!-- Chat Card -->
+                    <div class="border rounded" style="background-color: #fff;">
+                        <!-- Chat Header -->
+                        <div class="chat-header">
+                            <i class="fa fa-robot text-primary me-2 fa-lg"></i>
+                            <h5 class="mb-0 me-3" data-i18n="aiTutor.generalHelp">General Learning Help</h5>
+                            <span class="badge bg-success chat-context context-badge" id="chat-context-badge" data-i18n="aiTutor.context">General</span>
+                        </div>
+
+                        <!-- Chat Container -->
+                        <div class="chat-container" id="chat-container">
+                            <!-- Welcome Message -->
+                            <div class="welcome-card">
+                                <h5 data-i18n="aiTutor.welcomeTitle">Hello! I'm Ireme AI, your learning assistant.</h5>
+                                <p class="mb-2" data-i18n="aiTutor.welcomeIntro">I can help you with:</p>
+                                <ul data-i18n-html="aiTutor.welcomeText">
+                                    <li>Explaining difficult concepts step by step</li>
+                                    <li>Answering questions about your subjects</li>
+                                    <li>Creating revision notes and summaries</li>
+                                    <li>Generating practice exercises</li>
+                                    <li>Explaining exam answers</li>
+                                    <li>Recommending study resources</li>
+                                </ul>
+                                <p class="mb-0 fw-semibold" data-i18n="aiTutor.welcomeCTA">Select a subject or type your question below to get started.</p>
+                            </div>
+
+                            <!-- Sample Exchange 1 -->
+                            <div class="chat-message student">
+                                <div class="message-bubble">
+                                    <div class="message-sender">Student</div>
+                                    <div class="message-text">Can you explain how photosynthesis works?</div>
+                                </div>
+                            </div>
+
+                            <div class="chat-message ai">
+                                <div class="message-bubble">
+                                    <div class="message-sender"><i class="fa fa-robot me-1"></i> Ireme AI</div>
+                                    <div class="message-text">
+                                        <p>Great question! <strong>Photosynthesis</strong> is the process by which green plants make their own food using sunlight. Here is how it works step by step:</p>
+                                        <ol>
+                                            <li><strong>Absorption of sunlight:</strong> Chlorophyll (the green pigment in leaves) captures light energy from the sun.</li>
+                                            <li><strong>Absorption of water:</strong> The plant's roots absorb water from the soil and transport it to the leaves.</li>
+                                            <li><strong>Intake of carbon dioxide:</strong> The plant takes in CO2 from the air through tiny openings called stomata on the leaf surface.</li>
+                                            <li><strong>Chemical reaction:</strong> Using the energy from sunlight, the plant converts water (H2O) and carbon dioxide (CO2) into glucose (sugar) and oxygen (O2).</li>
+                                            <li><strong>Release of oxygen:</strong> The oxygen produced is released into the air through the stomata, which is what we breathe!</li>
+                                        </ol>
+                                        <p>The overall equation is: <strong>6CO2 + 6H2O + Light Energy → C6H12O6 + 6O2</strong></p>
+                                        <span class="source-citation">Source: REB Integrated Science P6 Textbook, Unit 3, Page 45</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sample Exchange 2 -->
+                            <div class="chat-message student">
+                                <div class="message-bubble">
+                                    <div class="message-sender">Student</div>
+                                    <div class="message-text">Give me 3 practice questions about photosynthesis</div>
+                                </div>
+                            </div>
+
+                            <div class="chat-message ai">
+                                <div class="message-bubble">
+                                    <div class="message-sender"><i class="fa fa-robot me-1"></i> Ireme AI</div>
+                                    <div class="message-text">
+                                        <p>Here are 3 practice questions with increasing difficulty:</p>
+                                        <ol>
+                                            <li><strong>Easy:</strong> What are the three things a plant needs for photosynthesis?</li>
+                                            <li><strong>Medium:</strong> Explain the role of chlorophyll in photosynthesis and where it is found in the plant.</li>
+                                            <li><strong>Hard:</strong> Write the balanced chemical equation for photosynthesis and explain what happens to each product after it is formed.</li>
+                                        </ol>
+                                        <p>Try answering them, and I will check your work!</p>
+                                        <span class="source-citation">Based on: REB Integrated Science P6 Textbook, Unit 3 - Practice Exercises</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chat Input Area -->
+                        <div class="chat-input-area">
+                            <div class="row g-2 align-items-end">
+                                <div class="col">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control py-3" id="chat-input" data-i18n="aiTutor.placeholder" placeholder="Ask Ireme AI a question..." aria-label="Chat input">
+                                        <button class="btn btn-primary px-4" id="chat-send-btn" data-i18n="aiTutor.send">
+                                            <i class="fa fa-paper-plane me-1"></i> Send
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <select class="form-select py-3" id="subject-context-select" aria-label="Subject context">
+                                        <option value="general" data-i18n="aiTutor.generalHelp">General Learning Help</option>
+                                        <option value="math">Mathematics</option>
+                                        <option value="science">Science</option>
+                                        <option value="english">English</option>
+                                        <option value="kinyarwanda">Kinyarwanda</option>
+                                        <option value="social">Social Studies</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mt-2 language-note">
+                                <i class="fa fa-globe me-1"></i> <span data-i18n="aiTutor.languageNote">Available in English and Kinyarwanda</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommended Resources Section -->
+            <div class="mt-5 wow fadeIn" data-wow-delay="0.1s">
+                <div class="d-flex align-items-center mb-4">
+                    <h4 class="mb-0" data-i18n="aiTutor.recommendedResources">Recommended Resources</h4>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-6 col-lg-3">
+                        <div class="service-item rounded p-4 h-100">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span class="badge bg-primary" data-i18n="resources.lesson">Lesson</span>
+                                <span class="badge bg-success" data-i18n="resources.official">Official REB Material</span>
+                            </div>
+                            <h5>Integrated Science P6</h5>
+                            <p class="text-muted small mb-2">Primary P6 &bull; Science &bull; REB Curriculum 2024</p>
+                            <p>Covers photosynthesis, plant biology, and ecosystems aligned with the national curriculum.</p>
+                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="aiTutor.viewResource">View</a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-3">
+                        <div class="service-item rounded p-4 h-100">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span class="badge bg-info" data-i18n="resources.quiz">Quiz</span>
+                                <span class="badge bg-warning text-dark" data-i18n="resources.aiGenerated">AI-Generated Supplement</span>
+                            </div>
+                            <h5>Science Practice Quiz - P6</h5>
+                            <p class="text-muted small mb-2">Primary P6 &bull; Science &bull; AI-Generated</p>
+                            <p>Practice questions covering plant biology, human body, and environmental science topics.</p>
+                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="aiTutor.viewResource">View</a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-3">
+                        <div class="service-item rounded p-4 h-100">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span class="badge bg-primary" data-i18n="resources.lesson">Lesson</span>
+                                <span class="badge bg-success" data-i18n="resources.official">Official REB Material</span>
+                            </div>
+                            <h5>Mathematics S1 Guide</h5>
+                            <p class="text-muted small mb-2">Secondary S1 &bull; Mathematics &bull; REB Curriculum 2024</p>
+                            <p>Comprehensive guide to algebra, geometry, and number concepts for Senior 1 students.</p>
+                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="aiTutor.viewResource">View</a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-3">
+                        <div class="service-item rounded p-4 h-100">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span class="badge bg-secondary" data-i18n="resources.document">Document</span>
+                                <span class="badge bg-success" data-i18n="resources.official">Official REB Material</span>
+                            </div>
+                            <h5>English Grammar Handbook</h5>
+                            <p class="text-muted small mb-2">Primary P5-P6 &bull; English &bull; REB Curriculum 2024</p>
+                            <p>Essential grammar rules and exercises for primary school English language learners.</p>
+                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="aiTutor.viewResource">View</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Disclaimer -->
+            <div class="mt-5 wow fadeIn" data-wow-delay="0.1s">
+                <div class="disclaimer-notice text-center">
+                    <p class="mb-0 text-warning">
+                        <i class="fa fa-exclamation-triangle me-2"></i>
+                        <span data-i18n="aiTutor.disclaimer">Ireme AI provides supplementary learning support. Always verify important information with your teacher and official textbooks.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- AI Tutor Content End -->
+
+    <div id="component-footer"></div>
+    <div id="component-backtotop"></div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+        IremeComponents.initPage('ai-tutor.html');
+
+        // Subject quick-select buttons
+        document.querySelectorAll('.subject-btn').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.subject-btn').forEach(function(b) { b.classList.remove('active'); });
+                this.classList.add('active');
+                var subject = this.getAttribute('data-subject');
+                var select = document.getElementById('subject-context-select');
+                var badge = document.getElementById('chat-context-badge');
+                if (select) {
+                    select.value = subject;
+                }
+                if (badge) {
+                    badge.textContent = this.textContent.trim();
+                }
+            });
+        });
+
+        // Subject context dropdown sync
+        document.getElementById('subject-context-select').addEventListener('change', function() {
+            var badge = document.getElementById('chat-context-badge');
+            var selectedText = this.options[this.selectedIndex].textContent.trim();
+            if (badge) {
+                badge.textContent = selectedText;
+            }
+            // Sync sidebar buttons
+            var value = this.value;
+            document.querySelectorAll('.subject-btn').forEach(function(b) {
+                b.classList.toggle('active', b.getAttribute('data-subject') === value);
+            });
+        });
+
+        // Conversation item click
+        document.querySelectorAll('.conversation-item').forEach(function(item) {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.conversation-item').forEach(function(i) { i.classList.remove('active'); });
+                this.classList.add('active');
+            });
+        });
+
+        // Chat send (placeholder)
+        document.getElementById('chat-send-btn').addEventListener('click', function() {
+            var input = document.getElementById('chat-input');
+            var message = input.value.trim();
+            if (!message) return;
+
+            var container = document.getElementById('chat-container');
+
+            // Add student message
+            var studentMsg = document.createElement('div');
+            studentMsg.className = 'chat-message student';
+            studentMsg.innerHTML = '<div class="message-bubble"><div class="message-sender">Student</div><div class="message-text">' + message.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div></div>';
+            container.appendChild(studentMsg);
+
+            // Clear input
+            input.value = '';
+
+            // Scroll to bottom
+            container.scrollTop = container.scrollHeight;
+        });
+
+        // Enter key to send
+        document.getElementById('chat-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('chat-send-btn').click();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,32 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
-    <title>IREME - Educational Resources</title>
+    <title>IREME - Educational Resource Library</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="IREME Resources, Educational Resources, Rwanda, REB Textbooks, National Exams, Teacher Guides, Student Guides" name="keywords">
+    <meta content="Browse the IREME educational resource library. Access textbooks, student guides, teacher guides, corrected national examination papers, and additional learning materials aligned with Rwanda's curriculum." name="description">
+
+    <!-- Favicon -->
     <link href="img/ireme-icon.png" rel="icon">
+
+    <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
     <link href="lib/animate/animate.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
 </head>
+
 <body>
     <div id="component-spinner"></div>
+
     <div id="component-navbar"></div>
 
+    <!-- Hero Start -->
     <div class="container-fluid pt-5 bg-primary hero-header">
         <div class="container pt-5">
             <div class="row g-5 pt-5">
                 <div class="col-lg-6 align-self-center text-center text-lg-start mb-lg-5">
-                    <h1 class="display-4 text-white mb-4 animated slideInRight" data-i18n="resources.title">Educational Resources</h1>
+                    <h1 class="display-4 text-white mb-4 animated slideInRight" data-i18n="resources.libraryTitle">Educational Resource Library</h1>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb justify-content-center justify-content-lg-start mb-0">
                             <li class="breadcrumb-item"><a class="text-white" href="index.html" data-i18n="breadcrumb.home">Home</a></li>
-                            <li class="breadcrumb-item text-white active" data-i18n="resources.title">Resources</li>
+                            <li class="breadcrumb-item text-white active" aria-current="page" data-i18n="resources.libraryTitle">Resources</li>
                         </ol>
                     </nav>
                 </div>
@@ -36,170 +55,639 @@
             </div>
         </div>
     </div>
+    <!-- Hero End -->
 
-    <div class="container-fluid py-5">
-        <div class="container py-5">
-            <!-- Filters -->
-            <div class="row g-3 mb-4 wow fadeIn" data-wow-delay="0.1s">
-                <div class="col-md-4">
+    <!-- Category Tabs Start -->
+    <div class="container-fluid bg-light py-4">
+        <div class="container py-3">
+            <div class="row g-3 wow fadeIn" data-wow-delay="0.1s">
+                <div class="col-12">
+                    <ul class="nav nav-pills d-flex justify-content-center flex-wrap gap-2" id="resource-category-tabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="btn btn-primary rounded-pill px-4 py-2 active" id="tab-all" data-category="all" type="button" role="tab" data-i18n="resources.allCategories">
+                                <i class="fa fa-th me-1"></i> All Categories
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="btn btn-outline-primary rounded-pill px-4 py-2" id="tab-textbooks" data-category="textbook" type="button" role="tab" data-i18n="resources.textbooks">
+                                <i class="fa fa-book me-1"></i> Textbooks
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="btn btn-outline-primary rounded-pill px-4 py-2" id="tab-student-guides" data-category="student-guide" type="button" role="tab" data-i18n="resources.studentGuides">
+                                <i class="fa fa-user-graduate me-1"></i> Student's Guides
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="btn btn-outline-primary rounded-pill px-4 py-2" id="tab-teacher-guides" data-category="teacher-guide" type="button" role="tab" data-i18n="resources.teacherGuides">
+                                <i class="fa fa-chalkboard-teacher me-1"></i> Teacher's Guides
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="btn btn-outline-primary rounded-pill px-4 py-2" id="tab-national-exams" data-category="exam" type="button" role="tab" data-i18n="resources.nationalExams">
+                                <i class="fa fa-file-alt me-1"></i> National Exams
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="btn btn-outline-primary rounded-pill px-4 py-2" id="tab-additional" data-category="additional" type="button" role="tab" data-i18n="resources.additionalMaterials">
+                                <i class="fa fa-plus-circle me-1"></i> Additional Materials
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Category Tabs End -->
+
+    <!-- Filters Start -->
+    <div class="container-fluid py-4">
+        <div class="container py-3">
+            <!-- Search Bar -->
+            <div class="row g-3 mb-3 wow fadeIn" data-wow-delay="0.1s">
+                <div class="col-12">
                     <div class="form-floating">
-                        <input type="text" class="form-control" id="resource-search" data-i18n="resources.search" placeholder="Search resources...">
-                        <label for="resource-search" data-i18n="resources.search">Search resources...</label>
+                        <input type="text" class="form-control" id="resource-search" data-i18n="resources.searchPlaceholder" placeholder="Search resources by title, subject, or keyword...">
+                        <label for="resource-search" data-i18n="resources.searchPlaceholder">Search resources by title, subject, or keyword...</label>
                     </div>
                 </div>
-                <div class="col-md-3">
+            </div>
+
+            <!-- Filter Row -->
+            <div class="row g-3 mb-4 wow fadeIn" data-wow-delay="0.2s">
+                <div class="col-md-3 col-sm-6">
                     <select class="form-select py-3" id="filter-level">
                         <option value="" data-i18n="resources.allLevels">All Levels</option>
-                        <option value="primary">Primary (P1-P6)</option>
-                        <option value="secondary">Secondary (S1-S6)</option>
+                        <option value="pre-primary">Pre-Primary</option>
+                        <option value="primary-p1-p3">Primary P1-P3</option>
+                        <option value="primary-p4-p6">Primary P4-P6</option>
+                        <option value="ordinary-s1-s3">Ordinary S1-S3</option>
+                        <option value="advanced-s4-s6">Advanced S4-S6</option>
                     </select>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-3 col-sm-6">
                     <select class="form-select py-3" id="filter-subject">
                         <option value="" data-i18n="resources.allSubjects">All Subjects</option>
-                        <option value="math">Mathematics</option>
+                        <option value="mathematics">Mathematics</option>
                         <option value="science">Science</option>
                         <option value="english">English</option>
                         <option value="kinyarwanda">Kinyarwanda</option>
-                        <option value="social">Social Studies</option>
+                        <option value="social-studies">Social Studies</option>
+                        <option value="french">French</option>
+                        <option value="computer-science">Computer Science</option>
                     </select>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3 col-sm-6">
                     <select class="form-select py-3" id="filter-type">
                         <option value="" data-i18n="resources.allTypes">All Types</option>
+                        <option value="textbook" data-i18n="resources.textbook">Textbook</option>
+                        <option value="student-guide" data-i18n="resources.studentGuide">Student Guide</option>
+                        <option value="teacher-guide" data-i18n="resources.teacherGuide">Teacher Guide</option>
+                        <option value="exam-paper" data-i18n="resources.examPaper">Exam Paper</option>
+                        <option value="marking-guide" data-i18n="resources.markingGuide">Marking Guide</option>
                         <option value="lesson" data-i18n="resources.lesson">Lesson</option>
                         <option value="quiz" data-i18n="resources.quiz">Quiz</option>
                         <option value="document" data-i18n="resources.document">Document</option>
                         <option value="video" data-i18n="resources.video">Video</option>
+                        <option value="worksheet" data-i18n="resources.worksheet">Worksheet</option>
                     </select>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <select class="form-select py-3" id="filter-language">
+                        <option value="" data-i18n="resources.allLanguages">All Languages</option>
+                        <option value="english">English</option>
+                        <option value="kinyarwanda">Kinyarwanda</option>
+                        <option value="french">French</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Results Count & Sort -->
+            <div class="row g-3 mb-4 wow fadeIn" data-wow-delay="0.3s">
+                <div class="col-md-6 align-self-center">
+                    <p class="text-muted mb-0">
+                        <span id="results-count" data-i18n="resources.results">12 resources found</span>
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="d-inline-flex align-items-center">
+                        <label class="text-muted me-2 mb-0" for="sort-select" data-i18n="resources.sortBy">Sort by:</label>
+                        <select class="form-select form-select-sm" id="sort-select" style="width: auto;">
+                            <option value="newest" data-i18n="resources.sortNewest">Newest First</option>
+                            <option value="oldest" data-i18n="resources.sortOldest">Oldest First</option>
+                            <option value="title-az" data-i18n="resources.sortTitleAZ">Title A-Z</option>
+                            <option value="title-za" data-i18n="resources.sortTitleZA">Title Z-A</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
             <!-- Resources Grid -->
             <div class="row g-4" id="resources-grid">
-                <div class="col-md-6 col-lg-4 wow fadeIn resource-card" data-level="primary" data-subject="math" data-type="lesson" data-wow-delay="0.1s">
+
+                <!-- Resource 1: Mathematics P5 Textbook -->
+                <div class="col-md-6 col-lg-4 wow fadeIn resource-card" data-category="textbook" data-level="primary-p4-p6" data-subject="mathematics" data-type="textbook" data-language="english" data-year="2024" data-wow-delay="0.1s">
                     <div class="service-item rounded p-4 h-100">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <span class="badge bg-primary" data-i18n="resources.lesson">Lesson</span>
-                            <span class="badge bg-success" data-i18n="resources.official">Official REB Material</span>
+                        <div class="d-flex flex-wrap justify-content-between align-items-start mb-3 gap-1">
+                            <span class="badge bg-primary" data-i18n="resources.textbook">Textbook</span>
+                            <span class="badge bg-success" data-i18n="resources.officialREB">Official REB Material</span>
                         </div>
-                        <h5>Fractions - Introduction</h5>
-                        <p class="text-muted small">Primary P4-P5 • Mathematics • REB Curriculum 2024</p>
-                        <p>Learn the basics of fractions including numerators, denominators, and equivalent fractions.</p>
-                        <a href="#" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="resources.viewResource">View Resource</a>
+                        <h5 data-i18n="resources.res1.title">Mathematics P5 Textbook</h5>
+                        <p class="text-muted small mb-2">
+                            <span data-i18n="resources.level">Level</span>: Primary P4-P6 &bull;
+                            <span data-i18n="resources.subject">Subject</span>: Mathematics<br>
+                            <span data-i18n="resources.publisher">Publisher</span>: REB &bull;
+                            <span data-i18n="resources.year">Year</span>: 2024 &bull;
+                            Curriculum v2024
+                        </p>
+                        <p data-i18n="resources.res1.desc">Official REB Mathematics textbook for Primary 5. Covers numbers, operations, geometry, measures, and data handling aligned with the competency-based curriculum.</p>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                            <span class="badge bg-light text-dark border"><i class="fa fa-globe me-1"></i>English</span>
+                            <span class="badge bg-light text-dark border"><i class="fa fa-file-pdf me-1"></i>PDF</span>
+                        </div>
+                        <div class="d-flex gap-2 mt-auto">
+                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill" data-i18n="resources.viewResource">View Resource</a>
+                            <a href="#" class="btn btn-sm btn-primary rounded-pill" data-i18n="resources.download"><i class="fa fa-download me-1"></i>Download</a>
+                        </div>
                     </div>
                 </div>
 
-                <div class="col-md-6 col-lg-4 wow fadeIn resource-card" data-level="primary" data-subject="science" data-type="lesson" data-wow-delay="0.2s">
+                <!-- Resource 2: Integrated Science S2 Textbook -->
+                <div class="col-md-6 col-lg-4 wow fadeIn resource-card" data-category="textbook" data-level="ordinary-s1-s3" data-subject="science" data-type="textbook" data-language="english" data-year="2024" data-wow-delay="0.2s">
                     <div class="service-item rounded p-4 h-100">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <span class="badge bg-primary" data-i18n="resources.lesson">Lesson</span>
-                            <span class="badge bg-success" data-i18n="resources.official">Official REB Material</span>
+                        <div class="d-flex flex-wrap justify-content-between align-items-start mb-3 gap-1">
+                            <span class="badge bg-primary" data-i18n="resources.textbook">Textbook</span>
+                            <span class="badge bg-success" data-i18n="resources.officialREB">Official REB Material</span>
                         </div>
-                        <h5>Photosynthesis</h5>
-                        <p class="text-muted small">Primary P5-P6 • Science • REB Curriculum 2024</p>
-                        <p>Understand how plants make food using sunlight, water, and carbon dioxide.</p>
-                        <a href="#" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="resources.viewResource">View Resource</a>
+                        <h5 data-i18n="resources.res2.title">Integrated Science S2 Textbook</h5>
+                        <p class="text-muted small mb-2">
+                            <span data-i18n="resources.level">Level</span>: Ordinary S1-S3 &bull;
+                            <span data-i18n="resources.subject">Subject</span>: Science<br>
+                            <span data-i18n="resources.publisher">Publisher</span>: REB &bull;
+                            <span data-i18n="resources.year">Year</span>: 2024 &bull;
+                            Curriculum v2024
+                        </p>
+                        <p data-i18n="resources.res2.desc">Official REB Integrated Science textbook for Senior 2. Covers biology, chemistry, and physics topics with practical activities and competency-based assessments.</p>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                            <span class="badge bg-light text-dark border"><i class="fa fa-globe me-1"></i>English</span>
+                            <span class="badge bg-light text-dark border"><i class="fa fa-file-pdf me-1"></i>PDF</span>
+                        </div>
+                        <div class="d-flex gap-2 mt-auto">
+                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill" data-i18n="resources.viewResource">View Resource</a>
+                            <a href="#" class="btn btn-sm btn-primary rounded-pill" data-i18n="resources.download"><i class="fa fa-download me-1"></i>Download</a>
+                        </div>
                     </div>
                 </div>
 
-                <div class="col-md-6 col-lg-4 wow fadeIn resource-card" data-level="secondary" data-subject="math" data-type="quiz" data-wow-delay="0.3s">
+                <!-- Resource 3: English Grammar Student Guide P4-P6 -->
+                <div class="col-md-6 col-lg-4 wow fadeIn resource-card" data-category="student-guide" data-level="primary-p4-p6" data-subject="english" data-type="student-guide" data-language="english" data-year="2024" data-wow-delay="0.3s">
                     <div class="service-item rounded p-4 h-100">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <span class="badge bg-info" data-i18n="resources.quiz">Quiz</span>
+                        <div class="d-flex flex-wrap justify-content-between align-items-start mb-3 gap-1">
+                            <span class="badge bg-info" data-i18n="resources.studentGuide">Student Guide</span>
+                            <span class="badge bg-success" data-i18n="resources.officialREB">Official REB Material</span>
+                        </div>
+                        <h5 data-i18n="resources.res3.title">English Grammar Student Guide P4-P6</h5>
+                        <p class="text-muted small mb-2">
+                            <span data-i18n="resources.level">Level</span>: Primary P4-P6 &bull;
+                            <span data-i18n="resources.subject">Subject</span>: English<br>
+                            <span data-i18n="resources.publisher">Publisher</span>: REB &bull;
+                            <span data-i18n="resources.year">Year</span>: 2024 &bull;
+                            Curriculum v2024
+                        </p>
+                        <p data-i18n="resources.res3.desc">Comprehensive student guide covering English grammar rules, sentence construction, tenses, and vocabulary building exercises for upper primary learners.</p>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                            <span class="badge bg-light text-dark border"><i class="fa fa-globe me-1"></i>English</span>
+                            <span class="badge bg-light text-dark border"><i class="fa fa-file-pdf me-1"></i>PDF</span>
+                        </div>
+                        <div class="d-flex gap-2 mt-auto">
+                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill" data-i18n="resources.viewResource">View Resource</a>
+                            <a href="#" class="btn btn-sm btn-primary rounded-pill" data-i18n="resources.download"><i class="fa fa-download me-1"></i>Download</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resource 4: Mathematics Revision Guide S3 (AI-Generated) -->
+                <div class="col-md-6 col-lg-4 wow fadeIn resource-card" data-category="student-guide" data-level="ordinary-s1-s3" data-subject="mathematics" data-type="student-guide" data-language="english" data-year="2024" data-wow-delay="0.4s">
+                    <div class="service-item rounded p-4 h-100">
+                        <div class="d-flex flex-wrap justify-content-between align-items-start mb-3 gap-1">
+                            <span class="badge bg-info" data-i18n="resources.studentGuide">Student Guide</span>
                             <span class="badge bg-warning text-dark" data-i18n="resources.aiGenerated">AI-Generated Supplement</span>
                         </div>
-                        <h5>Algebra Practice Quiz</h5>
-                        <p class="text-muted small">Secondary S1-S2 • Mathematics • AI-Generated</p>
-                        <p>Practice solving linear equations and simplifying algebraic expressions.</p>
-                        <a href="#" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="resources.viewResource">View Resource</a>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-lg-4 wow fadeIn resource-card" data-level="primary" data-subject="english" data-type="document" data-wow-delay="0.4s">
-                    <div class="service-item rounded p-4 h-100">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <span class="badge bg-secondary" data-i18n="resources.document">Document</span>
-                            <span class="badge bg-success" data-i18n="resources.official">Official REB Material</span>
+                        <h5 data-i18n="resources.res4.title">Mathematics Revision Guide S3</h5>
+                        <p class="text-muted small mb-2">
+                            <span data-i18n="resources.level">Level</span>: Ordinary S1-S3 &bull;
+                            <span data-i18n="resources.subject">Subject</span>: Mathematics<br>
+                            <span data-i18n="resources.publisher">Publisher</span>: IREME AI &bull;
+                            <span data-i18n="resources.year">Year</span>: 2024 &bull;
+                            Curriculum v2024
+                        </p>
+                        <p data-i18n="resources.res4.desc">AI-generated revision guide covering algebra, geometry, trigonometry, and statistics for Senior 3 students. Includes practice problems with step-by-step solutions.</p>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                            <span class="badge bg-light text-dark border"><i class="fa fa-globe me-1"></i>English</span>
+                            <span class="badge bg-light text-dark border"><i class="fa fa-file-pdf me-1"></i>PDF</span>
                         </div>
-                        <h5>English Grammar Guide</h5>
-                        <p class="text-muted small">Primary P4-P6 • English • REB Curriculum 2024</p>
-                        <p>Comprehensive guide to English grammar rules for primary school students.</p>
-                        <a href="#" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="resources.viewResource">View Resource</a>
+                        <div class="d-flex gap-2 mt-auto">
+                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill" data-i18n="resources.viewResource">View Resource</a>
+                            <a href="#" class="btn btn-sm btn-primary rounded-pill" data-i18n="resources.download"><i class="fa fa-download me-1"></i>Download</a>
+                        </div>
                     </div>
                 </div>
 
-                <div class="col-md-6 col-lg-4 wow fadeIn resource-card" data-level="secondary" data-subject="science" data-type="video" data-wow-delay="0.5s">
+                <!-- Resource 5: Mathematics P5 Teacher's Guide -->
+                <div class="col-md-6 col-lg-4 wow fadeIn resource-card" data-category="teacher-guide" data-level="primary-p4-p6" data-subject="mathematics" data-type="teacher-guide" data-language="english" data-year="2024" data-wow-delay="0.5s">
                     <div class="service-item rounded p-4 h-100">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="d-flex flex-wrap justify-content-between align-items-start mb-3 gap-1">
+                            <span class="badge bg-secondary" data-i18n="resources.teacherGuide">Teacher Guide</span>
+                            <span class="badge bg-success" data-i18n="resources.officialREB">Official REB Material</span>
+                        </div>
+                        <h5 data-i18n="resources.res5.title">Mathematics P5 Teacher's Guide</h5>
+                        <p class="text-muted small mb-2">
+                            <span data-i18n="resources.level">Level</span>: Primary P4-P6 &bull;
+                            <span data-i18n="resources.subject">Subject</span>: Mathematics<br>
+                            <span data-i18n="resources.publisher">Publisher</span>: REB &bull;
+                            <span data-i18n="resources.year">Year</span>: 2024 &bull;
+                            Curriculum v2024
+                        </p>
+                        <p data-i18n="resources.res5.desc">Official REB teacher's guide for Primary 5 Mathematics. Includes lesson plans, teaching methodologies, assessment strategies, and answer keys for all textbook activities.</p>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                            <span class="badge bg-light text-dark border"><i class="fa fa-globe me-1"></i>English</span>
+                            <span class="badge bg-light text-dark border"><i class="fa fa-file-pdf me-1"></i>PDF</span>
+                        </div>
+                        <div class="d-flex gap-2 mt-auto">
+                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill" data-i18n="resources.viewResource">View Resource</a>
+                            <a href="#" class="btn btn-sm btn-primary rounded-pill" data-i18n="resources.download"><i class="fa fa-download me-1"></i>Download</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resource 6: Science Teaching Methodology Guide -->
+                <div class="col-md-6 col-lg-4 wow fadeIn resource-card" data-category="teacher-guide" data-level="ordinary-s1-s3" data-subject="science" data-type="teacher-guide" data-language="english" data-year="2024" data-wow-delay="0.6s">
+                    <div class="service-item rounded p-4 h-100">
+                        <div class="d-flex flex-wrap justify-content-between align-items-start mb-3 gap-1">
+                            <span class="badge bg-secondary" data-i18n="resources.teacherGuide">Teacher Guide</span>
+                            <span class="badge bg-success" data-i18n="resources.officialREB">Official REB Material</span>
+                        </div>
+                        <h5 data-i18n="resources.res6.title">Science Teaching Methodology Guide</h5>
+                        <p class="text-muted small mb-2">
+                            <span data-i18n="resources.level">Level</span>: Ordinary S1-S3 &bull;
+                            <span data-i18n="resources.subject">Subject</span>: Science<br>
+                            <span data-i18n="resources.publisher">Publisher</span>: REB &bull;
+                            <span data-i18n="resources.year">Year</span>: 2024 &bull;
+                            Curriculum v2024
+                        </p>
+                        <p data-i18n="resources.res6.desc">Comprehensive guide for science teachers covering inquiry-based learning, practical experiment setups, lesson planning templates, and competency-based assessment approaches.</p>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                            <span class="badge bg-light text-dark border"><i class="fa fa-globe me-1"></i>English</span>
+                            <span class="badge bg-light text-dark border"><i class="fa fa-file-pdf me-1"></i>PDF</span>
+                        </div>
+                        <div class="d-flex gap-2 mt-auto">
+                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill" data-i18n="resources.viewResource">View Resource</a>
+                            <a href="#" class="btn btn-sm btn-primary rounded-pill" data-i18n="resources.download"><i class="fa fa-download me-1"></i>Download</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resource 7: P6 Mathematics National Exam 2023 -->
+                <div class="col-md-6 col-lg-4 wow fadeIn resource-card" data-category="exam" data-level="primary-p4-p6" data-subject="mathematics" data-type="exam-paper" data-language="english" data-year="2023" data-wow-delay="0.1s">
+                    <div class="service-item rounded p-4 h-100">
+                        <div class="d-flex flex-wrap justify-content-between align-items-start mb-3 gap-1">
+                            <span class="badge bg-danger" data-i18n="resources.examPaper">Exam Paper</span>
+                            <span class="badge bg-success" data-i18n="resources.officialREB">Official REB Material</span>
+                        </div>
+                        <h5 data-i18n="resources.res7.title">P6 Mathematics National Exam 2023</h5>
+                        <p class="text-muted small mb-2">
+                            <span data-i18n="resources.level">Level</span>: Primary P4-P6 &bull;
+                            <span data-i18n="resources.subject">Subject</span>: Mathematics<br>
+                            <span data-i18n="resources.publisher">Publisher</span>: NESA &bull;
+                            <span data-i18n="resources.year">Year</span>: 2023 &bull;
+                            Curriculum v2015
+                        </p>
+                        <p data-i18n="resources.res7.desc">Official P6 Mathematics national examination paper from NESA. Includes all sections covering numbers, geometry, measures, and data handling with the original exam format.</p>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                            <span class="badge bg-light text-dark border"><i class="fa fa-globe me-1"></i>English</span>
+                            <span class="badge bg-light text-dark border"><i class="fa fa-file-pdf me-1"></i>PDF</span>
+                        </div>
+                        <div class="d-flex gap-2 mt-auto">
+                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill" data-i18n="resources.viewResource">View Resource</a>
+                            <a href="#" class="btn btn-sm btn-primary rounded-pill" data-i18n="resources.download"><i class="fa fa-download me-1"></i>Download</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resource 8: S3 Physics National Exam 2023 + Marking Guide -->
+                <div class="col-md-6 col-lg-4 wow fadeIn resource-card" data-category="exam" data-level="ordinary-s1-s3" data-subject="science" data-type="exam-paper" data-language="english" data-year="2023" data-wow-delay="0.2s">
+                    <div class="service-item rounded p-4 h-100">
+                        <div class="d-flex flex-wrap justify-content-between align-items-start mb-3 gap-1">
+                            <span class="badge bg-danger" data-i18n="resources.examPaper">Exam Paper</span>
+                            <span class="badge bg-success" data-i18n="resources.officialREB">Official REB Material</span>
+                        </div>
+                        <h5 data-i18n="resources.res8.title">S3 Physics National Exam 2023 + Marking Guide</h5>
+                        <p class="text-muted small mb-2">
+                            <span data-i18n="resources.level">Level</span>: Ordinary S1-S3 &bull;
+                            <span data-i18n="resources.subject">Subject</span>: Science (Physics)<br>
+                            <span data-i18n="resources.publisher">Publisher</span>: NESA &bull;
+                            <span data-i18n="resources.year">Year</span>: 2023 &bull;
+                            Curriculum v2015
+                        </p>
+                        <p data-i18n="resources.res8.desc">Official S3 Physics national examination paper with complete marking guide from NESA. Covers mechanics, electricity, optics, and thermal physics with detailed marking schemes.</p>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                            <span class="badge bg-light text-dark border"><i class="fa fa-globe me-1"></i>English</span>
+                            <span class="badge bg-light text-dark border"><i class="fa fa-file-pdf me-1"></i>PDF</span>
+                        </div>
+                        <div class="d-flex gap-2 mt-auto">
+                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill" data-i18n="resources.viewResource">View Resource</a>
+                            <a href="#" class="btn btn-sm btn-primary rounded-pill" data-i18n="resources.download"><i class="fa fa-download me-1"></i>Download</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resource 9: S6 Chemistry National Exam 2022 -->
+                <div class="col-md-6 col-lg-4 wow fadeIn resource-card" data-category="exam" data-level="advanced-s4-s6" data-subject="science" data-type="exam-paper" data-language="english" data-year="2022" data-wow-delay="0.3s">
+                    <div class="service-item rounded p-4 h-100">
+                        <div class="d-flex flex-wrap justify-content-between align-items-start mb-3 gap-1">
+                            <span class="badge bg-danger" data-i18n="resources.examPaper">Exam Paper</span>
+                            <span class="badge bg-info" data-i18n="resources.verifiedSource">Verified Source</span>
+                        </div>
+                        <h5 data-i18n="resources.res9.title">S6 Chemistry National Exam 2022</h5>
+                        <p class="text-muted small mb-2">
+                            <span data-i18n="resources.level">Level</span>: Advanced S4-S6 &bull;
+                            <span data-i18n="resources.subject">Subject</span>: Science (Chemistry)<br>
+                            <span data-i18n="resources.publisher">Publisher</span>: NESA &bull;
+                            <span data-i18n="resources.year">Year</span>: 2022 &bull;
+                            Curriculum v2015
+                        </p>
+                        <p data-i18n="resources.res9.desc">Official S6 Chemistry national examination paper from NESA. Covers organic chemistry, inorganic chemistry, physical chemistry, and analytical chemistry with detailed questions.</p>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                            <span class="badge bg-light text-dark border"><i class="fa fa-globe me-1"></i>English</span>
+                            <span class="badge bg-light text-dark border"><i class="fa fa-file-pdf me-1"></i>PDF</span>
+                        </div>
+                        <div class="d-flex gap-2 mt-auto">
+                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill" data-i18n="resources.viewResource">View Resource</a>
+                            <a href="#" class="btn btn-sm btn-primary rounded-pill" data-i18n="resources.download"><i class="fa fa-download me-1"></i>Download</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resource 10: Fractions Practice Worksheet (AI-Generated) -->
+                <div class="col-md-6 col-lg-4 wow fadeIn resource-card" data-category="additional" data-level="primary-p4-p6" data-subject="mathematics" data-type="worksheet" data-language="english" data-year="2024" data-wow-delay="0.4s">
+                    <div class="service-item rounded p-4 h-100">
+                        <div class="d-flex flex-wrap justify-content-between align-items-start mb-3 gap-1">
+                            <span class="badge bg-dark" data-i18n="resources.worksheet">Worksheet</span>
+                            <span class="badge bg-warning text-dark" data-i18n="resources.aiGenerated">AI-Generated Supplement</span>
+                        </div>
+                        <h5 data-i18n="resources.res10.title">Fractions Practice Worksheet</h5>
+                        <p class="text-muted small mb-2">
+                            <span data-i18n="resources.level">Level</span>: Primary P4-P6 &bull;
+                            <span data-i18n="resources.subject">Subject</span>: Mathematics<br>
+                            <span data-i18n="resources.publisher">Publisher</span>: IREME AI &bull;
+                            <span data-i18n="resources.year">Year</span>: 2024 &bull;
+                            Curriculum v2024
+                        </p>
+                        <p data-i18n="resources.res10.desc">AI-generated practice worksheet with progressive difficulty covering fraction addition, subtraction, multiplication, division, and simplification with answer key.</p>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                            <span class="badge bg-light text-dark border"><i class="fa fa-globe me-1"></i>English</span>
+                            <span class="badge bg-light text-dark border"><i class="fa fa-file-pdf me-1"></i>PDF</span>
+                        </div>
+                        <div class="d-flex gap-2 mt-auto">
+                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill" data-i18n="resources.viewResource">View Resource</a>
+                            <a href="#" class="btn btn-sm btn-primary rounded-pill" data-i18n="resources.download"><i class="fa fa-download me-1"></i>Download</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resource 11: Cell Biology Video Lesson (AI-Generated) -->
+                <div class="col-md-6 col-lg-4 wow fadeIn resource-card" data-category="additional" data-level="ordinary-s1-s3" data-subject="science" data-type="video" data-language="english" data-year="2024" data-wow-delay="0.5s">
+                    <div class="service-item rounded p-4 h-100">
+                        <div class="d-flex flex-wrap justify-content-between align-items-start mb-3 gap-1">
                             <span class="badge bg-danger" data-i18n="resources.video">Video</span>
                             <span class="badge bg-warning text-dark" data-i18n="resources.aiGenerated">AI-Generated Supplement</span>
                         </div>
-                        <h5>Cell Biology Explained</h5>
-                        <p class="text-muted small">Secondary S3-S4 • Science • AI-Generated</p>
-                        <p>Video lesson covering cell structure, organelles, and cell functions.</p>
-                        <a href="#" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="resources.viewResource">View Resource</a>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-lg-4 wow fadeIn resource-card" data-level="primary" data-subject="kinyarwanda" data-type="lesson" data-wow-delay="0.6s">
-                    <div class="service-item rounded p-4 h-100">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <span class="badge bg-primary" data-i18n="resources.lesson">Lesson</span>
-                            <span class="badge bg-success" data-i18n="resources.official">Official REB Material</span>
+                        <h5 data-i18n="resources.res11.title">Cell Biology Video Lesson</h5>
+                        <p class="text-muted small mb-2">
+                            <span data-i18n="resources.level">Level</span>: Ordinary S1-S3 &bull;
+                            <span data-i18n="resources.subject">Subject</span>: Science (Biology)<br>
+                            <span data-i18n="resources.publisher">Publisher</span>: IREME AI &bull;
+                            <span data-i18n="resources.year">Year</span>: 2024 &bull;
+                            Curriculum v2024
+                        </p>
+                        <p data-i18n="resources.res11.desc">Engaging video lesson covering cell structure, organelles, cell division, and cell functions. Includes animated diagrams and real microscopy images aligned with the REB syllabus.</p>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                            <span class="badge bg-light text-dark border"><i class="fa fa-globe me-1"></i>English</span>
+                            <span class="badge bg-light text-dark border"><i class="fa fa-video me-1"></i>Video</span>
                         </div>
-                        <h5>Imivugo n'Imigani</h5>
-                        <p class="text-muted small">Primary P5-P6 • Ikinyarwanda • REB Curriculum 2024</p>
-                        <p>Igishushanyo cy'indimi n'imigani by'Ikinyarwanda ku banyeshuri b'icyiciro cy'ibanze.</p>
-                        <a href="#" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="resources.viewResource">View Resource</a>
+                        <div class="d-flex gap-2 mt-auto">
+                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill" data-i18n="resources.viewResource">View Resource</a>
+                            <a href="#" class="btn btn-sm btn-primary rounded-pill" data-i18n="resources.download"><i class="fa fa-download me-1"></i>Download</a>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Resource 12: Kinyarwanda Reading Comprehension Exercises -->
+                <div class="col-md-6 col-lg-4 wow fadeIn resource-card" data-category="additional" data-level="primary-p4-p6" data-subject="kinyarwanda" data-type="document" data-language="kinyarwanda" data-year="2024" data-wow-delay="0.6s">
+                    <div class="service-item rounded p-4 h-100">
+                        <div class="d-flex flex-wrap justify-content-between align-items-start mb-3 gap-1">
+                            <span class="badge bg-secondary" data-i18n="resources.document">Document</span>
+                            <span class="badge bg-success" data-i18n="resources.officialREB">Official REB Material</span>
+                        </div>
+                        <h5 data-i18n="resources.res12.title">Kinyarwanda Reading Comprehension Exercises</h5>
+                        <p class="text-muted small mb-2">
+                            <span data-i18n="resources.level">Level</span>: Primary P4-P6 &bull;
+                            <span data-i18n="resources.subject">Subject</span>: Kinyarwanda<br>
+                            <span data-i18n="resources.publisher">Publisher</span>: REB &bull;
+                            <span data-i18n="resources.year">Year</span>: 2024 &bull;
+                            Curriculum v2024
+                        </p>
+                        <p data-i18n="resources.res12.desc">Ikinyarwanda reading comprehension exercises for upper primary learners. Includes short stories, poems, and comprehension questions to strengthen reading and analysis skills.</p>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                            <span class="badge bg-light text-dark border"><i class="fa fa-globe me-1"></i>Kinyarwanda</span>
+                            <span class="badge bg-light text-dark border"><i class="fa fa-file-pdf me-1"></i>PDF</span>
+                        </div>
+                        <div class="d-flex gap-2 mt-auto">
+                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill" data-i18n="resources.viewResource">View Resource</a>
+                            <a href="#" class="btn btn-sm btn-primary rounded-pill" data-i18n="resources.download"><i class="fa fa-download me-1"></i>Download</a>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
-            <div id="no-resources" class="text-center py-5 d-none">
-                <p class="text-muted" data-i18n="resources.noResults">No resources found matching your filters.</p>
+            <!-- No Results Message -->
+            <div id="no-resources" class="text-center py-5 d-none wow fadeIn" data-wow-delay="0.1s">
+                <div class="mb-4">
+                    <i class="fa fa-search fa-3x text-muted"></i>
+                </div>
+                <h5 class="text-muted" data-i18n="resources.noResults">No resources found matching your filters.</h5>
+                <p class="text-muted" data-i18n="resources.noResultsHint">Try adjusting your search terms or filter criteria to find what you're looking for.</p>
+                <button class="btn btn-outline-primary rounded-pill px-4" id="btn-clear-filters" data-i18n="resources.clearFilters">Clear All Filters</button>
             </div>
+
+            <!-- Pagination -->
+            <nav aria-label="Resource pagination" class="wow fadeIn mt-5" data-wow-delay="0.3s" id="pagination-area">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item disabled">
+                        <a class="page-link rounded-pill" href="#" tabindex="-1" aria-disabled="true"><i class="fa fa-chevron-left"></i></a>
+                    </li>
+                    <li class="page-item active"><a class="page-link rounded-pill" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link rounded-pill" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link rounded-pill" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link rounded-pill" href="#"><i class="fa fa-chevron-right"></i></a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
+    <!-- Filters End -->
 
     <div id="component-footer"></div>
     <div id="component-backtotop"></div>
 
+    <!-- JavaScript Libraries -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="lib/wow/wow.min.js"></script>
     <script src="lib/easing/easing.min.js"></script>
     <script src="lib/waypoints/waypoints.min.js"></script>
+
+    <!-- Template Javascript -->
     <script src="js/main.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/components.js"></script>
     <script>
         IremeComponents.initPage('resources.html');
 
-        function filterResources() {
-            const search = document.getElementById('resource-search').value.toLowerCase();
-            const level = document.getElementById('filter-level').value;
-            const subject = document.getElementById('filter-subject').value;
-            const type = document.getElementById('filter-type').value;
-            let visible = 0;
+        // Category tab switching
+        document.querySelectorAll('#resource-category-tabs button').forEach(function(tab) {
+            tab.addEventListener('click', function() {
+                // Update active tab styling
+                document.querySelectorAll('#resource-category-tabs button').forEach(function(btn) {
+                    btn.classList.remove('btn-primary', 'active');
+                    btn.classList.add('btn-outline-primary');
+                });
+                this.classList.remove('btn-outline-primary');
+                this.classList.add('btn-primary', 'active');
 
-            document.querySelectorAll('.resource-card').forEach(card => {
-                const matchSearch = !search || card.textContent.toLowerCase().includes(search);
-                const matchLevel = !level || card.dataset.level === level;
-                const matchSubject = !subject || card.dataset.subject === subject;
-                const matchType = !type || card.dataset.type === type;
-                const show = matchSearch && matchLevel && matchSubject && matchType;
+                // Apply category filter
+                var category = this.getAttribute('data-category');
+                document.querySelectorAll('.resource-card').forEach(function(card) {
+                    if (category === 'all' || card.getAttribute('data-category') === category) {
+                        card.style.display = '';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Re-apply other filters
+                filterResources();
+            });
+        });
+
+        // Get active category
+        function getActiveCategory() {
+            var activeTab = document.querySelector('#resource-category-tabs button.active');
+            return activeTab ? activeTab.getAttribute('data-category') : 'all';
+        }
+
+        // Filter resources
+        function filterResources() {
+            var search = document.getElementById('resource-search').value.toLowerCase();
+            var level = document.getElementById('filter-level').value;
+            var subject = document.getElementById('filter-subject').value;
+            var type = document.getElementById('filter-type').value;
+            var language = document.getElementById('filter-language').value;
+            var category = getActiveCategory();
+            var visible = 0;
+
+            document.querySelectorAll('.resource-card').forEach(function(card) {
+                var matchSearch = !search || card.textContent.toLowerCase().indexOf(search) !== -1;
+                var matchLevel = !level || card.getAttribute('data-level') === level;
+                var matchSubject = !subject || card.getAttribute('data-subject') === subject;
+                var matchType = !type || card.getAttribute('data-type') === type;
+                var matchLanguage = !language || card.getAttribute('data-language') === language;
+                var matchCategory = category === 'all' || card.getAttribute('data-category') === category;
+                var show = matchSearch && matchLevel && matchSubject && matchType && matchLanguage && matchCategory;
                 card.style.display = show ? '' : 'none';
                 if (show) visible++;
             });
 
+            // Update results count
+            var countEl = document.getElementById('results-count');
+            if (visible === 0) {
+                countEl.textContent = 'No resources found';
+            } else if (visible === 1) {
+                countEl.textContent = '1 resource found';
+            } else {
+                countEl.textContent = visible + ' resources found';
+            }
+
+            // Toggle no results message
             document.getElementById('no-resources').classList.toggle('d-none', visible > 0);
+            // Toggle pagination
+            document.getElementById('pagination-area').classList.toggle('d-none', visible === 0);
         }
 
-        ['resource-search','filter-level','filter-subject','filter-type'].forEach(id => {
-            document.getElementById(id).addEventListener('input', filterResources);
-            document.getElementById(id).addEventListener('change', filterResources);
+        // Sort resources
+        function sortResources() {
+            var sortBy = document.getElementById('sort-select').value;
+            var grid = document.getElementById('resources-grid');
+            var cards = Array.from(grid.querySelectorAll('.resource-card'));
+
+            cards.sort(function(a, b) {
+                var yearA = parseInt(a.getAttribute('data-year')) || 0;
+                var yearB = parseInt(b.getAttribute('data-year')) || 0;
+                var titleA = a.querySelector('h5').textContent.toLowerCase();
+                var titleB = b.querySelector('h5').textContent.toLowerCase();
+
+                switch (sortBy) {
+                    case 'newest': return yearB - yearA;
+                    case 'oldest': return yearA - yearB;
+                    case 'title-az': return titleA < titleB ? -1 : titleA > titleB ? 1 : 0;
+                    case 'title-za': return titleB < titleA ? -1 : titleB > titleA ? 1 : 0;
+                    default: return 0;
+                }
+            });
+
+            cards.forEach(function(card) {
+                grid.appendChild(card);
+            });
+        }
+
+        // Clear all filters
+        function clearAllFilters() {
+            document.getElementById('resource-search').value = '';
+            document.getElementById('filter-level').value = '';
+            document.getElementById('filter-subject').value = '';
+            document.getElementById('filter-type').value = '';
+            document.getElementById('filter-language').value = '';
+
+            // Reset category tab to "All"
+            document.querySelectorAll('#resource-category-tabs button').forEach(function(btn) {
+                btn.classList.remove('btn-primary', 'active');
+                btn.classList.add('btn-outline-primary');
+            });
+            var allTab = document.getElementById('tab-all');
+            allTab.classList.remove('btn-outline-primary');
+            allTab.classList.add('btn-primary', 'active');
+
+            filterResources();
+        }
+
+        // Bind filter events
+        ['resource-search', 'filter-level', 'filter-subject', 'filter-type', 'filter-language'].forEach(function(id) {
+            var el = document.getElementById(id);
+            el.addEventListener('input', filterResources);
+            el.addEventListener('change', filterResources);
         });
+
+        // Bind sort event
+        document.getElementById('sort-select').addEventListener('change', sortResources);
+
+        // Bind clear filters button
+        document.getElementById('btn-clear-filters').addEventListener('click', clearAllFilters);
+
+        // Initialize results count
+        filterResources();
     </script>
 </body>
+
 </html>

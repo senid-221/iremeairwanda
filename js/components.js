@@ -2,8 +2,9 @@ const IremeComponents = {
     navItems: [
         { href: 'index.html', key: 'nav.home' },
         { href: 'about.html', key: 'nav.about' },
-        { href: 'service.html', key: 'nav.services' },
-        { href: 'project.html', key: 'nav.programs' },
+        { href: 'resources.html', key: 'nav.resources' },
+        { href: 'schools.html', key: 'nav.schools' },
+        { href: 'ai-tutor.html', key: 'nav.aiTutor' },
         { href: 'game-setup.html', key: 'nav.game' },
         { href: 'contact.html', key: 'nav.contact' },
     ],
