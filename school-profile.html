@@ -207,6 +207,14 @@
                                         <p class="text-muted" id="location-sector"></p>
                                     </div>
                                     <div class="col-sm-6">
+                                        <p class="mb-1"><strong data-i18n="schoolProfile.cell">Cell:</strong></p>
+                                        <p class="text-muted" id="location-cell"></p>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <p class="mb-1"><strong data-i18n="schoolProfile.village">Village:</strong></p>
+                                        <p class="text-muted" id="location-village"></p>
+                                    </div>
+                                    <div class="col-sm-6">
                                         <p class="mb-1"><strong data-i18n="schoolProfile.city">City:</strong></p>
                                         <p class="text-muted" id="location-city"></p>
                                     </div>
@@ -534,12 +542,14 @@
             document.getElementById('overview-school-category').textContent = ownershipLabel || 'Not specified';
 
             // --- Location Tab ---
-            document.getElementById('location-province').textContent = school.province || 'Not specified';
-            document.getElementById('location-district').textContent = school.district || 'Not specified';
-            document.getElementById('location-sector').textContent = school.sector || 'Not specified';
-            document.getElementById('location-city').textContent = school.city || 'Not specified';
-            document.getElementById('location-lat').textContent = school.lat != null ? school.lat.toFixed(6) : 'Not available';
-            document.getElementById('location-lng').textContent = school.lng != null ? school.lng.toFixed(6) : 'Not available';
+            document.getElementById('location-province').textContent = school.province || 'Not yet verified';
+            document.getElementById('location-district').textContent = school.district || 'Not yet verified';
+            document.getElementById('location-sector').textContent = school.sector || 'Not yet verified';
+            document.getElementById('location-cell').textContent = school.cell || 'Not yet verified';
+            document.getElementById('location-village').textContent = school.village || 'Not yet verified';
+            document.getElementById('location-city').textContent = school.city || 'Not yet verified';
+            document.getElementById('location-lat').textContent = school.lat != null ? school.lat.toFixed(6) : 'Location coordinates unavailable';
+            document.getElementById('location-lng').textContent = school.lng != null ? school.lng.toFixed(6) : 'Location coordinates unavailable';
             if (school.lat != null && school.lng != null) {
                 document.getElementById('map-coordinates-display').textContent = school.lat.toFixed(6) + ', ' + school.lng.toFixed(6);
             } else {

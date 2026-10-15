@@ -27,6 +27,9 @@
 
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
     <div id="component-spinner"></div>
@@ -69,6 +72,28 @@
         </div>
     </div>
     <!-- Data Notice End -->
+
+    <!-- Map/List Toggle -->
+    <div class="container-fluid py-2 bg-light border-bottom">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-sm btn-outline-primary active" id="view-list-btn">
+                        <i class="fa fa-list me-1"></i> <span data-i18n="schools.listView">List View</span>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" id="view-map-btn">
+                        <i class="fa fa-map me-1"></i> <span data-i18n="schools.mapView">Map View</span>
+                    </button>
+                </div>
+                <span class="text-muted small" id="map-school-count"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Map Container -->
+    <div id="schools-map-container" class="d-none">
+        <div id="schools-map" style="height: 500px; width: 100%;"></div>
+    </div>
 
     <!-- Search and Filters Start -->
     <div class="container-fluid py-5">
@@ -213,6 +238,16 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Link to Full Coverage Dashboard -->
+            <div class="text-center mt-4">
+                <a href="schools-coverage.html" class="btn btn-outline-primary rounded-pill px-4 py-2">
+                    <i class="fa fa-chart-bar me-2"></i> View Full Coverage Dashboard
+                </a>
+                <a href="schools-import.html" class="btn btn-outline-secondary rounded-pill px-4 py-2 ms-2">
+                    <i class="fa fa-upload me-2"></i> Import Data
+                </a>
+            </div>
         </div>
     </div>
     <!-- Search and Filters End -->
@@ -238,6 +273,9 @@
 
     <div id="component-footer"></div>
     <div id="component-backtotop"></div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <!-- JavaScript Libraries -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
@@ -468,6 +506,9 @@
             // Sort
             sortFiltered();
             resetAndRender();
+
+            // Update map markers if map is active
+            if (map) populateMapMarkers(filteredList);
         }
 
         function sortFiltered() {
@@ -646,6 +687,27 @@
 
             // Populate coverage statistics
             populateCoverageStats();
+
+            // Map view toggle event listeners
+            document.getElementById('view-list-btn').addEventListener('click', function() {
+                document.getElementById('view-list-btn').classList.add('active');
+                document.getElementById('view-map-btn').classList.remove('active');
+                document.getElementById('schools-map-container').classList.add('d-none');
+                // Show list content
+                document.querySelectorAll('.container-fluid.py-5 .container.py-5 > .row.g-3.mb-4, #schools-grid, #no-schools, #load-more-btn, #show-all-btn, #coverage-stats').forEach(function(el) {
+                    el.classList.remove('d-none');
+                });
+            });
+
+            document.getElementById('view-map-btn').addEventListener('click', function() {
+                document.getElementById('view-map-btn').classList.add('active');
+                document.getElementById('view-list-btn').classList.remove('active');
+                document.getElementById('schools-map-container').classList.remove('d-none');
+                initMap();
+                // Update map markers based on current filter
+                populateMapMarkers(filteredList);
+                setTimeout(function() { map.invalidateSize(); }, 100);
+            });
         }
 
         function populateCoverageStats() {
@@ -689,6 +751,48 @@
                 '</div>';
             });
             document.getElementById('province-coverage').innerHTML = provinceHtml;
+        }
+
+        /* ------------------------------------------------------------------ */
+        /*  Map                                                                */
+        /* ------------------------------------------------------------------ */
+
+        var map = null;
+        var mapMarkers = [];
+
+        function initMap() {
+            if (map) return; // Already initialized
+            map = L.map('schools-map').setView([-1.9403, 29.8739], 7); // Center of Rwanda
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 19
+            }).addTo(map);
+            populateMapMarkers(allSchools);
+        }
+
+        function populateMapMarkers(schools) {
+            // Clear existing markers
+            mapMarkers.forEach(function(m) { map.removeLayer(m); });
+            mapMarkers = [];
+
+            var schoolsWithCoords = schools.filter(function(s) { return s.lat && s.lng; });
+
+            schoolsWithCoords.forEach(function(s) {
+                var name = s.name || 'Unnamed School';
+                var location = s.sector + ', ' + s.district;
+                var popupContent = '<strong>' + name + '</strong><br>' +
+                    '<small>' + location + '</small><br>' +
+                    '<small>' + s.level + '</small><br>' +
+                    '<a href="school-profile.html?id=' + encodeURIComponent(s.id) + '">View Profile</a>';
+
+                var marker = L.marker([s.lat, s.lng])
+                    .addTo(map)
+                    .bindPopup(popupContent);
+                mapMarkers.push(marker);
+            });
+
+            document.getElementById('map-school-count').textContent =
+                schoolsWithCoords.length + ' schools with GPS coordinates shown on map';
         }
 
         // Run when DOM ready
