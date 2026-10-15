@@ -96,6 +96,23 @@
                     </select>
                 </div>
                 <div class="col-md-2">
+                    <select class="form-select py-3" id="filter-sector">
+                        <option value="" data-i18n="schools.allSectors">All Sectors</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select py-3" id="filter-cell">
+                        <option value="" data-i18n="schools.allCells">All Cells</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select py-3" id="filter-village">
+                        <option value="" data-i18n="schools.allVillages">All Villages</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row g-3 mb-4 wow fadeIn" data-wow-delay="0.12s">
+                <div class="col-md-2">
                     <select class="form-select py-3" id="filter-level">
                         <option value="" data-i18n="schools.allLevels">All Levels</option>
                         <option value="school">School</option>
@@ -187,6 +204,7 @@
 
     <!-- School Data from OpenStreetMap -->
     <script src="js/schools-data.js"></script>
+    <script src="js/rwanda-admin.js"></script>
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
@@ -202,14 +220,8 @@
 
         var BATCH_SIZE = 30;
 
-        // Districts keyed by province (must match data.province values)
-        var districtsByProvince = {
-            'Eastern Province':  ['Bugesera', 'Gatsibo', 'Kayonza', 'Kirehe', 'Ngoma', 'Nyagatare', 'Rwamagana'],
-            'Kigali City':      ['Gasabo', 'Kicukiro', 'Nyarugenge'],
-            'Northern Province':['Burera', 'Gakenke', 'Gicumbi', 'Musanze', 'Rulindo'],
-            'Southern Province':['Gisagara', 'Huye', 'Kamonyi', 'Muhanga', 'Nyamagabe', 'Nyanza', 'Nyaruguru', 'Ruhango'],
-            'Western Province': ['Karongi', 'Ngororero', 'Nyabihu', 'Nyamasheke', 'Rubavu', 'Rusizi', 'Rutsiro']
-        };
+        // Use Rwanda admin data for cascading filters
+        var adminData = (typeof IremeRwandaAdmin !== 'undefined') ? IremeRwandaAdmin : null;
 
         // Badge colour maps
         var levelBadgeClass = {
@@ -379,25 +391,21 @@
             var search     = document.getElementById('school-search').value.toLowerCase().trim();
             var province   = document.getElementById('filter-province').value;
             var district   = document.getElementById('filter-district').value;
+            var sector     = document.getElementById('filter-sector').value;
             var level      = document.getElementById('filter-level').value;
             var ownership  = document.getElementById('filter-ownership').value;
             var namedOnly  = document.getElementById('filter-named-only').checked;
 
             filteredList = allSchools.filter(function (s) {
-                // Search (by name)
                 if (search) {
                     var haystack = (s.name || '').toLowerCase();
                     if (haystack.indexOf(search) === -1) return false;
                 }
-                // Province
                 if (province && s.province !== province) return false;
-                // District
                 if (district && s.district !== district) return false;
-                // Level
+                if (sector && s.sector !== sector) return false;
                 if (level && s.level !== level) return false;
-                // Ownership
                 if (ownership && s.ownership !== ownership) return false;
-                // Named only
                 if (namedOnly && !s.name) return false;
                 return true;
             });
@@ -434,11 +442,54 @@
         function populateDistricts(province) {
             var sel = document.getElementById('filter-district');
             sel.innerHTML = '<option value="" data-i18n="schools.allDistricts">All Districts</option>';
-            if (province && districtsByProvince[province]) {
-                districtsByProvince[province].forEach(function (d) {
+            if (province && adminData) {
+                adminData.getDistricts(province).forEach(function (d) {
                     var opt = document.createElement('option');
                     opt.value = d;
                     opt.textContent = d;
+                    sel.appendChild(opt);
+                });
+            }
+            // Reset downstream
+            populateSectors(province, '');
+        }
+
+        function populateSectors(province, district) {
+            var sel = document.getElementById('filter-sector');
+            sel.innerHTML = '<option value="" data-i18n="schools.allSectors">All Sectors</option>';
+            if (province && district && adminData) {
+                adminData.getSectors(province, district).forEach(function (s) {
+                    var opt = document.createElement('option');
+                    opt.value = s;
+                    opt.textContent = s;
+                    sel.appendChild(opt);
+                });
+            }
+            populateCells(province, district, '');
+        }
+
+        function populateCells(province, district, sector) {
+            var sel = document.getElementById('filter-cell');
+            sel.innerHTML = '<option value="" data-i18n="schools.allCells">All Cells</option>';
+            if (province && district && sector && adminData) {
+                adminData.getCells(province, district, sector).forEach(function (c) {
+                    var opt = document.createElement('option');
+                    opt.value = c;
+                    opt.textContent = c;
+                    sel.appendChild(opt);
+                });
+            }
+            populateVillages(province, district, sector, '');
+        }
+
+        function populateVillages(province, district, sector, cell) {
+            var sel = document.getElementById('filter-village');
+            sel.innerHTML = '<option value="" data-i18n="schools.allVillages">All Villages</option>';
+            if (province && district && sector && cell && adminData) {
+                adminData.getVillages(province, district, sector, cell).forEach(function (v) {
+                    var opt = document.createElement('option');
+                    opt.value = v;
+                    opt.textContent = v;
                     sel.appendChild(opt);
                 });
             }
@@ -483,7 +534,30 @@
                 filterSchools();
             });
 
-            ['school-search', 'filter-district', 'filter-level', 'filter-ownership'].forEach(function (id) {
+            document.getElementById('filter-district').addEventListener('change', function () {
+                var province = document.getElementById('filter-province').value;
+                populateSectors(province, this.value);
+                document.getElementById('filter-sector').value = '';
+                filterSchools();
+            });
+
+            document.getElementById('filter-sector').addEventListener('change', function () {
+                var province = document.getElementById('filter-province').value;
+                var district = document.getElementById('filter-district').value;
+                populateCells(province, district, this.value);
+                document.getElementById('filter-cell').value = '';
+                filterSchools();
+            });
+
+            document.getElementById('filter-cell').addEventListener('change', function () {
+                var province = document.getElementById('filter-province').value;
+                var district = document.getElementById('filter-district').value;
+                var sector = document.getElementById('filter-sector').value;
+                populateVillages(province, district, sector, this.value);
+                document.getElementById('filter-village').value = '';
+            });
+
+            ['school-search', 'filter-level', 'filter-ownership'].forEach(function (id) {
                 var el = document.getElementById(id);
                 el.addEventListener('input', filterSchools);
                 el.addEventListener('change', filterSchools);
