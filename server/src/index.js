@@ -60,8 +60,8 @@ const authLimiter = rateLimit({
 app.use(session({
   store: new PgSession({
     pool: pool,
-    tableName: 'session',
-    createTableIfMissing: false,
+    tableName: 'session_store',
+    createTableIfMissing: true,
   }),
   secret: process.env.SESSION_SECRET || 'fallback_secret_change_me',
   resave: false,

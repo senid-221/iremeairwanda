@@ -10,8 +10,12 @@
     "prisma:migrate": "prisma migrate deploy",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:studio": "prisma studio",
-    "build": "prisma generate",
+    "prisma:seed": "node prisma/seed.js",
+    "build": "prisma generate && prisma migrate deploy",
     "postinstall": "prisma generate"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   },
   "keywords": ["ireme", "education", "rwanda"],
   "author": "IREME",
@@ -28,6 +32,7 @@
     "helmet": "^8.0.0",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
+    "pg": "^8.13.0",
     "uuid": "^11.0.3"
   },
   "devDependencies": {
