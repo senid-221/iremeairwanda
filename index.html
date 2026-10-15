@@ -36,7 +36,7 @@
     <div id="spinner"
         class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
         <div class="spinner-grow text-primary" style="width: 3rem; height: 3rem;" role="status">
-            <span class="sr-only">Loading...</span>
+            <span class="sr-only" data-i18n="spinner.loading">Loading...</span>
         </div>
     </div>
     <!-- Spinner End -->
@@ -54,12 +54,16 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarCollapse">
-                    <div class="navbar-nav ms-auto">
-                        <a href="index.html" class="nav-item nav-link active">Home</a>
-                        <a href="about.html" class="nav-item nav-link">About</a>
-                        <a href="service.html" class="nav-item nav-link">Services</a>
-                        <a href="project.html" class="nav-item nav-link">Programs</a>
-                        <a href="contact.html" class="nav-item nav-link">Contact</a>
+                    <div class="navbar-nav ms-auto align-items-lg-center">
+                        <a href="index.html" class="nav-item nav-link active" data-i18n="nav.home">Home</a>
+                        <a href="about.html" class="nav-item nav-link" data-i18n="nav.about">About</a>
+                        <a href="service.html" class="nav-item nav-link" data-i18n="nav.services">Services</a>
+                        <a href="project.html" class="nav-item nav-link" data-i18n="nav.programs">Programs</a>
+                        <a href="contact.html" class="nav-item nav-link" data-i18n="nav.contact">Contact</a>
+                        <div class="lang-switcher ms-lg-3 d-flex rounded-pill border border-white-50 overflow-hidden">
+                            <button class="lang-btn btn btn-sm text-white px-3 py-1 active" data-lang="en" onclick="setLanguage('en')">EN</button>
+                            <button class="lang-btn btn btn-sm text-white-50 px-3 py-1" data-lang="rw" onclick="setLanguage('rw')">RW</button>
+                        </div>
                     </div>
                 </div>
             </nav>
@@ -73,11 +77,11 @@
         <div class="container pt-5">
             <div class="row g-5 pt-5">
                 <div class="col-lg-6 align-self-center text-center text-lg-start mb-lg-5">
-                    <div class="btn btn-sm border rounded-pill text-white px-3 mb-3 animated slideInRight">IREME</div>
-                    <h1 class="display-4 text-white mb-4 animated slideInRight">Smarter Learning for a Brighter Rwanda</h1>
-                    <p class="text-white mb-4 animated slideInRight">IREME is an AI-powered education platform built for Rwanda. We help students, teachers, and schools access curriculum-aligned learning resources, personalized study support, and intelligent tools — all in one place.</p>
-                    <a href="about.html" class="btn btn-light py-sm-3 px-sm-5 rounded-pill me-3 animated slideInRight">Learn More</a>
-                    <a href="contact.html" class="btn btn-outline-light py-sm-3 px-sm-5 rounded-pill animated slideInRight">Contact Us</a>
+                    <div class="btn btn-sm border rounded-pill text-white px-3 mb-3 animated slideInRight" data-i18n="hero.badge">IREME</div>
+                    <h1 class="display-4 text-white mb-4 animated slideInRight" data-i18n="hero.title">Smarter Learning for a Brighter Rwanda</h1>
+                    <p class="text-white mb-4 animated slideInRight" data-i18n="hero.desc">IREME is an AI-powered education platform built for Rwanda. We help students, teachers, and schools access curriculum-aligned learning resources, personalized study support, and intelligent tools — all in one place.</p>
+                    <a href="about.html" class="btn btn-light py-sm-3 px-sm-5 rounded-pill me-3 animated slideInRight" data-i18n="hero.learnMore">Learn More</a>
+                    <a href="contact.html" class="btn btn-outline-light py-sm-3 px-sm-5 rounded-pill animated slideInRight" data-i18n="hero.contactUs">Contact Us</a>
                 </div>
                 <div class="col-lg-6 align-self-end text-center text-lg-end">
                     <img class="img-fluid" src="img/hero-img.png" alt="IREME Education Platform">
@@ -98,22 +102,22 @@
                     </div>
                 </div>
                 <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s">
-                    <div class="btn btn-sm border rounded-pill text-primary px-3 mb-3">About IREME</div>
-                    <h1 class="mb-4">Empowering Rwandan Education with Artificial Intelligence</h1>
-                    <p class="mb-4">IREME is a Rwanda-focused AI-powered education platform designed to support students, teachers, and schools across the country. We align with the official Rwandan curriculum published by REB and provide intelligent tools that make learning more accessible and effective.</p>
-                    <p class="mb-4">Our AI assistant, Ireme AI, helps learners understand difficult subjects, generates curriculum-aligned practice questions, and supports teachers in preparing lessons and teaching resources.</p>
+                    <div class="btn btn-sm border rounded-pill text-primary px-3 mb-3" data-i18n="about.badge">About IREME</div>
+                    <h1 class="mb-4" data-i18n="about.title">Empowering Rwandan Education with Artificial Intelligence</h1>
+                    <p class="mb-4" data-i18n="about.p1">IREME is a Rwanda-focused AI-powered education platform designed to support students, teachers, and schools across the country. We align with the official Rwandan curriculum published by REB and provide intelligent tools that make learning more accessible and effective.</p>
+                    <p class="mb-4" data-i18n="about.p2">Our AI assistant, Ireme AI, helps learners understand difficult subjects, generates curriculum-aligned practice questions, and supports teachers in preparing lessons and teaching resources.</p>
                     <div class="row g-3">
                         <div class="col-sm-6">
-                            <h6 class="mb-3"><i class="fa fa-check text-primary me-2"></i>Curriculum Aligned</h6>
-                            <h6 class="mb-0"><i class="fa fa-check text-primary me-2"></i>AI-Powered Learning</h6>
+                            <h6 class="mb-3"><i class="fa fa-check text-primary me-2"></i><span data-i18n="about.check1">Curriculum Aligned</span></h6>
+                            <h6 class="mb-0"><i class="fa fa-check text-primary me-2"></i><span data-i18n="about.check2">AI-Powered Learning</span></h6>
                         </div>
                         <div class="col-sm-6">
-                            <h6 class="mb-3"><i class="fa fa-check text-primary me-2"></i>English & Kinyarwanda</h6>
-                            <h6 class="mb-0"><i class="fa fa-check text-primary me-2"></i>Built for Rwanda</h6>
+                            <h6 class="mb-3"><i class="fa fa-check text-primary me-2"></i><span data-i18n="about.check3">English & Kinyarwanda</span></h6>
+                            <h6 class="mb-0"><i class="fa fa-check text-primary me-2"></i><span data-i18n="about.check4">Built for Rwanda</span></h6>
                         </div>
                     </div>
                     <div class="d-flex align-items-center mt-4">
-                        <a class="btn btn-primary rounded-pill px-4 me-3" href="about.html">Read More</a>
+                        <a class="btn btn-primary rounded-pill px-4 me-3" href="about.html" data-i18n="about.readMore">Read More</a>
                         <a class="btn btn-outline-primary btn-square me-3" href=""><i class="fab fa-facebook-f"></i></a>
                         <a class="btn btn-outline-primary btn-square me-3" href=""><i class="fab fa-twitter"></i></a>
                         <a class="btn btn-outline-primary btn-square me-3" href=""><i class="fab fa-instagram"></i></a>
@@ -131,10 +135,10 @@
         <div class="container py-5">
             <div class="row g-5 align-items-center">
                 <div class="col-lg-5 wow fadeIn" data-wow-delay="0.1s">
-                    <div class="btn btn-sm border rounded-pill text-primary px-3 mb-3">Our Services</div>
-                    <h1 class="mb-4">AI-Powered Education Solutions for Rwanda</h1>
-                    <p class="mb-4">IREME provides intelligent learning tools aligned with Rwanda's official curriculum, supporting students and teachers at every level of education.</p>
-                    <a class="btn btn-primary rounded-pill px-4" href="service.html">Read More</a>
+                    <div class="btn btn-sm border rounded-pill text-primary px-3 mb-3" data-i18n="services.badge">Our Services</div>
+                    <h1 class="mb-4" data-i18n="services.title">AI-Powered Education Solutions for Rwanda</h1>
+                    <p class="mb-4" data-i18n="services.desc">IREME provides intelligent learning tools aligned with Rwanda's official curriculum, supporting students and teachers at every level of education.</p>
+                    <a class="btn btn-primary rounded-pill px-4" href="service.html" data-i18n="about.readMore">Read More</a>
                 </div>
                 <div class="col-lg-7">
                     <div class="row g-4">
@@ -145,9 +149,9 @@
                                         <div class="service-icon btn-square">
                                             <i class="fa fa-robot fa-2x"></i>
                                         </div>
-                                        <h5 class="mb-3">Ireme AI Assistant</h5>
-                                        <p>Personalized learning support powered by AI. Get step-by-step explanations, practice questions, and study guides aligned with the Rwandan curriculum.</p>
-                                        <a class="btn px-3 mt-auto mx-auto" href="service.html">Read More</a>
+                                        <h5 class="mb-3" data-i18n="service.ai.title">Ireme AI Assistant</h5>
+                                        <p data-i18n="service.ai.desc">Personalized learning support powered by AI. Get step-by-step explanations, practice questions, and study guides aligned with the Rwandan curriculum.</p>
+                                        <a class="btn px-3 mt-auto mx-auto" href="service.html" data-i18n="about.readMore">Read More</a>
                                     </div>
                                 </div>
                                 <div class="col-12 wow fadeIn" data-wow-delay="0.5s">
@@ -155,9 +159,9 @@
                                         <div class="service-icon btn-square">
                                             <i class="fa fa-book-open fa-2x"></i>
                                         </div>
-                                        <h5 class="mb-3">Curriculum Resources</h5>
-                                        <p>Access official REB curriculum materials, syllabuses, and learning objectives for every education level and subject in Rwanda.</p>
-                                        <a class="btn px-3 mt-auto mx-auto" href="service.html">Read More</a>
+                                        <h5 class="mb-3" data-i18n="service.curriculum.title">Curriculum Resources</h5>
+                                        <p data-i18n="service.curriculum.desc">Access official REB curriculum materials, syllabuses, and learning objectives for every education level and subject in Rwanda.</p>
+                                        <a class="btn px-3 mt-auto mx-auto" href="service.html" data-i18n="about.readMore">Read More</a>
                                     </div>
                                 </div>
                             </div>
@@ -169,9 +173,9 @@
                                         <div class="service-icon btn-square">
                                             <i class="fa fa-graduation-cap fa-2x"></i>
                                         </div>
-                                        <h5 class="mb-3">Student Learning Hub</h5>
-                                        <p>Interactive lessons, quizzes, and revision tools designed for Rwandan students. Track progress and identify learning gaps with AI insights.</p>
-                                        <a class="btn px-3 mt-auto mx-auto" href="service.html">Read More</a>
+                                        <h5 class="mb-3" data-i18n="service.student.title">Student Learning Hub</h5>
+                                        <p data-i18n="service.student.desc">Interactive lessons, quizzes, and revision tools designed for Rwandan students. Track progress and identify learning gaps with AI insights.</p>
+                                        <a class="btn px-3 mt-auto mx-auto" href="service.html" data-i18n="about.readMore">Read More</a>
                                     </div>
                                 </div>
                                 <div class="col-12 wow fadeIn" data-wow-delay="0.7s">
@@ -179,9 +183,9 @@
                                         <div class="service-icon btn-square">
                                             <i class="fa fa-chalkboard-teacher fa-2x"></i>
                                         </div>
-                                        <h5 class="mb-3">Teacher Tools</h5>
-                                        <p>Help teachers prepare lessons, generate assessments, and access teaching resources aligned with REB standards and NESA assessment guidance.</p>
-                                        <a class="btn px-3 mt-auto mx-auto" href="service.html">Read More</a>
+                                        <h5 class="mb-3" data-i18n="service.teacher.title">Teacher Tools</h5>
+                                        <p data-i18n="service.teacher.desc">Help teachers prepare lessons, generate assessments, and access teaching resources aligned with REB standards and NESA assessment guidance.</p>
+                                        <a class="btn px-3 mt-auto mx-auto" href="service.html" data-i18n="about.readMore">Read More</a>
                                     </div>
                                 </div>
                             </div>
@@ -198,16 +202,16 @@
     <div class="container-fluid py-5">
         <div class="container py-5">
             <div class="mx-auto text-center wow fadeIn" data-wow-delay="0.1s" style="max-width: 500px;">
-                <div class="btn btn-sm border rounded-pill text-primary px-3 mb-3">Programs</div>
-                <h1 class="mb-4">Explore Our Education Programs</h1>
+                <div class="btn btn-sm border rounded-pill text-primary px-3 mb-3" data-i18n="programs.badge">Programs</div>
+                <h1 class="mb-4" data-i18n="programs.title">Explore Our Education Programs</h1>
             </div>
             <div class="row g-4">
                 <div class="col-lg-4 wow fadeIn" data-wow-delay="0.3s">
                     <div class="case-item position-relative overflow-hidden rounded mb-2">
                         <img class="img-fluid" src="img/project-1.jpg" alt="Primary Education">
                         <a class="case-overlay text-decoration-none" href="project.html">
-                            <small>Primary Education</small>
-                            <h5 class="lh-base text-white mb-3">Supporting P1–P6 learners with curriculum-aligned lessons and AI-powered study tools</h5>
+                            <small data-i18n="programs.primary.small">Primary Education</small>
+                            <h5 class="lh-base text-white mb-3" data-i18n="programs.primary.desc.short">Supporting P1–P6 learners with curriculum-aligned lessons and AI-powered study tools</h5>
                             <span class="btn btn-square btn-primary"><i class="fa fa-arrow-right"></i></span>
                         </a>
                     </div>
@@ -216,8 +220,8 @@
                     <div class="case-item position-relative overflow-hidden rounded mb-2">
                         <img class="img-fluid" src="img/project-2.jpg" alt="Secondary Education">
                         <a class="case-overlay text-decoration-none" href="project.html">
-                            <small>Secondary Education</small>
-                            <h5 class="lh-base text-white mb-3">Helping S1–S6 students prepare for national exams with intelligent revision and practice</h5>
+                            <small data-i18n="programs.secondary.small">Secondary Education</small>
+                            <h5 class="lh-base text-white mb-3" data-i18n="programs.secondary.desc.short">Helping S1–S6 students prepare for national exams with intelligent revision and practice</h5>
                             <span class="btn btn-square btn-primary"><i class="fa fa-arrow-right"></i></span>
                         </a>
                     </div>
@@ -226,8 +230,8 @@
                     <div class="case-item position-relative overflow-hidden rounded mb-2">
                         <img class="img-fluid" src="img/project-3.jpg" alt="Teacher Support">
                         <a class="case-overlay text-decoration-none" href="project.html">
-                            <small>Teacher Support</small>
-                            <h5 class="lh-base text-white mb-3">Empowering teachers with AI-assisted lesson planning and curriculum-aligned resources</h5>
+                            <small data-i18n="programs.teacher.small">Teacher Support</small>
+                            <h5 class="lh-base text-white mb-3" data-i18n="programs.teacher.desc.short">Empowering teachers with AI-assisted lesson planning and curriculum-aligned resources</h5>
                             <span class="btn btn-square btn-primary"><i class="fa fa-arrow-right"></i></span>
                         </a>
                     </div>
@@ -242,8 +246,8 @@
     <div class="container-fluid bg-light py-5">
         <div class="container py-5">
             <div class="mx-auto text-center wow fadeIn" data-wow-delay="0.1s" style="max-width: 500px;">
-                <div class="btn btn-sm border rounded-pill text-primary px-3 mb-3">Contact Us</div>
-                <h1 class="mb-4">Have Questions? Get in Touch with IREME</h1>
+                <div class="btn btn-sm border rounded-pill text-primary px-3 mb-3" data-i18n="contact.badge">Contact Us</div>
+                <h1 class="mb-4" data-i18n="contact.title">Have Questions? Get in Touch with IREME</h1>
             </div>
             <div class="row justify-content-center">
                 <div class="col-lg-7">
@@ -252,30 +256,30 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <div class="form-floating">
-                                        <input type="text" class="form-control" id="name" placeholder="Your Name">
-                                        <label for="name">Your Name</label>
+                                        <input type="text" class="form-control" id="name" data-i18n="contact.name" placeholder="Your Name">
+                                        <label for="name" data-i18n="contact.name">Your Name</label>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-floating">
-                                        <input type="email" class="form-control" id="email" placeholder="Your Email">
-                                        <label for="email">Your Email</label>
+                                        <input type="email" class="form-control" id="email" data-i18n="contact.email" placeholder="Your Email">
+                                        <label for="email" data-i18n="contact.email">Your Email</label>
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="form-floating">
-                                        <input type="text" class="form-control" id="subject" placeholder="Subject">
-                                        <label for="subject">Subject</label>
+                                        <input type="text" class="form-control" id="subject" data-i18n="contact.subject" placeholder="Subject">
+                                        <label for="subject" data-i18n="contact.subject">Subject</label>
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="form-floating">
-                                        <textarea class="form-control" placeholder="Leave a message here" id="message" style="height: 150px"></textarea>
-                                        <label for="message">Message</label>
+                                        <textarea class="form-control" data-i18n="contact.message" placeholder="Leave a message here" id="message" style="height: 150px"></textarea>
+                                        <label for="message" data-i18n="contact.message">Leave a message here</label>
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <button class="btn btn-primary w-100 py-3" type="submit">Send Message</button>
+                                    <button class="btn btn-primary w-100 py-3" type="submit" data-i18n="contact.send">Send Message</button>
                                 </div>
                             </div>
                         </form>
@@ -295,11 +299,11 @@
                     <a href="index.html" class="d-inline-block mb-3">
                         <img src="img/ireme-logo.png" alt="IREME" style="height: 45px;">
                     </a>
-                    <p class="mb-0">IREME is a Rwanda-focused AI-powered education platform. Smarter Learning for a Brighter Rwanda.</p>
+                    <p class="mb-0" data-i18n="footer.desc">IREME is a Rwanda-focused AI-powered education platform. Smarter Learning for a Brighter Rwanda.</p>
                 </div>
                 <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.3s">
-                    <h5 class="text-white mb-4">Get In Touch</h5>
-                    <p><i class="fa fa-map-marker-alt me-3"></i>Kigali, Rwanda</p>
+                    <h5 class="text-white mb-4" data-i18n="footer.getInTouch">Get In Touch</h5>
+                    <p><i class="fa fa-map-marker-alt me-3"></i><span data-i18n="footer.location">Kigali, Rwanda</span></p>
                     <p><i class="fa fa-phone-alt me-3"></i><a href="tel:+250791537354" class="text-white-50 text-decoration-none">+250 791 537 354</a></p>
                     <p><i class="fa fa-envelope me-3"></i><a href="mailto:info@iremerwanda.com" class="text-white-50 text-decoration-none">info@iremerwanda.com</a></p>
                     <div class="d-flex pt-2">
@@ -311,20 +315,20 @@
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.5s">
-                    <h5 class="text-white mb-4">Quick Links</h5>
-                    <a class="btn btn-link" href="about.html">About Us</a>
-                    <a class="btn btn-link" href="contact.html">Contact Us</a>
-                    <a class="btn btn-link" href="">Privacy Policy</a>
-                    <a class="btn btn-link" href="">Terms & Conditions</a>
-                    <a class="btn btn-link" href="">Career</a>
+                    <h5 class="text-white mb-4" data-i18n="footer.quickLinks">Quick Links</h5>
+                    <a class="btn btn-link" href="about.html" data-i18n="footer.aboutUs">About Us</a>
+                    <a class="btn btn-link" href="contact.html" data-i18n="footer.contactUs">Contact Us</a>
+                    <a class="btn btn-link" href="" data-i18n="footer.privacy">Privacy Policy</a>
+                    <a class="btn btn-link" href="" data-i18n="footer.terms">Terms & Conditions</a>
+                    <a class="btn btn-link" href="" data-i18n="footer.career">Career</a>
                 </div>
                 <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.7s">
-                    <h5 class="text-white mb-4">Our Services</h5>
-                    <a class="btn btn-link" href="service.html">Ireme AI Assistant</a>
-                    <a class="btn btn-link" href="service.html">Curriculum Resources</a>
-                    <a class="btn btn-link" href="service.html">Student Learning Hub</a>
-                    <a class="btn btn-link" href="service.html">Teacher Tools</a>
-                    <a class="btn btn-link" href="project.html">Education Programs</a>
+                    <h5 class="text-white mb-4" data-i18n="footer.ourServices">Our Services</h5>
+                    <a class="btn btn-link" href="service.html" data-i18n="footer.aiAssistant">Ireme AI Assistant</a>
+                    <a class="btn btn-link" href="service.html" data-i18n="footer.curriculum">Curriculum Resources</a>
+                    <a class="btn btn-link" href="service.html" data-i18n="footer.studentHub">Student Learning Hub</a>
+                    <a class="btn btn-link" href="service.html" data-i18n="footer.teacherTools">Teacher Tools</a>
+                    <a class="btn btn-link" href="project.html" data-i18n="footer.educationPrograms">Education Programs</a>
                 </div>
             </div>
         </div>
@@ -332,14 +336,14 @@
             <div class="copyright">
                 <div class="row">
                     <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                        &copy; <a class="border-bottom" href="index.html">IREME</a>, All Rights Reserved.
+                        &copy; <a class="border-bottom" href="index.html">IREME</a>, <span data-i18n="footer.rights">All Rights Reserved.</span>
                     </div>
                     <div class="col-md-6 text-center text-md-end">
                         <div class="footer-menu">
-                            <a href="index.html">Home</a>
-                            <a href="">Cookies</a>
-                            <a href="">Help</a>
-                            <a href="">FAQs</a>
+                            <a href="index.html" data-i18n="nav.home">Home</a>
+                            <a href="" data-i18n="footer.cookies">Cookies</a>
+                            <a href="" data-i18n="footer.help">Help</a>
+                            <a href="" data-i18n="footer.faqs">FAQs</a>
                         </div>
                     </div>
                 </div>
@@ -362,6 +366,7 @@
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+    <script src="js/i18n.js"></script>
 </body>
 
 </html>

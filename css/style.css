@@ -402,3 +402,31 @@ h6,
     padding-right: 0;
     border-right: none;
 }
+
+
+/*** Language Switcher ***/
+.lang-switcher {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.lang-switcher .lang-btn {
+    border-radius: 0 !important;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    border: none !important;
+    transition: background 0.3s;
+}
+
+.lang-switcher .lang-btn.active {
+    background: rgba(255, 255, 255, 0.25);
+    color: #fff !important;
+}
+
+.lang-switcher .lang-btn:not(.active) {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.lang-switcher .lang-btn:hover:not(.active) {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
