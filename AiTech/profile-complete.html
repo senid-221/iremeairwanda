@@ -354,7 +354,7 @@
                 var schoolSelect = document.getElementById('school-select');
                 schoolSelect.innerHTML = '<option value="">Select your school</option>';
                 IremeAPI.get('/api/schools?limit=10000').then(function(res) {
-                    var schools = res.schools || [];
+                    var schools = res.data || res.schools || [];
                     schools.sort(function(a, b) {
                         return (a.name || '').localeCompare(b.name || '');
                     });
