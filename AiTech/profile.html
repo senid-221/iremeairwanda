@@ -179,11 +179,11 @@
                 phone: document.getElementById('profile-input-phone').value,
                 preferredLanguage: document.getElementById('profile-input-language').value,
                 timezone: document.getElementById('profile-input-timezone').value,
-                provinceId: (IremeLocation.getSelection('profile-location-selector') || {}).provinceId || null,
-                districtId: (IremeLocation.getSelection('profile-location-selector') || {}).districtId || null,
-                sectorId: (IremeLocation.getSelection('profile-location-selector') || {}).sectorId || null,
-                cellId: (IremeLocation.getSelection('profile-location-selector') || {}).cellId || null,
-                villageId: (IremeLocation.getSelection('profile-location-selector') || {}).villageId || null,
+                province: (IremeLocation.getSelection('profile-location-selector') || {}).province || null,
+                district: (IremeLocation.getSelection('profile-location-selector') || {}).district || null,
+                sector: (IremeLocation.getSelection('profile-location-selector') || {}).sector || null,
+                cell: (IremeLocation.getSelection('profile-location-selector') || {}).cell || null,
+                village: (IremeLocation.getSelection('profile-location-selector') || {}).village || null,
             }).then(function() {
                 showMessage('success', 'Profile updated successfully.');
                 document.getElementById('profile-name').textContent = document.getElementById('profile-input-name').value;

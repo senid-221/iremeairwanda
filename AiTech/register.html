@@ -189,12 +189,12 @@
 
             // Include location data if available
             var locSel = IremeLocation.getSelection('register-location-selector');
-            if (locSel.provinceId) {
-                data.provinceId = locSel.provinceId;
-                data.districtId = locSel.districtId;
-                data.sectorId = locSel.sectorId;
-                data.cellId = locSel.cellId;
-                data.villageId = locSel.villageId;
+            if (locSel.province) {
+                data.province = locSel.province;
+                data.district = locSel.district;
+                data.sector = locSel.sector;
+                data.cell = locSel.cell;
+                data.village = locSel.village;
             }
 
             function setLoading(loading) {

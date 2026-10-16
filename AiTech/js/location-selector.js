@@ -1,29 +1,65 @@
 /**
  * IremeLocation — Cascading Rwanda location selector component.
+ * Uses static data from IremeRwandaAdmin (rwanda-admin.js).
  *
  * Usage:
  *   IremeLocation.init('container-id', { required: true, onChange: fn });
  *   var sel = IremeLocation.getSelection('container-id');
- *   IremeLocation.setSelection('container-id', { provinceId: '...', ... });
+ *   IremeLocation.setSelection('container-id', { province: 'Kigali City', district: 'Gasabo', ... });
  *   var valid = IremeLocation.validate('container-id');
  */
 var IremeLocation = (function () {
-  var BASE_URL = (typeof window !== 'undefined' && window.IREME_API_URL) ||
-    (typeof process !== 'undefined' && process.env && process.env.VITE_API_BASE_URL) || '';
-
   var instances = {};
+  var levelOrder = ['province', 'district', 'sector', 'cell', 'village'];
+  var levelLabels = {
+    province: 'Province',
+    district: 'District',
+    sector: 'Sector (Umurenge)',
+    cell: 'Cell (Akagari)',
+    village: 'Village (Umudugudu)'
+  };
+  var levelPlaceholders = {
+    province: 'Search province...',
+    district: 'Search district...',
+    sector: 'Search sector...',
+    cell: 'Search cell...',
+    village: 'Search village...'
+  };
 
-  /* ------------------------------------------------------------------ */
-  /*  HTTP helper                                                        */
-  /* ------------------------------------------------------------------ */
-  function apiGet(path) {
-    return fetch(BASE_URL + path, { credentials: 'include' })
-      .then(function (r) { return r.json(); });
+  function getStaticData() {
+    return typeof IremeRwandaAdmin !== 'undefined' ? IremeRwandaAdmin : null;
   }
 
-  /* ------------------------------------------------------------------ */
-  /*  Build a single searchable dropdown                                 */
-  /* ------------------------------------------------------------------ */
+  function getItems(level, context) {
+    var data = getStaticData();
+    if (!data) return [];
+    switch (level) {
+      case 'province':
+        return data.provinces.map(function (n) { return { name: n }; });
+      case 'district':
+        return data.getDistricts(context.province).map(function (n) { return { name: n }; });
+      case 'sector':
+        return data.getSectors(context.province, context.district).map(function (n) { return { name: n }; });
+      case 'cell':
+        return data.getCells(context.province, context.district, context.sector).map(function (n) { return { name: n }; });
+      case 'village':
+        return data.getVillages(context.province, context.district, context.sector, context.cell).map(function (n) { return { name: n }; });
+      default:
+        return [];
+    }
+  }
+
+  function createContext(inst, upToLevel) {
+    var ctx = {};
+    for (var i = 0; i < levelOrder.length; i++) {
+      var lv = levelOrder[i];
+      if (lv === upToLevel) break;
+      var dd = inst.dropdowns[lv];
+      ctx[lv] = dd.querySelector('.location-search').value || '';
+    }
+    return ctx;
+  }
+
   function createDropdown(instanceId, level, label, placeholder) {
     var wrap = document.createElement('div');
     wrap.className = 'location-dropdown';
@@ -32,18 +68,11 @@ var IremeLocation = (function () {
       '<label class="form-label fw-bold small">' + label + '</label>' +
       '<div class="location-dropdown-inner position-relative">' +
         '<input type="text" class="form-control location-search" placeholder="' + placeholder + '" autocomplete="off" />' +
-        '<input type="hidden" class="location-value" data-level="' + level + '" />' +
-        '<span class="location-spinner position-absolute d-none" style="right:12px;top:50%;transform:translateY(-50%);">' +
-          '<span class="spinner-border spinner-border-sm text-primary" role="status"></span>' +
-        '</span>' +
         '<ul class="location-options list-group position-absolute w-100 d-none" style="z-index:1050;max-height:220px;overflow-y:auto;"></ul>' +
       '</div>';
     return wrap;
   }
 
-  /* ------------------------------------------------------------------ */
-  /*  Populate options list for a dropdown                               */
-  /* ------------------------------------------------------------------ */
   function populateOptions(dd, items) {
     var ul = dd.querySelector('.location-options');
     ul.innerHTML = '';
@@ -55,9 +84,8 @@ var IremeLocation = (function () {
     items.forEach(function (item) {
       var li = document.createElement('li');
       li.className = 'location-option list-group-item px-3 py-2';
-      li.setAttribute('data-id', item.id);
-      li.setAttribute('data-name', item.nameEn || item.name);
-      li.textContent = item.nameEn || item.name;
+      li.setAttribute('data-name', item.name);
+      li.textContent = item.name;
       li.addEventListener('click', function () {
         selectOption(dd, item);
       });
@@ -68,28 +96,23 @@ var IremeLocation = (function () {
 
   function selectOption(dd, item) {
     var input = dd.querySelector('.location-search');
-    var hidden = dd.querySelector('.location-value');
-    input.value = item.nameEn || item.name;
-    hidden.value = item.id;
+    input.value = item.name;
     dd.querySelector('.location-options').classList.add('d-none');
 
-    // Mark selected
     var opts = dd.querySelectorAll('.location-option');
     opts.forEach(function (o) { o.classList.remove('selected'); });
-    var clicked = dd.querySelector('.location-option[data-id="' + item.id + '"]');
+    var clicked = dd.querySelector('.location-option[data-name="' + item.name + '"]');
     if (clicked) clicked.classList.add('selected');
 
-    // Dispatch change event on the container
     var container = dd.closest('.location-group');
     if (container) {
-      var evt = new CustomEvent('location-change', { detail: { level: dd.getAttribute('data-level'), id: item.id, name: item.nameEn || item.name } });
+      var evt = new CustomEvent('location-change', {
+        detail: { level: dd.getAttribute('data-level'), name: item.name }
+      });
       container.dispatchEvent(evt);
     }
   }
 
-  /* ------------------------------------------------------------------ */
-  /*  Filter options as user types                                       */
-  /* ------------------------------------------------------------------ */
   function attachSearch(dd) {
     var input = dd.querySelector('.location-search');
     var ul = dd.querySelector('.location-options');
@@ -109,19 +132,16 @@ var IremeLocation = (function () {
 
     input.addEventListener('input', function () {
       var q = this.value.toLowerCase().trim();
-      var hidden = dd.querySelector('.location-value');
-      hidden.value = '';
       if (!q) {
         populateOptions(dd, allItems);
         return;
       }
       var filtered = allItems.filter(function (item) {
-        return (item.nameEn || item.name || '').toLowerCase().indexOf(q) !== -1;
+        return (item.name || '').toLowerCase().indexOf(q) !== -1;
       });
       populateOptions(dd, filtered);
     });
 
-    // Close dropdown when clicking outside
     document.addEventListener('click', function (e) {
       if (!dd.contains(e.target)) {
         ul.classList.add('d-none');
@@ -129,108 +149,44 @@ var IremeLocation = (function () {
     });
   }
 
-  /* ------------------------------------------------------------------ */
-  /*  Show / hide spinner                                                */
-  /* ------------------------------------------------------------------ */
-  function showSpinner(dd) {
-    var sp = dd.querySelector('.location-spinner');
-    if (sp) sp.classList.remove('d-none');
-  }
-  function hideSpinner(dd) {
-    var sp = dd.querySelector('.location-spinner');
-    if (sp) sp.classList.add('d-none');
-  }
-
-  /* ------------------------------------------------------------------ */
-  /*  Clear a dropdown and all dependents                                */
-  /* ------------------------------------------------------------------ */
   function clearDropdown(dd) {
     var input = dd.querySelector('.location-search');
-    var hidden = dd.querySelector('.location-value');
     input.value = '';
-    hidden.value = '';
     dd._setItems([]);
     dd.querySelector('.location-options').classList.add('d-none');
   }
 
-  /* ------------------------------------------------------------------ */
-  /*  Cascade logic                                                      */
-  /* ------------------------------------------------------------------ */
-  var levelOrder = ['province', 'district', 'sector', 'cell', 'village'];
-  var levelLabels = {
-    province: 'Province',
-    district: 'District',
-    sector: 'Sector',
-    cell: 'Cell',
-    village: 'Village'
-  };
-  var levelPlaceholders = {
-    province: 'Search province...',
-    district: 'Search district...',
-    sector: 'Search sector...',
-    cell: 'Search cell...',
-    village: 'Search village...'
-  };
-  var levelEndpoints = {
-    province: '/api/locations/provinces',
-    district: '/api/locations/districts',
-    sector: '/api/locations/sectors',
-    cell: '/api/locations/cells',
-    village: '/api/locations/villages'
-  };
-  var levelParentParam = {
-    province: null,
-    district: 'provinceId',
-    sector: 'districtId',
-    cell: 'sectorId',
-    village: 'cellId'
-  };
-
   function loadOptions(inst, level) {
     var dd = inst.dropdowns[level];
-    var parentParam = levelParentParam[level];
-    var url = levelEndpoints[level];
-
-    if (parentParam) {
-      var parentLevel = levelOrder[levelOrder.indexOf(level) - 1];
-      var parentDd = inst.dropdowns[parentLevel];
-      var parentId = parentDd.querySelector('.location-value').value;
-      if (!parentId) {
-        clearDropdown(dd);
-        return Promise.resolve();
-      }
-      url += '?' + parentParam + '=' + encodeURIComponent(parentId);
+    var idx = levelOrder.indexOf(level);
+    if (idx === 0) {
+      dd._setItems(getItems(level, {}));
+      return;
     }
-
-    showSpinner(dd);
-    return apiGet(url).then(function (data) {
-      hideSpinner(dd);
-      dd._setItems(data.items || []);
-    }).catch(function () {
-      hideSpinner(dd);
-      dd._setItems([]);
-    });
+    var parentLevel = levelOrder[idx - 1];
+    var parentDd = inst.dropdowns[parentLevel];
+    var parentName = parentDd.querySelector('.location-search').value;
+    if (!parentName) {
+      clearDropdown(dd);
+      return;
+    }
+    var ctx = createContext(inst, level);
+    dd._setItems(getItems(level, ctx));
   }
 
   function onLevelChange(inst, level) {
     var idx = levelOrder.indexOf(level);
-    // Clear all dependent levels
     for (var i = idx + 1; i < levelOrder.length; i++) {
       clearDropdown(inst.dropdowns[levelOrder[i]]);
     }
-    // Load next level
     if (idx + 1 < levelOrder.length) {
       loadOptions(inst, levelOrder[idx + 1]);
     }
-    // Fire onChange callback
     if (inst.options.onChange) {
       inst.options.onChange(getSelection(inst.containerId));
     }
   }
 
-  /* ------------------------------------------------------------------ */
-  /*  Public API                                                         */
-  /* ------------------------------------------------------------------ */
   function init(containerId, options) {
     options = options || {};
     var container = document.getElementById(containerId);
@@ -255,17 +211,13 @@ var IremeLocation = (function () {
       inst.dropdowns[level] = dd;
     });
 
-    // Listen for cascade changes
     container.addEventListener('location-change', function (e) {
       onLevelChange(inst, e.detail.level);
     });
 
     instances[containerId] = inst;
-
-    // Load provinces initially
     loadOptions(inst, 'province');
 
-    // If initial values provided, set them after a tick
     if (options.initial) {
       setTimeout(function () {
         setSelection(containerId, options.initial);
@@ -279,40 +231,32 @@ var IremeLocation = (function () {
     var sel = {};
     levelOrder.forEach(function (level) {
       var dd = inst.dropdowns[level];
-      sel[level + 'Id'] = dd.querySelector('.location-value').value || null;
-      sel[level + 'Name'] = dd.querySelector('.location-search').value || null;
+      sel[level] = dd.querySelector('.location-search').value || null;
     });
     return sel;
   }
 
-  function setSelection(containerId, ids) {
+  function setSelection(containerId, values) {
     var inst = instances[containerId];
     if (!inst) return;
 
-    // We need to cascade-load each level sequentially
-    function loadAndSelect(idx) {
-      if (idx >= levelOrder.length) return;
-      var level = levelOrder[idx];
-      var idKey = level + 'Id';
-      var targetId = ids[idKey];
-
-      loadOptions(inst, level).then(function () {
-        if (targetId) {
-          var dd = inst.dropdowns[level];
-          var items = dd._allItems || [];
-          // Find the item in the loaded data
-          var ul = dd.querySelector('.location-options');
-          var li = ul.querySelector('[data-id="' + targetId + '"]');
-          if (li) {
-            var item = { id: targetId, nameEn: li.getAttribute('data-name') };
-            selectOption(dd, item);
-          }
-        }
-        loadAndSelect(idx + 1);
-      });
+    for (var i = 0; i < levelOrder.length; i++) {
+      var level = levelOrder[i];
+      var val = values[level];
+      if (!val) break;
+      var dd = inst.dropdowns[level];
+      loadOptions(inst, level);
+      var items = dd._allItems || [];
+      var match = null;
+      for (var j = 0; j < items.length; j++) {
+        if (items[j].name === val) { match = items[j]; break; }
+      }
+      if (match) {
+        selectOption(dd, match);
+      } else {
+        break;
+      }
     }
-
-    loadAndSelect(0);
   }
 
   function validate(containerId) {
@@ -323,9 +267,9 @@ var IremeLocation = (function () {
     var valid = true;
     levelOrder.forEach(function (level) {
       var dd = inst.dropdowns[level];
-      var hidden = dd.querySelector('.location-value');
+      var input = dd.querySelector('.location-search');
       var wrap = dd.querySelector('.location-dropdown-inner');
-      if (!hidden.value) {
+      if (!input.value) {
         valid = false;
         wrap.classList.add('is-invalid');
       } else {
