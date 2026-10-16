@@ -576,7 +576,7 @@ const translations = {
         // Auth - Portals
         "auth.studentPortal": "Student Portal",
         "auth.teacherPortal": "Teacher Portal",
-        "auth.parentPortal": "Parent/Guardian Portal",
+        "auth.parentPortal": "Parent Portal",
         "auth.schoolPortal": "School Administrator Portal",
         "auth.learnerPortal": "TTC/TVET Learner Portal",
         "auth.adminPortal": "Administrator Portal",
@@ -592,7 +592,7 @@ const translations = {
         // Auth - Roles
         "auth.role.student": "Student",
         "auth.role.teacher": "Teacher",
-        "auth.role.parent": "Parent/Guardian",
+        "auth.role.parent": "Parent",
         "auth.role.school_admin": "School Administrator",
         "auth.role.learner": "TTC/TVET Learner",
         "auth.role.content_manager": "Content Manager",
@@ -1288,7 +1288,7 @@ const translations = {
         // Auth - Portals
         "auth.studentPortal": "Umuryango w'Umunyeshuri",
         "auth.teacherPortal": "Umuryango w'Umwarimu",
-        "auth.parentPortal": "Umuryango w'Umubyeyi/Murezi",
+        "auth.parentPortal": "Umuryango w'Umubyeyi",
         "auth.schoolPortal": "Umuryango w'Umuyobozi w'Ishuri",
         "auth.learnerPortal": "Umuryango w'Umunyeshuri wa TTC/TVET",
         "auth.adminPortal": "Umuryango w'Umuyobozi",
@@ -1304,7 +1304,7 @@ const translations = {
         // Auth - Roles
         "auth.role.student": "Umunyeshuri",
         "auth.role.teacher": "Umwarimu",
-        "auth.role.parent": "Umubyeyi/Murezi",
+        "auth.role.parent": "Umubyeyi",
         "auth.role.school_admin": "Umuyobozi w'Ishuri",
         "auth.role.learner": "Umunyeshuri wa TTC/TVET",
         "auth.role.content_manager": "Umuyobozi w'Ibikoresho",
