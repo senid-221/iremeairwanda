@@ -340,6 +340,7 @@ model EducationLevel {
   academicYears       AcademicYear[]
   levelSubjects       LevelSubject[]
   curriculumProgrammes CurriculumProgramme[]
+  subjectCombinations SubjectCombination[]
   schoolLevels        SchoolLevel[]
   studentEnrollments StudentEnrollment[]
   resourceCurriculumLinks ResourceCurriculumLink[]
@@ -424,6 +425,10 @@ model CurriculumProgramme {
   nameRw          String?
   description     String?
   programmeType   String
+  qualificationLevel String?
+  tradeCategory   String?
+  durationYears   Int?
+  awardingAuthority String?
   sourceName      String?
   verificationStatus String @default("pending")
   lastReviewedAt DateTime?
@@ -477,6 +482,7 @@ model Subject {
   updatedAt   DateTime @updatedAt
 
   levelSubjects LevelSubject[]
+  combinationSubjects CombinationSubject[]
   questionBanks QuestionBank[]
   schoolSubjects SchoolSubject[]
   teacherAssignments TeacherAssignment[]
@@ -546,6 +552,47 @@ model SubjectTopic {
   @@unique([levelSubjectId, curriculumTopicId])
   @@index([levelSubjectId])
   @@index([curriculumTopicId])
+}
+
+model SubjectCombination {
+  id              String   @id @default(uuid())
+  code            String   @unique
+  name            String
+  nameEn          String
+  nameRw          String?
+  description     String?
+  educationLevelId String
+  combinationType String   @default("general")
+  sourceName      String?
+  verificationStatus String @default("pending")
+  lastReviewedAt DateTime?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  educationLevel EducationLevel @relation(fields: [educationLevelId], references: [id], onDelete: Cascade)
+  combinationSubjects CombinationSubject[]
+
+  @@index([code])
+  @@index([educationLevelId])
+  @@index([verificationStatus])
+}
+
+model CombinationSubject {
+  id              String   @id @default(uuid())
+  combinationId   String
+  subjectId       String
+  isRequired      Boolean  @default(true)
+  displayOrder    Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  combination SubjectCombination @relation(fields: [combinationId], references: [id], onDelete: Cascade)
+  subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@unique([combinationId, subjectId])
+  @@index([combinationId])
+  @@index([subjectId])
 }
 
 model CurriculumModule {

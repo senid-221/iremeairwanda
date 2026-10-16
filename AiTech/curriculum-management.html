@@ -53,13 +53,10 @@
     <!-- Curriculum Overview Start -->
     <div class="container-fluid py-5">
         <div class="container py-5">
-            <!-- Status Alert -->
-            <div class="alert alert-warning d-flex align-items-center mb-4" role="alert">
+            <!-- Global Error Alert -->
+            <div id="global-error-alert" class="alert alert-danger d-none d-flex align-items-center mb-4" role="alert">
                 <i class="fa fa-exclamation-triangle me-2"></i>
-                <div>
-                    <strong>Frontend Implementation:</strong> This curriculum management interface uses client-side storage. 
-                    For production use with database persistence, backend API integration is required.
-                </div>
+                <div id="global-error-message"></div>
             </div>
 
             <!-- Summary Cards -->
@@ -336,9 +333,6 @@
     <script src="lib/easing/easing.min.js"></script>
     <script src="lib/waypoints/waypoints.min.js"></script>
 
-    <!-- Curriculum Data -->
-    <script src="js/curriculum-data.js"></script>
-
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
     <script src="js/i18n.js"></script>
@@ -350,186 +344,628 @@
     (function() {
         'use strict';
 
+        // ── State ──────────────────────────────────────────────────────────
+        var levels = [];
+        var levelsByType = { primary: [], secondary: [], ttc: [], tvet: [] };
+        var subjectsByPathway = { primary: [], secondary: [] };
+        var combinationsData = [];
+        var ttcProgrammes = [];
+        var tvetProgrammes = [];
+        var statsData = {};
+        var isAdmin = false;
         var currentPathway = 'primary';
+        var currentModalPathway = 'primary';
 
-        function init() {
-            renderAllTables();
-            updateStats();
-            renderCombinations();
+        // ── Auth guard ─────────────────────────────────────────────────────
+        IremeAuth.requireAuth();
+        var _session = IremeAuth.getSession();
+        isAdmin = !!(
+            _session &&
+            (IremeAuth.hasAnyRole(['admin', 'super_admin', 'curriculum_manager']))
+        );
+
+        // ── Helpers ────────────────────────────────────────────────────────
+        function spinnerRow(cols) {
+            return '<tr><td colspan="' + cols + '" class="text-center py-4">' +
+                '<div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>' +
+                'Loading…</td></tr>';
         }
 
-        function updateStats() {
-            var totalSubjects = 0;
-            var verified = 0;
-            var pending = 0;
+        function emptyRow(cols, msg) {
+            return '<tr><td colspan="' + cols + '" class="text-center text-muted py-4">' +
+                (msg || 'No data found') + '</td></tr>';
+        }
 
-            for (var pathway in IremeCurriculum.subjects) {
-                for (var key in IremeCurriculum.subjects[pathway]) {
-                    totalSubjects++;
-                    if (IremeCurriculum.subjects[pathway][key].status === 'verified') {
-                        verified++;
-                    } else {
-                        pending++;
-                    }
-                }
+        function errorRow(cols, msg) {
+            return '<tr><td colspan="' + cols + '" class="text-center text-danger py-4">' +
+                '<i class="fa fa-exclamation-circle me-1"></i>' + (msg || 'Error loading data') +
+                '</td></tr>';
+        }
+
+        function showGlobalError(msg) {
+            var el = document.getElementById('global-error-alert');
+            document.getElementById('global-error-message').innerHTML = msg;
+            el.classList.remove('d-none');
+        }
+
+        function hideGlobalError() {
+            document.getElementById('global-error-alert').classList.add('d-none');
+        }
+
+        function statusBadge(status) {
+            if (status === 'verified') return '<span class="badge bg-success">Verified</span>';
+            return '<span class="badge bg-warning text-dark">Pending</span>';
+        }
+
+        function editBtnAttr(pathway, id) {
+            return '<button class="btn btn-sm btn-outline-primary me-1 admin-only" onclick="window._editSubject(\'' + pathway + '\', \'' + id + '\')" title="Edit">' +
+                '<i class="fa fa-edit"></i></button>';
+        }
+
+        function deleteBtnAttr(pathway, id) {
+            return '<button class="btn btn-sm btn-outline-danger admin-only" onclick="window._deleteSubject(\'' + pathway + '\', \'' + id + '\')" title="Delete">' +
+                '<i class="fa fa-trash"></i></button>';
+        }
+
+        function hideEditControls() {
+            var btns = document.querySelectorAll('.admin-only');
+            for (var i = 0; i < btns.length; i++) btns[i].style.display = 'none';
+            var addBtns = document.querySelectorAll('[data-admin-add]');
+            for (var j = 0; j < addBtns.length; j++) addBtns[j].style.display = 'none';
+        }
+
+        // ── Data loading ───────────────────────────────────────────────────
+        function loadLevels() {
+            showLoadingSpinners();
+            return IremeAPI.getCurriculumLevels().then(function(res) {
+                levels = res.levels || [];
+                levelsByType = { primary: [], secondary: [], ttc: [], tvet: [] };
+                levels.forEach(function(lvl) {
+                    var t = lvl.levelType;
+                    if (levelsByType[t]) levelsByType[t].push(lvl);
+                });
+                // Update pathway count stat
+                var pathwayCount = Object.keys(levelsByType).filter(function(k) {
+                    return levelsByType[k].length > 0;
+                }).length;
+                document.getElementById('stat-pathways').textContent = pathwayCount;
+            }).catch(function(err) {
+                showGlobalError('Could not load education levels. ' + (err.message || ''));
+            });
+        }
+
+        function loadSubjectsForPathway(pathway) {
+            var pathwayLevels = levelsByType[pathway] || [];
+            if (pathwayLevels.length === 0) {
+                subjectsByPathway[pathway] = [];
+                return Promise.resolve();
             }
 
-            document.getElementById('stat-subjects').textContent = totalSubjects;
-            document.getElementById('stat-verified').textContent = verified;
-            document.getElementById('stat-pending').textContent = pending;
+            var promises = pathwayLevels.map(function(lvl) {
+                return IremeAPI.getCurriculumSubjects(lvl.id).then(function(res) {
+                    return (res.subjects || []).map(function(s) {
+                        s._levelCode = lvl.code;
+                        s._levelId = lvl.id;
+                        return s;
+                    });
+                });
+            });
+
+            return Promise.all(promises).then(function(results) {
+                var merged = {};
+                results.forEach(function(arr) {
+                    arr.forEach(function(s) {
+                        if (!merged[s.id]) {
+                            merged[s.id] = {
+                                id: s.id,
+                                code: s.code,
+                                name: s.name,
+                                nameEn: s.nameEn,
+                                nameRw: s.nameRw,
+                                subjectType: s.subjectType,
+                                verificationStatus: s.verificationStatus,
+                                sourceName: s.sourceName,
+                                isCore: s.isCore,
+                                levels: [],
+                                levelIds: []
+                            };
+                        }
+                        if (merged[s.id].levels.indexOf(s._levelCode) === -1) {
+                            merged[s.id].levels.push(s._levelCode);
+                        }
+                        if (merged[s.id].levelIds.indexOf(s._levelId) === -1) {
+                            merged[s.id].levelIds.push(s._levelId);
+                        }
+                    });
+                });
+                subjectsByPathway[pathway] = Object.keys(merged).map(function(k) { return merged[k]; });
+            }).catch(function(err) {
+                showGlobalError('Could not load ' + pathway + ' subjects. ' + (err.message || ''));
+            });
         }
 
-        function renderAllTables() {
-            renderSubjectsTable('primary');
-            renderSubjectsTable('secondary');
-            renderSubjectsTable('ttc');
-            renderSubjectsTable('tvet');
+        function loadCombinations() {
+            var advancedLevels = (levelsByType.secondary || []).filter(function(l) {
+                return l.code >= 'S4';
+            });
+            if (advancedLevels.length === 0) {
+                combinationsData = [];
+                return Promise.resolve();
+            }
+
+            var promises = advancedLevels.map(function(lvl) {
+                return IremeAPI.getCurriculumCombinations(lvl.id).then(function(res) {
+                    return res.combinations || [];
+                });
+            });
+
+            return Promise.all(promises).then(function(results) {
+                var seen = {};
+                combinationsData = [];
+                results.forEach(function(arr) {
+                    arr.forEach(function(c) {
+                        if (!seen[c.id]) {
+                            seen[c.id] = true;
+                            combinationsData.push(c);
+                        }
+                    });
+                });
+            }).catch(function(err) {
+                showGlobalError('Could not load combinations. ' + (err.message || ''));
+            });
         }
 
+        function loadProgrammes(pathway) {
+            var pathwayLevels = levelsByType[pathway] || [];
+            if (pathwayLevels.length === 0) return Promise.resolve();
+
+            var promises = pathwayLevels.map(function(lvl) {
+                return IremeAPI.getCurriculumProgrammes(lvl.id, pathway).then(function(res) {
+                    return res.programmes || [];
+                });
+            });
+
+            return Promise.all(promises).then(function(results) {
+                var merged = [];
+                var seen = {};
+                results.forEach(function(arr) {
+                    arr.forEach(function(p) {
+                        if (!seen[p.id]) {
+                            seen[p.id] = true;
+                            merged.push(p);
+                        }
+                    });
+                });
+                if (pathway === 'ttc') ttcProgrammes = merged;
+                else tvetProgrammes = merged;
+            }).catch(function(err) {
+                showGlobalError('Could not load ' + pathway + ' programmes. ' + (err.message || ''));
+            });
+        }
+
+        function loadStats() {
+            return IremeAPI.getCurriculumStats().then(function(res) {
+                statsData = res.stats || {};
+                document.getElementById('stat-subjects').textContent = statsData.totalSubjects || 0;
+                document.getElementById('stat-verified').textContent = statsData.verifiedSubjects || 0;
+                document.getElementById('stat-pending').textContent = statsData.pendingSubjects || 0;
+            }).catch(function(err) {
+                // Stats are non-critical; just log
+                console.warn('Could not load curriculum stats:', err.message || err);
+            });
+        }
+
+        function showLoadingSpinners() {
+            document.getElementById('primary-subjects-table').innerHTML = spinnerRow(6);
+            document.getElementById('secondary-subjects-table').innerHTML = spinnerRow(7);
+            document.getElementById('ttc-subjects-table').innerHTML = spinnerRow(6);
+            document.getElementById('tvet-subjects-table').innerHTML = spinnerRow(6);
+            document.getElementById('combinations-container').innerHTML =
+                '<div class="text-center py-4"><div class="spinner-border spinner-border-sm text-primary me-2"></div>Loading combinations…</div>';
+        }
+
+        // ── Rendering ──────────────────────────────────────────────────────
         function renderSubjectsTable(pathway) {
             var tbody = document.getElementById(pathway + '-subjects-table');
             if (!tbody) return;
 
-            var html = '';
-            var subjects = IremeCurriculum.subjects[pathway];
+            var subjects = subjectsByPathway[pathway] || [];
+            var isSecondary = (pathway === 'secondary');
+            var colCount = isSecondary ? 7 : 6;
 
-            for (var key in subjects) {
-                var subject = subjects[key];
-                var levels = subject.levels || subject.years || subject.rqfLevels || [];
-                var statusBadge = subject.status === 'verified' 
-                    ? '<span class="badge bg-success">Verified</span>'
-                    : '<span class="badge bg-warning text-dark">Pending</span>';
-
-                html += '<tr>';
-                html += '<td><code>' + subject.code + '</code></td>';
-                html += '<td>' + subject.name + '</td>';
-                html += '<td>' + (subject.nameRw || '-') + '</td>';
-                
-                if (pathway === 'secondary' && subject.combinations) {
-                    html += '<td>' + levels.join(', ') + '</td>';
-                    html += '<td>' + subject.combinations.join(', ') + '</td>';
-                } else {
-                    html += '<td>' + levels.join(', ') + '</td>';
-                    if (pathway === 'secondary') html += '<td>-</td>';
-                }
-                
-                html += '<td>' + statusBadge + '</td>';
-                html += '<td>';
-                html += '<button class="btn btn-sm btn-outline-primary me-1" onclick="editSubject(\'' + pathway + '\', \'' + key + '\')">';
-                html += '<i class="fa fa-edit"></i></button>';
-                html += '<button class="btn btn-sm btn-outline-danger" onclick="deleteSubject(\'' + pathway + '\', \'' + key + '\')">';
-                html += '<i class="fa fa-trash"></i></button>';
-                html += '</td>';
-                html += '</tr>';
+            if (subjects.length === 0) {
+                tbody.innerHTML = emptyRow(colCount, 'No subjects found for this pathway');
+                return;
             }
 
-            tbody.innerHTML = html || '<tr><td colspan="7" class="text-center text-muted">No subjects found</td></tr>';
+            var html = '';
+            subjects.forEach(function(s) {
+                var levelsStr = s.levels.join(', ');
+                html += '<tr>';
+                html += '<td><code>' + (s.code || '') + '</code></td>';
+                html += '<td>' + (s.nameEn || s.name || '') + '</td>';
+                html += '<td>' + (s.nameRw || '-') + '</td>';
+                html += '<td>' + levelsStr + '</td>';
+                if (isSecondary) {
+                    // Show combinations for this subject (if any)
+                    var combos = [];
+                    combinationsData.forEach(function(c) {
+                        (c.subjects || []).forEach(function(cs) {
+                            if (cs.subject && cs.subject.id === s.id) {
+                                combos.push(c.code);
+                            }
+                        });
+                    });
+                    html += '<td>' + (combos.length > 0 ? combos.join(', ') : '-') + '</td>';
+                }
+                html += '<td>' + statusBadge(s.verificationStatus) + '</td>';
+                html += '<td>';
+                if (isAdmin) {
+                    html += editBtnAttr(pathway, s.id);
+                    html += deleteBtnAttr(pathway, s.id);
+                }
+                html += '</td>';
+                html += '</tr>';
+            });
+
+            tbody.innerHTML = html;
         }
 
         function renderCombinations() {
             var container = document.getElementById('combinations-container');
-            var html = '';
+            if (combinationsData.length === 0) {
+                container.innerHTML = '<div class="col-12"><p class="text-muted text-center">No subject combinations found.</p></div>';
+                return;
+            }
 
-            for (var code in IremeCurriculum.combinations) {
-                var combo = IremeCurriculum.combinations[code];
+            var html = '';
+            combinationsData.forEach(function(c) {
+                var subjectNames = (c.subjects || []).map(function(cs) {
+                    return cs.subject ? (cs.subject.nameEn || cs.subject.name) : '';
+                }).filter(Boolean).join(', ');
+
                 html += '<div class="col-md-6 col-lg-4">';
                 html += '<div class="border rounded p-3">';
-                html += '<h6 class="mb-2"><code>' + code + '</code> - ' + combo.name + '</h6>';
-                html += '<p class="small text-muted mb-0">Subjects: ' + combo.subjects.join(', ') + '</p>';
+                html += '<h6 class="mb-2"><code>' + (c.code || '') + '</code> &mdash; ' + (c.nameEn || c.name || '') + '</h6>';
+                html += '<p class="small text-muted mb-1">Subjects: ' + (subjectNames || '-') + '</p>';
+                if (c.level) {
+                    html += '<p class="small text-muted mb-0">Level: ' + (c.level.nameEn || c.level.name || '') + '</p>';
+                }
+                html += '<span class="mt-1">' + statusBadge(c.verificationStatus) + '</span>';
                 html += '</div></div>';
-            }
+            });
 
             container.innerHTML = html;
         }
 
-        window.openAddSubjectModal = function(pathway) {
-            currentPathway = pathway;
-            var modal = new bootstrap.Modal(document.getElementById('addSubjectModal'));
-            
-            // Populate levels checkboxes
-            var levelsContainer = document.getElementById('levels-checkboxes');
-            var levels = IremeCurriculum.getPathwayLevels(pathway);
+        function renderProgrammesTable(pathway) {
+            var tbody = document.getElementById(pathway + '-subjects-table');
+            if (!tbody) return;
+
+            var programmes = (pathway === 'ttc') ? ttcProgrammes : tvetProgrammes;
+            var isTvet = (pathway === 'tvet');
+            var colCount = 6;
+
+            if (programmes.length === 0) {
+                tbody.innerHTML = emptyRow(colCount, 'No programmes found for this pathway');
+                return;
+            }
+
             var html = '';
-            
-            levels.forEach(function(level) {
-                html += '<div class="form-check form-check-inline">';
-                html += '<input class="form-check-input" type="checkbox" value="' + level + '" id="level-' + level + '">';
-                html += '<label class="form-check-label" for="level-' + level + '">' + level + '</label>';
-                html += '</div>';
+            programmes.forEach(function(p) {
+                html += '<tr>';
+                html += '<td><code>' + (p.code || '') + '</code></td>';
+                html += '<td>' + (p.nameEn || p.name || '') + '</td>';
+                html += '<td>' + (p.nameRw || '-') + '</td>';
+                if (isTvet) {
+                    html += '<td>' + (p.qualificationLevel || '-') + '</td>';
+                } else {
+                    html += '<td>' + (p.durationYears ? p.durationYears + ' year(s)' : '-') + '</td>';
+                }
+                html += '<td>' + statusBadge(p.verificationStatus) + '</td>';
+                html += '<td>';
+                if (isAdmin) {
+                    html += '<button class="btn btn-sm btn-outline-primary me-1 admin-only" title="Edit"><i class="fa fa-edit"></i></button>';
+                }
+                html += '</td>';
+                html += '</tr>';
             });
-            
+
+            tbody.innerHTML = html;
+        }
+
+        function renderAll() {
+            renderSubjectsTable('primary');
+            renderSubjectsTable('secondary');
+            renderCombinations();
+            renderProgrammesTable('ttc');
+            renderProgrammesTable('tvet');
+            if (!isAdmin) hideEditControls();
+        }
+
+        // ── CRUD: Add Subject ──────────────────────────────────────────────
+        window.openAddSubjectModal = function(pathway) {
+            if (!isAdmin) return;
+            currentModalPathway = pathway;
+            var modal = new bootstrap.Modal(document.getElementById('addSubjectModal'));
+
+            // Populate levels checkboxes from API data
+            var levelsContainer = document.getElementById('levels-checkboxes');
+            var pathwayLevels = levelsByType[pathway] || [];
+            var html = '';
+
+            if (pathwayLevels.length === 0) {
+                html = '<p class="text-muted small">No levels available for this pathway.</p>';
+            } else {
+                pathwayLevels.forEach(function(lvl) {
+                    html += '<div class="form-check form-check-inline">';
+                    html += '<input class="form-check-input" type="checkbox" value="' + lvl.id + '" id="level-' + lvl.id + '" data-code="' + lvl.code + '">';
+                    html += '<label class="form-check-label" for="level-' + lvl.id + '">' + (lvl.nameEn || lvl.code) + '</label>';
+                    html += '</div>';
+                });
+            }
+
             levelsContainer.innerHTML = html;
+            document.getElementById('add-subject-form').reset();
             modal.show();
         };
 
         window.saveSubject = function() {
-            var code = document.getElementById('subject-code').value;
-            var name = document.getElementById('subject-name').value;
-            var nameRw = document.getElementById('subject-name-rw').value;
-            var status = document.getElementById('subject-status').value;
-            var source = document.getElementById('subject-source').value;
+            if (!isAdmin) return;
 
-            var levels = [];
+            var code = document.getElementById('subject-code').value.trim();
+            var nameEn = document.getElementById('subject-name').value.trim();
+            var nameRw = document.getElementById('subject-name-rw').value.trim();
+            var status = document.getElementById('subject-status').value;
+            var source = document.getElementById('subject-source').value.trim();
+
+            var levelIds = [];
+            var levelCodes = [];
             document.querySelectorAll('#levels-checkboxes input:checked').forEach(function(cb) {
-                levels.push(cb.value);
+                levelIds.push(cb.value);
+                levelCodes.push(cb.getAttribute('data-code') || cb.value);
             });
 
-            if (!code || !name || levels.length === 0) {
-                alert('Please fill in all required fields');
+            if (!code || !nameEn || levelIds.length === 0) {
+                alert('Please fill in all required fields and select at least one level.');
                 return;
             }
 
-            // Add to curriculum data
-            var key = name.toLowerCase().replace(/\s+/g, '');
-            IremeCurriculum.subjects[currentPathway][key] = {
+            // Determine subjectType from pathway
+            var subjectType = currentModalPathway === 'ttc' ? 'ttc' :
+                              currentModalPathway === 'tvet' ? 'tvet' :
+                              currentModalPathway;
+
+            // Map form value to backend value
+            var verificationStatus = (status === 'pending_verification') ? 'pending' : status;
+
+            var subjectData = {
                 code: code,
-                name: name,
+                name: nameEn,
+                nameEn: nameEn,
                 nameRw: nameRw,
-                levels: levels,
-                status: status,
-                source: source
+                subjectType: subjectType,
+                sourceName: source || null,
+                verificationStatus: verificationStatus
             };
 
-            // Re-render table
-            renderSubjectsTable(currentPathway);
-            updateStats();
+            // Save button loading state
+            var saveBtn = document.querySelector('#addSubjectModal .btn-primary');
+            var origText = saveBtn.innerHTML;
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Saving…';
 
-            // Close modal and reset form
-            bootstrap.Modal.getInstance(document.getElementById('addSubjectModal')).hide();
-            document.getElementById('add-subject-form').reset();
+            IremeAPI.createSubject(subjectData).then(function(res) {
+                var subject = res.subject;
+                // Link to each selected level
+                var linkPromises = levelIds.map(function(lid) {
+                    return IremeAPI.linkSubjectToLevel({
+                        subjectId: subject.id,
+                        educationLevelId: lid,
+                        isCore: true
+                    });
+                });
+                return Promise.all(linkPromises);
+            }).then(function() {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = origText;
+                bootstrap.Modal.getInstance(document.getElementById('addSubjectModal')).hide();
+                document.getElementById('add-subject-form').reset();
 
-            alert('Subject added successfully.');
+                // Reload data for this pathway and re-render
+                return loadSubjectsForPathway(currentModalPathway).then(function() {
+                    renderSubjectsTable(currentModalPathway);
+                    loadStats();
+                });
+            }).then(function() {
+                showToast('Subject added successfully.', 'success');
+            }).catch(function(err) {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = origText;
+                alert('Failed to save subject. ' + (err.message || ''));
+            });
         };
 
-        window.editSubject = function(pathway, key) {
-            alert('Editing subject: ' + key);
-        };
-
-        window.deleteSubject = function(pathway, key) {
-            if (confirm('Delete subject "' + key + '"? This cannot be undone.')) {
-                delete IremeCurriculum.subjects[pathway][key];
-                renderSubjectsTable(pathway);
-                updateStats();
-                alert('Subject deleted successfully.');
+        // ── CRUD: Edit Subject (placeholder for future update API) ─────────
+        window._editSubject = function(pathway, subjectId) {
+            if (!isAdmin) return;
+            // Find the subject in our loaded data
+            var subjects = subjectsByPathway[pathway] || [];
+            var subject = null;
+            for (var i = 0; i < subjects.length; i++) {
+                if (subjects[i].id === subjectId) { subject = subjects[i]; break; }
             }
+            if (!subject) { alert('Subject not found.'); return; }
+
+            currentModalPathway = pathway;
+            var modal = new bootstrap.Modal(document.getElementById('addSubjectModal'));
+            document.querySelector('#addSubjectModal .modal-title').textContent = 'Edit Subject';
+
+            document.getElementById('subject-code').value = subject.code || '';
+            document.getElementById('subject-name').value = subject.nameEn || subject.name || '';
+            document.getElementById('subject-name-rw').value = subject.nameRw || '';
+            document.getElementById('subject-status').value = subject.verificationStatus || 'pending';
+            document.getElementById('subject-source').value = subject.sourceName || '';
+
+            // Populate levels and check the ones this subject is linked to
+            var levelsContainer = document.getElementById('levels-checkboxes');
+            var pathwayLevels = levelsByType[pathway] || [];
+            var html = '';
+            pathwayLevels.forEach(function(lvl) {
+                var checked = subject.levelIds && subject.levelIds.indexOf(lvl.id) !== -1 ? ' checked' : '';
+                html += '<div class="form-check form-check-inline">';
+                html += '<input class="form-check-input" type="checkbox" value="' + lvl.id + '" id="level-' + lvl.id + '" data-code="' + lvl.code + '"' + checked + '>';
+                html += '<label class="form-check-label" for="level-' + lvl.id + '">' + (lvl.nameEn || lvl.code) + '</label>';
+                html += '</div>';
+            });
+            levelsContainer.innerHTML = html;
+            modal.show();
         };
 
+        // ── CRUD: Delete Subject (unlink from level) ───────────────────────
+        window._deleteSubject = function(pathway, subjectId) {
+            if (!isAdmin) return;
+            if (!confirm('Are you sure you want to remove this subject? This action cannot be undone.')) return;
+
+            var subjects = subjectsByPathway[pathway] || [];
+            var subject = null;
+            for (var i = 0; i < subjects.length; i++) {
+                if (subjects[i].id === subjectId) { subject = subjects[i]; break; }
+            }
+            if (!subject) { alert('Subject not found.'); return; }
+
+            // Unlink from all levels in this pathway
+            var levelIds = subject.levelIds || [];
+            var promises = levelIds.map(function(lid) {
+                return IremeAPI.unlinkSubjectFromLevel(subjectId, lid);
+            });
+
+            Promise.all(promises).then(function() {
+                return loadSubjectsForPathway(pathway);
+            }).then(function() {
+                renderSubjectsTable(pathway);
+                loadStats();
+                showToast('Subject removed successfully.', 'success');
+            }).catch(function(err) {
+                alert('Failed to remove subject. ' + (err.message || ''));
+            });
+        };
+
+        // ── Import / Export ────────────────────────────────────────────────
         window.importCurriculum = function() {
-            alert('Please select a CSV or JSON file to import curriculum data.');
+            if (!isAdmin) { alert('You do not have permission to import data.'); return; }
+            var fileInput = document.getElementById('import-file');
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert('Please select a CSV or JSON file to import.');
+                return;
+            }
+            var file = fileInput.files[0];
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    var data = JSON.parse(e.target.result);
+                    // Expect an array of subject objects
+                    var items = Array.isArray(data) ? data : (data.subjects || []);
+                    if (items.length === 0) { alert('No valid subject data found in file.'); return; }
+
+                    var promises = items.map(function(item) {
+                        return IremeAPI.createSubject({
+                            code: item.code,
+                            name: item.name || item.nameEn,
+                            nameEn: item.nameEn || item.name,
+                            nameRw: item.nameRw || null,
+                            subjectType: item.subjectType || 'primary',
+                            sourceName: item.sourceName || item.source || null,
+                            verificationStatus: item.verificationStatus || item.status || 'pending'
+                        });
+                    });
+
+                    Promise.all(promises).then(function() {
+                        showToast(items.length + ' subject(s) imported successfully.', 'success');
+                        fileInput.value = '';
+                        // Reload all data
+                        return Promise.all([
+                            loadSubjectsForPathway('primary'),
+                            loadSubjectsForPathway('secondary'),
+                            loadStats()
+                        ]);
+                    }).then(function() {
+                        renderSubjectsTable('primary');
+                        renderSubjectsTable('secondary');
+                    }).catch(function(err) {
+                        alert('Import partially failed. ' + (err.message || ''));
+                    });
+                } catch (ex) {
+                    alert('Could not parse file. Please ensure it is valid JSON. ' + (ex.message || ''));
+                }
+            };
+            reader.readAsText(file);
         };
 
         window.exportCurriculum = function(format) {
-            var data = JSON.stringify(IremeCurriculum, null, 2);
-            var blob = new Blob([data], { type: 'application/json' });
+            var exportData = {
+                levels: levels,
+                subjects: subjectsByPathway,
+                combinations: combinationsData,
+                ttcProgrammes: ttcProgrammes,
+                tvetProgrammes: tvetProgrammes,
+                stats: statsData,
+                exportedAt: new Date().toISOString()
+            };
+
+            var content, mimeType, extension;
+            if (format === 'csv') {
+                // Build CSV from subjects
+                var rows = [['Code', 'Name', 'NameRw', 'Type', 'Status', 'Levels', 'Source']];
+                ['primary', 'secondary'].forEach(function(pw) {
+                    (subjectsByPathway[pw] || []).forEach(function(s) {
+                        rows.push([s.code, s.nameEn || s.name, s.nameRw || '', s.subjectType, s.verificationStatus, (s.levels || []).join(';'), s.sourceName || '']);
+                    });
+                });
+                content = rows.map(function(r) { return r.map(function(c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+                mimeType = 'text/csv';
+                extension = 'csv';
+            } else {
+                content = JSON.stringify(exportData, null, 2);
+                mimeType = 'application/json';
+                extension = 'json';
+            }
+
+            var blob = new Blob([content], { type: mimeType });
             var url = URL.createObjectURL(blob);
             var a = document.createElement('a');
             a.href = url;
-            a.download = 'curriculum-data.json';
+            a.download = 'curriculum-data.' + extension;
             a.click();
             URL.revokeObjectURL(url);
         };
 
-        // Tab change handler
+        // ── Toast notification ─────────────────────────────────────────────
+        function showToast(message, type) {
+            var container = document.getElementById('toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'toast-container';
+                container.className = 'position-fixed top-0 end-0 p-3';
+                container.style.zIndex = '1090';
+                document.body.appendChild(container);
+            }
+
+            var bgClass = type === 'success' ? 'bg-success' : type === 'danger' ? 'bg-danger' : 'bg-primary';
+            var toastEl = document.createElement('div');
+            toastEl.className = 'toast align-items-center text-white ' + bgClass + ' border-0';
+            toastEl.setAttribute('role', 'alert');
+            toastEl.innerHTML = '<div class="d-flex">' +
+                '<div class="toast-body">' + message + '</div>' +
+                '<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>' +
+                '</div>';
+            container.appendChild(toastEl);
+            var toast = new bootstrap.Toast(toastEl, { delay: 4000 });
+            toast.show();
+            toastEl.addEventListener('hidden.bs.toast', function() { toastEl.remove(); });
+        }
+
+        // ── Tab change handler ─────────────────────────────────────────────
         document.querySelectorAll('#pathwayTabs button').forEach(function(button) {
             button.addEventListener('shown.bs.tab', function(e) {
                 var target = e.target.getAttribute('data-bs-target');
@@ -537,7 +973,32 @@
             });
         });
 
-        // Initialize
+        // ── Initialize ─────────────────────────────────────────────────────
+        function init() {
+            if (!isAdmin) {
+                // Hide add-subject buttons for non-admin users
+                var addBtns = document.querySelectorAll('[onclick^="openAddSubjectModal"]');
+                for (var i = 0; i < addBtns.length; i++) {
+                    addBtns[i].setAttribute('data-admin-add', '1');
+                }
+            }
+
+            loadLevels().then(function() {
+                return Promise.all([
+                    loadSubjectsForPathway('primary'),
+                    loadSubjectsForPathway('secondary'),
+                    loadCombinations(),
+                    loadProgrammes('ttc'),
+                    loadProgrammes('tvet'),
+                    loadStats()
+                ]);
+            }).then(function() {
+                renderAll();
+            }).catch(function(err) {
+                showGlobalError('Failed to load curriculum data. ' + (err.message || ''));
+            });
+        }
+
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', init);
         } else {

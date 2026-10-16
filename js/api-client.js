@@ -221,6 +221,42 @@ var IremeAPI = (function() {
     getSchoolMembers: function(schoolId) {
       return this.get('/api/schools/' + encodeURIComponent(schoolId) + '/members');
     },
+
+    getCurriculumCombinations: function(levelId) {
+      return this.get('/api/curriculum/combinations' + (levelId ? '?levelId=' + encodeURIComponent(levelId) : ''));
+    },
+
+    getCurriculumProgrammes: function(levelId, type) {
+      var params = [];
+      if (levelId) params.push('levelId=' + encodeURIComponent(levelId));
+      if (type) params.push('type=' + encodeURIComponent(type));
+      var qs = params.length ? '?' + params.join('&') : '';
+      return this.get('/api/curriculum/programmes' + qs);
+    },
+
+    getCurriculumStats: function() {
+      return this.get('/api/curriculum/stats');
+    },
+
+    createSubject: function(data) {
+      return this.post('/api/curriculum/subjects', data);
+    },
+
+    linkSubjectToLevel: function(data) {
+      return this.post('/api/curriculum/subjects/link', data);
+    },
+
+    unlinkSubjectFromLevel: function(subjectId, levelId) {
+      return this.delete('/api/curriculum/subjects/link?subjectId=' + encodeURIComponent(subjectId) + '&educationLevelId=' + encodeURIComponent(levelId));
+    },
+
+    createCombination: function(data) {
+      return this.post('/api/curriculum/combinations', data);
+    },
+
+    createProgramme: function(data) {
+      return this.post('/api/curriculum/programmes', data);
+    },
   };
 })();
 
