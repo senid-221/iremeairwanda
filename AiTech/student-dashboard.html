@@ -44,21 +44,21 @@
                 <div class="col-md-3 wow fadeIn" data-wow-delay="0.1s">
                     <div class="service-item rounded text-center p-4">
                         <i class="fa fa-book-open fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold">6</h3>
+                        <h3 class="fw-bold" id="dash-subjects-count">0</h3>
                         <p class="mb-0" data-i18n="dashboard.mySubjects">My Subjects</p>
                     </div>
                 </div>
                 <div class="col-md-3 wow fadeIn" data-wow-delay="0.2s">
                     <div class="service-item rounded text-center p-4">
                         <i class="fa fa-tasks fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold">3</h3>
+                        <h3 class="fw-bold" id="dash-pending-count">0</h3>
                         <p class="mb-0" data-i18n="dashboard.pending">Pending</p>
                     </div>
                 </div>
                 <div class="col-md-3 wow fadeIn" data-wow-delay="0.3s">
                     <div class="service-item rounded text-center p-4">
                         <i class="fa fa-check-circle fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold">12</h3>
+                        <h3 class="fw-bold" id="dash-completed-count">0</h3>
                         <p class="mb-0" data-i18n="dashboard.completed">Completed</p>
                     </div>
                 </div>
@@ -76,51 +76,8 @@
                 <div class="col-lg-8 wow fadeIn" data-wow-delay="0.1s">
                     <div class="bg-light rounded p-4">
                         <h4 class="mb-4" data-i18n="dashboard.mySubjects">My Subjects</h4>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="service-item rounded p-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="service-icon btn-square me-3"><i class="fa fa-calculator fa-lg"></i></div>
-                                        <div>
-                                            <h6 class="mb-1">Mathematics</h6>
-                                            <small class="text-muted">P5 • 8 lessons completed</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="service-item rounded p-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="service-icon btn-square me-3"><i class="fa fa-flask fa-lg"></i></div>
-                                        <div>
-                                            <h6 class="mb-1">Science</h6>
-                                            <small class="text-muted">P5 • 6 lessons completed</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="service-item rounded p-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="service-icon btn-square me-3"><i class="fa fa-language fa-lg"></i></div>
-                                        <div>
-                                            <h6 class="mb-1">English</h6>
-                                            <small class="text-muted">P5 • 10 lessons completed</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="service-item rounded p-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="service-icon btn-square me-3"><i class="fa fa-comment fa-lg"></i></div>
-                                        <div>
-                                            <h6 class="mb-1">Kinyarwanda</h6>
-                                            <small class="text-muted">P5 • 7 lessons completed</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="row g-3" id="dash-subjects-list">
+                            <div class="col-12 text-center text-muted py-3">Loading subjects...</div>
                         </div>
                     </div>
                 </div>
@@ -132,7 +89,7 @@
                         <div class="d-grid gap-3">
                             <a href="game-setup.html" class="btn btn-primary rounded-pill py-3" data-i18n="dashboard.playGame">Play Learning Game</a>
                             <a href="resources.html" class="btn btn-outline-primary rounded-pill py-3" data-i18n="home.browseResources">Browse Resources</a>
-                            <a href="" class="btn btn-outline-primary rounded-pill py-3" data-i18n="dashboard.aiAssistant">Ask Ireme AI</a>
+                            <a href="ai-tutor.html" class="btn btn-outline-primary rounded-pill py-3" data-i18n="dashboard.aiAssistant">Ask Ireme AI</a>
                         </div>
 
                         <hr class="my-4">
@@ -165,30 +122,13 @@
                                 <thead>
                                     <tr>
                                         <th>Activity</th>
-                                        <th>Subject</th>
+                                        <th>Details</th>
                                         <th>Status</th>
                                         <th>Date</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Mathematics Quiz - Fractions</td>
-                                        <td>Math</td>
-                                        <td><span class="badge bg-success" data-i18n="dashboard.completed">Completed</span></td>
-                                        <td>2026-10-14</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Science Lesson - Photosynthesis</td>
-                                        <td>Science</td>
-                                        <td><span class="badge bg-success" data-i18n="dashboard.completed">Completed</span></td>
-                                        <td>2026-10-13</td>
-                                    </tr>
-                                    <tr>
-                                        <td>English Assignment - Grammar</td>
-                                        <td>English</td>
-                                        <td><span class="badge bg-warning text-dark" data-i18n="dashboard.pending">Pending</span></td>
-                                        <td>2026-10-15</td>
-                                    </tr>
+                                <tbody id="dash-activity-list">
+                                    <tr><td colspan="4" class="text-center text-muted py-3">Loading activity...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -221,7 +161,62 @@
             var welcomeEl = document.querySelector('[data-i18n="dashboard.welcome"]');
             if (welcomeEl) welcomeEl.textContent = user.name;
         }
-        document.getElementById('dash-games-played').textContent = IremeGame.getMatchHistory().length;
+
+        var SUBJECT_ICONS = {
+            mathematics: 'fa-calculator', math: 'fa-calculator', science: 'fa-flask',
+            english: 'fa-language', kinyarwanda: 'fa-comment', french: 'fa-language',
+            physics: 'fa-atom', chemistry: 'fa-flask', biology: 'fa-dna',
+            history: 'fa-landmark', geography: 'fa-globe-africa',
+        };
+        function iconForSubject(name) {
+            var key = String(name || '').toLowerCase();
+            for (var k in SUBJECT_ICONS) { if (key.indexOf(k) !== -1) return SUBJECT_ICONS[k]; }
+            return 'fa-book';
+        }
+
+        IremeAPI.getDashboard('student').then(function(data) {
+            var subjects = data.subjects || [];
+            var gameStats = data.gameStats || {};
+            var videoLessons = data.videoLessons || {};
+            var recentActivity = data.recentActivity || [];
+
+            document.getElementById('dash-subjects-count').textContent = subjects.length;
+            document.getElementById('dash-games-played').textContent = gameStats.matchesPlayed || 0;
+            document.getElementById('dash-completed-count').textContent = videoLessons.completed || 0;
+            document.getElementById('dash-pending-count').textContent = videoLessons.inProgress || 0;
+
+            var subjectsList = document.getElementById('dash-subjects-list');
+            if (subjects.length === 0) {
+                subjectsList.innerHTML = '<div class="col-12 text-center text-muted py-3">No subjects enrolled yet. Contact your school to enroll.</div>';
+            } else {
+                subjectsList.innerHTML = subjects.slice(0, 8).map(function(s) {
+                    var name = s.nameEn || s.name || 'Subject';
+                    var level = s.level ? (s.level.nameEn || s.level.name || '') : '';
+                    return '<div class="col-md-6">' +
+                        '<div class="service-item rounded p-3"><div class="d-flex align-items-center">' +
+                        '<div class="service-icon btn-square me-3"><i class="fa ' + iconForSubject(name) + ' fa-lg"></i></div>' +
+                        '<div><h6 class="mb-1">' + name.replace(/</g, '&lt;') + '</h6>' +
+                        '<small class="text-muted">' + (level ? level + ' &bull; ' : '') + s.code + '</small></div>' +
+                        '</div></div></div>';
+                }).join('');
+            }
+
+            var activityList = document.getElementById('dash-activity-list');
+            if (recentActivity.length === 0) {
+                activityList.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3">No recent activity</td></tr>';
+            } else {
+                activityList.innerHTML = recentActivity.map(function(a) {
+                    var date = new Date(a.createdAt).toLocaleDateString();
+                    var type = a.activityType || 'activity';
+                    var title = a.activityTitle || type;
+                    var status = a.xpEarned > 0 ? '<span class="badge bg-success">Completed</span>' : '<span class="badge bg-info">In Progress</span>';
+                    return '<tr><td>' + title.replace(/</g, '&lt;') + '</td><td>' + type.replace(/</g, '&lt;') + '</td><td>' + status + '</td><td>' + date + '</td></tr>';
+                }).join('');
+            }
+        }).catch(function() {
+            document.getElementById('dash-subjects-list').innerHTML = '<div class="col-12 text-center text-muted py-3">Could not load dashboard data</div>';
+        });
+
         IremeAPI.getVideoLessons().then(function(data){
             var lessons = (data.lessons || []).filter(function(l){
                 return l.status === 'completed' && l.progress && l.progress.completionPercent > 5 && l.progress.completionPercent < 95;

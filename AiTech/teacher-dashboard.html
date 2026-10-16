@@ -43,29 +43,29 @@
                 <div class="col-md-3 wow fadeIn" data-wow-delay="0.1s">
                     <div class="service-item rounded text-center p-4">
                         <i class="fa fa-users fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold">45</h3>
+                        <h3 class="fw-bold" id="dash-teacher-students">0</h3>
                         <p class="mb-0" data-i18n="dashboard.myStudents">My Students</p>
                     </div>
                 </div>
                 <div class="col-md-3 wow fadeIn" data-wow-delay="0.2s">
                     <div class="service-item rounded text-center p-4">
                         <i class="fa fa-book fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold">8</h3>
-                        <p class="mb-0" data-i18n="dashboard.lessons">Lessons</p>
+                        <h3 class="fw-bold" id="dash-teacher-classes">0</h3>
+                        <p class="mb-0" data-i18n="dashboard.lessons">Classes</p>
                     </div>
                 </div>
                 <div class="col-md-3 wow fadeIn" data-wow-delay="0.3s">
                     <div class="service-item rounded text-center p-4">
                         <i class="fa fa-clipboard-check fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold">5</h3>
-                        <p class="mb-0" data-i18n="dashboard.assessments">Assessments</p>
+                        <h3 class="fw-bold" id="dash-teacher-assignments">0</h3>
+                        <p class="mb-0" data-i18n="dashboard.assessments">Assignments</p>
                     </div>
                 </div>
                 <div class="col-md-3 wow fadeIn" data-wow-delay="0.4s">
                     <div class="service-item rounded text-center p-4">
-                        <i class="fa fa-chart-bar fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold">3</h3>
-                        <p class="mb-0" data-i18n="dashboard.reports">Reports</p>
+                        <i class="fa fa-school fa-2x text-primary mb-3"></i>
+                        <h3 class="fw-bold" id="dash-teacher-school-name" style="font-size:0.9rem">—</h3>
+                        <p class="mb-0" data-i18n="dashboard.school">School</p>
                     </div>
                 </div>
             </div>
@@ -74,35 +74,8 @@
                 <div class="col-lg-8 wow fadeIn" data-wow-delay="0.1s">
                     <div class="bg-light rounded p-4">
                         <h4 class="mb-4" data-i18n="dashboard.myClasses">My Classes</h4>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="service-item rounded p-3">
-                                    <h6 class="mb-1">P5 - Mathematics</h6>
-                                    <small class="text-muted">22 students • 8 lessons</small>
-                                    <div class="progress mt-2" style="height: 6px;"><div class="progress-bar bg-primary" style="width: 75%"></div></div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="service-item rounded p-3">
-                                    <h6 class="mb-1">P5 - Science</h6>
-                                    <small class="text-muted">22 students • 6 lessons</small>
-                                    <div class="progress mt-2" style="height: 6px;"><div class="progress-bar bg-primary" style="width: 60%"></div></div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="service-item rounded p-3">
-                                    <h6 class="mb-1">P6 - Mathematics</h6>
-                                    <small class="text-muted">23 students • 10 lessons</small>
-                                    <div class="progress mt-2" style="height: 6px;"><div class="progress-bar bg-primary" style="width: 85%"></div></div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="service-item rounded p-3">
-                                    <h6 class="mb-1">P6 - Science</h6>
-                                    <small class="text-muted">23 students • 5 lessons</small>
-                                    <div class="progress mt-2" style="height: 6px;"><div class="progress-bar bg-primary" style="width: 45%"></div></div>
-                                </div>
-                            </div>
+                        <div class="row g-3" id="dash-teacher-classes-list">
+                            <div class="col-12 text-center text-muted py-3">Loading classes...</div>
                         </div>
                     </div>
                 </div>
@@ -114,7 +87,7 @@
                             <button class="btn btn-primary rounded-pill py-3" data-i18n="dashboard.createLesson">Create Lesson</button>
                             <button class="btn btn-outline-primary rounded-pill py-3" data-i18n="dashboard.createQuiz">Create Quiz</button>
                             <button class="btn btn-outline-primary rounded-pill py-3" data-i18n="dashboard.viewReports">View Reports</button>
-                            <button class="btn btn-outline-primary rounded-pill py-3" data-i18n="dashboard.aiAssistant">Ask Ireme AI</button>
+                            <a href="ai-tutor.html" class="btn btn-outline-primary rounded-pill py-3" data-i18n="dashboard.aiAssistant">Ask Ireme AI</a>
                         </div>
                     </div>
                 </div>
@@ -129,10 +102,8 @@
                                 <thead>
                                     <tr><th>Activity</th><th>Class</th><th>Status</th><th>Date</th></tr>
                                 </thead>
-                                <tbody>
-                                    <tr><td>Math Quiz - Fractions graded</td><td>P5 Math</td><td><span class="badge bg-success" data-i18n="dashboard.completed">Completed</span></td><td>2026-10-14</td></tr>
-                                    <tr><td>Science Lesson Plan created</td><td>P5 Science</td><td><span class="badge bg-success" data-i18n="dashboard.completed">Completed</span></td><td>2026-10-13</td></tr>
-                                    <tr><td>Student progress report</td><td>P6 Math</td><td><span class="badge bg-info">Generated</span></td><td>2026-10-12</td></tr>
+                                <tbody id="dash-teacher-activity">
+                                    <tr><td colspan="4" class="text-center text-muted py-3">Loading activity...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -159,6 +130,53 @@
     <script>
         IremeComponents.initPage('teacher-dashboard.html');
         if (!IremeAuth.requireRole('teacher')) { throw new Error('Access denied'); }
+        var user = IremeAuth.currentUser();
+        if (user) {
+            var welcomeEl = document.querySelector('[data-i18n="dashboard.welcome"]');
+            if (welcomeEl) welcomeEl.textContent = user.name;
+        }
+
+        IremeAPI.getDashboard('teacher').then(function(data) {
+            var classes = data.classes || [];
+            var assignments = data.assignments || [];
+            var students = data.students || [];
+            var school = data.school;
+            var recentActivity = data.recentActivity || [];
+
+            document.getElementById('dash-teacher-students').textContent = students.length;
+            document.getElementById('dash-teacher-classes').textContent = classes.length;
+            document.getElementById('dash-teacher-assignments').textContent = assignments.length;
+            if (school) {
+                document.getElementById('dash-teacher-school-name').textContent = school.nameEn || school.name || '—';
+            }
+
+            var classesList = document.getElementById('dash-teacher-classes-list');
+            if (classes.length === 0) {
+                classesList.innerHTML = '<div class="col-12 text-center text-muted py-3">No classes assigned yet.</div>';
+            } else {
+                classesList.innerHTML = classes.map(function(c) {
+                    var classAssignments = assignments.filter(function(a) { return a.class && a.class.id === c.id; });
+                    var subjectNames = classAssignments.map(function(a) { return a.subject ? (a.subject.nameEn || a.subject.name) : ''; }).filter(Boolean).join(', ');
+                    var studentCount = students.filter(function(s) { return s.class && s.class.id === c.id; }).length;
+                    return '<div class="col-md-6"><div class="service-item rounded p-3">' +
+                        '<h6 class="mb-1">' + (c.name || c.level || 'Class').replace(/</g, '&lt;') + (subjectNames ? ' - ' + subjectNames.replace(/</g, '&lt;') : '') + '</h6>' +
+                        '<small class="text-muted">' + studentCount + ' students</small>' +
+                        '</div></div>';
+                }).join('');
+            }
+
+            var activityTbody = document.getElementById('dash-teacher-activity');
+            if (recentActivity.length === 0) {
+                activityTbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3">No recent activity</td></tr>';
+            } else {
+                activityTbody.innerHTML = recentActivity.map(function(a) {
+                    var date = new Date(a.createdAt).toLocaleDateString();
+                    return '<tr><td>' + (a.activityTitle || a.activityType || '').replace(/</g, '&lt;') + '</td><td>—</td><td><span class="badge bg-success">Logged</span></td><td>' + date + '</td></tr>';
+                }).join('');
+            }
+        }).catch(function() {
+            document.getElementById('dash-teacher-classes-list').innerHTML = '<div class="col-12 text-center text-muted py-3">Could not load dashboard data</div>';
+        });
     </script>
 </body>
 </html>

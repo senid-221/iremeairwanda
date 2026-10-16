@@ -115,25 +115,32 @@
 
         if (IremeAuth.isLoggedIn()) { IremeAuth.redirectToDashboard(); }
 
-        var registerableRoles = ['student', 'teacher', 'parent'];
-        var roleIcons = { student: 'fa-user-graduate', teacher: 'fa-chalkboard-teacher', parent: 'fa-users' };
-        var roleI18n = { student: 'auth.role.student', teacher: 'auth.role.teacher', parent: 'auth.role.parent' };
+        var registerableRoles = ['student', 'teacher', 'parent', 'headteacher'];
+        var roleIcons = { student: 'fa-user-graduate', teacher: 'fa-chalkboard-teacher', parent: 'fa-users', headteacher: 'fa-school' };
+        var roleI18n = { student: 'auth.role.student', teacher: 'auth.role.teacher', parent: 'auth.role.parent', headteacher: 'auth.headteacherPortal' };
+        var roleColors = { student: '', teacher: '', parent: '', headteacher: 'btn-outline-warning' };
 
         function renderRoleGrid() {
             var grid = document.getElementById('role-grid');
             if (!grid) return;
             var html = '';
             registerableRoles.forEach(function(role) {
-                html += '<div class="col-6 col-md-4">' +
-                    '<button class="btn btn-outline-primary w-100 py-3" onclick="selectRole(\'' + role + '\')">' +
+                var btnClass = roleColors[role] || 'btn-outline-primary';
+                html += '<div class="col-6 col-md-3">' +
+                    '<button class="btn ' + btnClass + ' w-100 py-3" onclick="selectRole(\'' + role + '\')">' +
                     '<i class="fa ' + roleIcons[role] + ' d-block mb-2 fa-lg"></i>' +
-                    '<span data-i18n="' + roleI18n[role] + '">' + IremeAuth.ROLES[role].label + '</span>' +
+                    '<span data-i18n="' + roleI18n[role] + '">' + (IremeAuth.ROLES[role] ? IremeAuth.ROLES[role].label : 'Headteacher') + '</span>' +
                     '</button></div>';
             });
             grid.innerHTML = html;
         }
 
         function selectRole(role) {
+            if (role === 'headteacher') {
+                window.location.href = 'headteacher-register.html';
+                return;
+            }
+
             document.getElementById('register-role').value = role;
             document.getElementById('selected-role-badge').textContent = IremeAuth.ROLES[role].label;
             document.getElementById('role-selection').classList.add('d-none');

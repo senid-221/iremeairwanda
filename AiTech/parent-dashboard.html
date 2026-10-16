@@ -54,28 +54,28 @@
                 <div class="col-md-3 wow fadeIn" data-wow-delay="0.1s">
                     <div class="service-item rounded text-center p-4">
                         <i class="fa fa-child fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold">2</h3>
+                        <h3 class="fw-bold" id="dash-parent-children">0</h3>
                         <p class="mb-0" data-i18n="parent.childrenLinked">Children Linked</p>
                     </div>
                 </div>
                 <div class="col-md-3 wow fadeIn" data-wow-delay="0.2s">
                     <div class="service-item rounded text-center p-4">
-                        <i class="fa fa-calendar-check fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold">95%</h3>
-                        <p class="mb-0" data-i18n="parent.attendance">Attendance</p>
+                        <i class="fa fa-bell fa-2x text-primary mb-3"></i>
+                        <h3 class="fw-bold" id="dash-parent-notifications">0</h3>
+                        <p class="mb-0" data-i18n="parent.notifications">Notifications</p>
                     </div>
                 </div>
                 <div class="col-md-3 wow fadeIn" data-wow-delay="0.3s">
                     <div class="service-item rounded text-center p-4">
-                        <i class="fa fa-star fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold">B+</h3>
-                        <p class="mb-0" data-i18n="parent.recentGrades">Recent Grades</p>
+                        <i class="fa fa-calendar-check fa-2x text-primary mb-3"></i>
+                        <h3 class="fw-bold" id="dash-parent-attendance">—</h3>
+                        <p class="mb-0" data-i18n="parent.attendance">Attendance</p>
                     </div>
                 </div>
                 <div class="col-md-3 wow fadeIn" data-wow-delay="0.4s">
                     <div class="service-item rounded text-center p-4">
                         <i class="fa fa-envelope fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold">3</h3>
+                        <h3 class="fw-bold" id="dash-parent-messages">0</h3>
                         <p class="mb-0" data-i18n="parent.messages">Messages</p>
                     </div>
                 </div>
@@ -86,37 +86,8 @@
                 <div class="col-lg-8 wow fadeIn" data-wow-delay="0.1s">
                     <div class="bg-light rounded p-4">
                         <h4 class="mb-4" data-i18n="parent.myChildren">My Children</h4>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="service-item rounded p-3">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="service-icon btn-square me-3"><i class="fa fa-user fa-lg"></i></div>
-                                        <div>
-                                            <h6 class="mb-1">Jean Baptiste</h6>
-                                            <small class="text-muted">P5 - GS Remera</small>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-between">
-                                        <small><i class="fa fa-star text-warning me-1"></i> <span data-i18n="parent.grade">Grade</span>: B+</small>
-                                        <small><i class="fa fa-calendar-check text-success me-1"></i> <span data-i18n="parent.attendance">Attendance</span>: 96%</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="service-item rounded p-3">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="service-icon btn-square me-3"><i class="fa fa-user fa-lg"></i></div>
-                                        <div>
-                                            <h6 class="mb-1">Grace Uwimana</h6>
-                                            <small class="text-muted">P3 - GS Remera</small>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-between">
-                                        <small><i class="fa fa-star text-warning me-1"></i> <span data-i18n="parent.grade">Grade</span>: A-</small>
-                                        <small><i class="fa fa-calendar-check text-success me-1"></i> <span data-i18n="parent.attendance">Attendance</span>: 94%</small>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="row g-3" id="dash-parent-children-list">
+                            <div class="col-12 text-center text-muted py-3">Loading children...</div>
                         </div>
                     </div>
                 </div>
@@ -126,10 +97,10 @@
                     <div class="bg-light rounded p-4">
                         <h4 class="mb-4" data-i18n="dashboard.overview">Quick Actions</h4>
                         <div class="d-grid gap-3">
-                            <a href="#" class="btn btn-primary rounded-pill py-3" data-i18n="parent.viewReports">View Reports</a>
-                            <a href="#" class="btn btn-outline-primary rounded-pill py-3" data-i18n="parent.contactTeacher">Contact Teacher</a>
-                            <a href="#" class="btn btn-outline-primary rounded-pill py-3" data-i18n="parent.schoolAnnouncements">School Announcements</a>
-                            <a href="#" class="btn btn-outline-primary rounded-pill py-3" data-i18n="parent.accountSettings">Account Settings</a>
+                            <a href="parent-dashboard.html#children" class="btn btn-primary rounded-pill py-3" data-i18n="parent.viewReports">View Reports</a>
+                            <a href="contact.html" class="btn btn-outline-primary rounded-pill py-3" data-i18n="parent.contactTeacher">Contact Teacher</a>
+                            <a href="school-dashboard.html" class="btn btn-outline-primary rounded-pill py-3" data-i18n="parent.schoolAnnouncements">School Announcements</a>
+                            <a href="subscription.html" class="btn btn-outline-primary rounded-pill py-3" data-i18n="parent.accountSettings">Account Settings</a>
                         </div>
                     </div>
                 </div>
@@ -206,6 +177,36 @@
             var welcomeEl = document.getElementById('parent-welcome');
             if (welcomeEl) welcomeEl.textContent = user.name;
         }
+
+        IremeAPI.getDashboard('parent').then(function(data) {
+            var children = data.children || [];
+            document.getElementById('dash-parent-children').textContent = children.length;
+            document.getElementById('dash-parent-notifications').textContent = data.unreadNotificationCount || 0;
+
+            var childrenList = document.getElementById('dash-parent-children-list');
+            if (children.length === 0) {
+                childrenList.innerHTML = '<div class="col-12 text-center text-muted py-3">No children linked yet. Contact your school to link your children.</div>';
+            } else {
+                childrenList.innerHTML = children.map(function(child) {
+                    var name = child.fullName || 'Student';
+                    var schoolName = child.school ? (child.school.nameEn || child.school.name || '') : '';
+                    var levelName = child.level ? (child.level.nameEn || child.level.name || '') : '';
+                    var info = levelName + (schoolName ? ' - ' + schoolName : '');
+                    return '<div class="col-md-6"><div class="service-item rounded p-3">' +
+                        '<div class="d-flex align-items-center mb-2">' +
+                        '<div class="service-icon btn-square me-3"><i class="fa fa-user fa-lg"></i></div>' +
+                        '<div><h6 class="mb-1">' + name.replace(/</g, '&lt;') + '</h6>' +
+                        '<small class="text-muted">' + (info ? info.replace(/</g, '&lt;') : child.studentId || '') + '</small></div>' +
+                        '</div>' +
+                        '<div class="d-flex justify-content-between">' +
+                        '<small><i class="fa fa-id-badge text-primary me-1"></i> ' + (child.relationship || 'Guardian') + '</small>' +
+                        (child.isPrimary ? '<small><i class="fa fa-star text-warning me-1"></i> Primary</small>' : '') +
+                        '</div></div></div>';
+                }).join('');
+            }
+        }).catch(function() {
+            document.getElementById('dash-parent-children-list').innerHTML = '<div class="col-12 text-center text-muted py-3">Could not load dashboard data</div>';
+        });
     </script>
 </body>
 </html>

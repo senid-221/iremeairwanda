@@ -1,17 +1,97 @@
 const IremeComponents = {
-    navItems: [
-        { href: 'index.html', key: 'nav.home' },
-        { href: 'about.html', key: 'nav.about' },
-        { href: 'resources.html', key: 'nav.resources' },
-        { href: 'schools.html', key: 'nav.schools' },
-        { href: 'ai-tutor.html', key: 'nav.aiTutor' },
-        { href: 'game-setup.html', key: 'nav.game' },
-        { href: 'contact.html', key: 'nav.contact' },
+    /** Links shown to logged-out visitors */
+    publicNavItems: [
+        { href: 'index.html',       key: 'nav.home' },
+        { href: 'about.html',       key: 'nav.about' },
+        { href: 'service.html',     key: 'nav.services' },
+        { href: 'resources.html',   key: 'nav.resources' },
+        { href: 'schools.html',     key: 'nav.schools' },
+        { href: 'contact.html',     key: 'nav.contact' },
     ],
 
+    /** Role-specific links shown to logged-in users */
+    roleNavItems: {
+        student: [
+            { href: 'student-dashboard.html', key: 'nav.dashboard' },
+            { href: 'video-lessons.html',     key: 'nav.videoLessons' },
+            { href: 'game-setup.html',        key: 'nav.game' },
+            { href: 'resources.html',         key: 'nav.resources' },
+            { href: 'ai-tutor.html',          key: 'nav.aiTutor' },
+        ],
+        teacher: [
+            { href: 'teacher-dashboard.html', key: 'nav.dashboard' },
+            { href: 'teacher-dashboard.html#classes',       key: 'nav.classes' },
+            { href: 'teacher-dashboard.html#assessments',   key: 'nav.assessments' },
+            { href: 'resources.html',         key: 'nav.resources' },
+        ],
+        parent: [
+            { href: 'parent-dashboard.html',  key: 'nav.dashboard' },
+            { href: 'parent-dashboard.html#children', key: 'nav.children' },
+            { href: 'resources.html',         key: 'nav.resources' },
+        ],
+        headteacher: [
+            { href: 'school-dashboard.html',  key: 'nav.schoolDashboard' },
+            { href: 'school-dashboard.html#staff',      key: 'nav.staff' },
+            { href: 'school-dashboard.html#students',   key: 'nav.students' },
+            { href: 'school-profile.html',    key: 'nav.schoolProfile' },
+        ],
+        school_admin: [
+            { href: 'school-dashboard.html',  key: 'nav.schoolDashboard' },
+            { href: 'school-dashboard.html#staff',      key: 'nav.staff' },
+            { href: 'school-dashboard.html#students',   key: 'nav.students' },
+            { href: 'school-profile.html',    key: 'nav.schoolProfile' },
+        ],
+        admin: [
+            { href: 'admin-dashboard.html',         key: 'nav.adminDashboard' },
+            { href: 'admin-dashboard.html#users',   key: 'nav.users' },
+            { href: 'schools.html',                 key: 'nav.schools' },
+            { href: 'curriculum-management.html',   key: 'nav.curriculum' },
+        ],
+        super_admin: [
+            { href: 'super-admin-dashboard.html', key: 'nav.adminDashboard' },
+            { href: 'admin-dashboard.html#users', key: 'nav.users' },
+            { href: 'schools.html',               key: 'nav.schools' },
+            { href: 'curriculum-management.html', key: 'nav.curriculum' },
+        ],
+        learner: [
+            { href: 'learner-dashboard.html', key: 'nav.dashboard' },
+            { href: 'video-lessons.html',     key: 'nav.videoLessons' },
+            { href: 'resources.html',         key: 'nav.resources' },
+        ],
+        content_manager: [
+            { href: 'content-manager-dashboard.html', key: 'nav.dashboard' },
+            { href: 'resources.html',  key: 'nav.resources' },
+        ],
+        curriculum_manager: [
+            { href: 'curriculum-manager-dashboard.html', key: 'nav.dashboard' },
+            { href: 'curriculum-management.html', key: 'nav.curriculum' },
+            { href: 'resources.html',             key: 'nav.resources' },
+        ],
+        finance: [
+            { href: 'finance-dashboard.html',  key: 'nav.dashboard' },
+            { href: 'subscription.html',       key: 'nav.subscriptions' },
+        ],
+        support: [
+            { href: 'support-dashboard.html',  key: 'nav.dashboard' },
+            { href: 'contact.html',            key: 'nav.contact' },
+        ],
+    },
+
+    /** Return the array of nav items appropriate for the current viewer */
+    getNavItems() {
+        if (typeof IremeAuth !== 'undefined' && IremeAuth.isLoggedIn()) {
+            var session = IremeAuth.getSession();
+            var role = session && session.role ? String(session.role).trim().toLowerCase() : '';
+            if (this.roleNavItems[role]) return this.roleNavItems[role];
+        }
+        return this.publicNavItems;
+    },
+
     renderNavbar(activePage) {
-        const navLinks = this.navItems.map(item =>
-            `<a href="${item.href}" class="nav-item nav-link${item.href === activePage ? ' active' : ''}" data-i18n="${item.key}"></a>`
+        var items = this.getNavItems();
+        var showLoginRegister = !(typeof IremeAuth !== 'undefined' && IremeAuth.isLoggedIn());
+        const navLinks = items.map(item =>
+            `<a href="${item.href}" class="nav-item nav-link${item.href === activePage ? ' active' : ''}" data-i18n="${item.key}">${item.key}</a>`
         ).join('');
 
         var authSection = '';
@@ -33,7 +113,9 @@ const IremeComponents = {
                     </ul>
                 </div>`;
         } else {
-            authSection = `<a href="login.html" class="btn btn-sm btn-light rounded-pill px-3 ms-lg-3" data-i18n="auth.login">Log In</a>`;
+            authSection = `
+                <a href="login.html" class="btn btn-sm btn-light rounded-pill px-3 ms-lg-3" data-i18n="auth.login">Log In</a>
+                <a href="register.html" class="btn btn-sm btn-primary rounded-pill px-3 ms-lg-2" data-i18n="auth.register">Register</a>`;
         }
 
         return `
@@ -84,11 +166,11 @@ const IremeComponents = {
                     <p><i class="fa fa-phone-alt me-3"></i><a href="tel:+250791537354" class="text-white-50 text-decoration-none">+250 791 537 354</a></p>
                     <p><i class="fa fa-envelope me-3"></i><a href="mailto:info@iremerwanda.com" class="text-white-50 text-decoration-none">info@iremerwanda.com</a></p>
                     <div class="d-flex pt-2">
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-instagram"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
+                        <a class="btn btn-outline-light btn-social" href="https://twitter.com/ireme_rw" target="_blank" rel="noopener"><i class="fab fa-twitter"></i></a>
+                        <a class="btn btn-outline-light btn-social" href="https://facebook.com/iremerwanda" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-outline-light btn-social" href="https://youtube.com/@iremerwanda" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
+                        <a class="btn btn-outline-light btn-social" href="https://instagram.com/ireme_rw" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+                        <a class="btn btn-outline-light btn-social" href="https://linkedin.com/company/ireme-rwanda" target="_blank" rel="noopener"><i class="fab fa-linkedin-in"></i></a>
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.5s">
@@ -98,8 +180,8 @@ const IremeComponents = {
                     <a class="btn btn-link" href="game-setup.html" data-i18n="footer.learningGame"></a>
                     <a class="btn btn-link" href="subscription.html" data-i18n="footer.plans"></a>
                     <a class="btn btn-link" href="contact.html" data-i18n="footer.contactUs"></a>
-                    <a class="btn btn-link" href="" data-i18n="footer.privacy"></a>
-                    <a class="btn btn-link" href="" data-i18n="footer.terms"></a>
+                    <a class="btn btn-link" href="subscription.html" data-i18n="footer.privacy"></a>
+                    <a class="btn btn-link" href="subscription.html" data-i18n="footer.terms"></a>
                 </div>
                 <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.7s">
                     <h5 class="text-white mb-4" data-i18n="footer.ourServices"></h5>
@@ -120,9 +202,9 @@ const IremeComponents = {
                     <div class="col-md-6 text-center text-md-end">
                         <div class="footer-menu">
                             <a href="index.html" data-i18n="nav.home"></a>
-                            <a href="" data-i18n="footer.cookies"></a>
-                            <a href="" data-i18n="footer.help"></a>
-                            <a href="" data-i18n="footer.faqs"></a>
+                            <a href="subscription.html" data-i18n="footer.cookies"></a>
+                            <a href="contact.html" data-i18n="footer.help"></a>
+                            <a href="ai-tutor.html" data-i18n="footer.faqs"></a>
                         </div>
                     </div>
                 </div>

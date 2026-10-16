@@ -122,6 +122,18 @@ const translations = {
         // Nav extras
         "nav.game": "Game",
         "nav.dashboard": "Dashboard",
+        "nav.videoLessons": "Video Lessons",
+        "nav.classes": "Classes",
+        "nav.assessments": "Assessments",
+        "nav.children": "Children",
+        "nav.schoolDashboard": "School Dashboard",
+        "nav.staff": "Staff",
+        "nav.students": "Students",
+        "nav.schoolProfile": "School Profile",
+        "nav.adminDashboard": "Admin Dashboard",
+        "nav.users": "Users",
+        "nav.curriculum": "Curriculum",
+        "nav.subscriptions": "Subscriptions",
 
         // Footer extras
         "footer.learningGame": "Learning Game",
@@ -616,6 +628,25 @@ const translations = {
         "auth.resetSuccess": "Password has been reset successfully.",
         "auth.enterEmail": "Enter your email address and we'll send you a link to reset your password.",
 
+        // Auth - Headteacher Registration
+        "auth.headteacherPortal": "Headteacher",
+        "auth.headteacherDesc": "Register and manage your school",
+        "auth.headteacherRegister": "Headteacher Registration",
+        "auth.schoolDetails": "School Details",
+        "auth.schoolName": "School Official Name",
+        "auth.schoolCode": "School Code/Registration Number",
+        "auth.schoolType": "School Type",
+        "auth.schoolCategory": "Category",
+        "auth.schoolOwnership": "Ownership",
+        "auth.schoolLocation": "School Location",
+        "auth.schoolContacts": "Contact Information",
+        "auth.schoolLevels": "Education Levels Offered",
+        "auth.schoolDocuments": "Supporting Documents",
+        "auth.registrationPending": "Your registration is pending admin review. You will be notified once approved.",
+        "auth.registerSchool": "Register School",
+        "auth.createAccount": "Create Your Account",
+        "auth.nextStep": "Next: Register Your School",
+
         // Auth - Dashboard
         "auth.welcomeBack": "Welcome back",
         "auth.recentActivity": "Recent Activity",
@@ -805,6 +836,18 @@ const translations = {
         // Nav extras
         "nav.game": "Umukino",
         "nav.dashboard": "Dashboard",
+        "nav.videoLessons": "Amashusho y'Ubumenyi",
+        "nav.classes": "Amashuri",
+        "nav.assessments": "Ibizamini",
+        "nav.children": "Abana",
+        "nav.schoolDashboard": "Dashboard y'Ishuri",
+        "nav.staff": "Abakozi",
+        "nav.students": "Abanyeshuri",
+        "nav.schoolProfile": "Umwirondoro w'Ishuri",
+        "nav.adminDashboard": "Dashboard y'Umuyobozi",
+        "nav.users": "Abakoresha",
+        "nav.curriculum": "Integanyanyigisho",
+        "nav.subscriptions": "Gahunda",
 
         // Footer extras
         "footer.learningGame": "Umukino wo Kwiga",
@@ -1298,6 +1341,25 @@ const translations = {
         "auth.resetSent": "Niba imeyili ihari, ihuza ryo guhindura ryoherejwe.",
         "auth.resetSuccess": "Ijambo ry'ibanga ryahinduwe neza.",
         "auth.enterEmail": "Injiza imeyili yawe tuzaguha ihuza ryo guhindura ijambo ry'ibanga.",
+
+        // Auth - Headteacher Registration
+        "auth.headteacherPortal": "Umuyobozi w'Ishuri",
+        "auth.headteacherDesc": "Iyandikishe kandi uyobore ishuri ryawe",
+        "auth.headteacherRegister": "Kwiyandikisha kw'Umuyobozi w'Ishuri",
+        "auth.schoolDetails": "Amakuru y'Ishuri",
+        "auth.schoolName": "Izina Ryemewe ry'Ishuri",
+        "auth.schoolCode": "Kode y'Ishuri/Nimero y'Iyandikisha",
+        "auth.schoolType": "Ubwoko bw'Ishuri",
+        "auth.schoolCategory": "Icyiciro",
+        "auth.schoolOwnership": "Nyiraryo",
+        "auth.schoolLocation": "Aho Ishuri Riherereye",
+        "auth.schoolContacts": "Amakuru yo Kuvugisha",
+        "auth.schoolLevels": "Inzego z'Uburezi Zatanzwe",
+        "auth.schoolDocuments": "Inyandiko Zishyigikira",
+        "auth.registrationPending": "Kwiyandikisha kwawe kurategereje isuzuma ry'umuyobozi. Uzamenyeshwa nimwemezwa.",
+        "auth.registerSchool": "Iyandikishe Ishuri",
+        "auth.createAccount": "Kora Konti Yawe",
+        "auth.nextStep": "Ikurikira: Iyandikishe Ishuri Ryawe",
 
         // Auth - Dashboard
         "auth.welcomeBack": "Murakaza neza",

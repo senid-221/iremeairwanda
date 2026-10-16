@@ -166,14 +166,13 @@
                 roleFilterPopulated = true;
             }
 
-            IremeAuth.getStats().then(function(res) {
-                if (!res.success) return;
-                var stats = res.stats;
-                document.getElementById('sa-total-users').textContent = stats.total;
-                document.getElementById('sa-admin-count').textContent = (stats.byRole.admin || 0) + (stats.byRole.super_admin || 0);
-                document.getElementById('sa-pending-count').textContent = stats.byStatus.pending || 0;
-                document.getElementById('sa-suspended-count').textContent = stats.byStatus.suspended || 0;
-            });
+            IremeAPI.getDashboard('super_admin').then(function(data) {
+                var stats = data.stats || {};
+                var health = data.systemHealth || {};
+                document.getElementById('sa-total-users').textContent = stats.totalUsers || 0;
+                document.getElementById('sa-admin-count').textContent = (stats.userRoles ? (stats.userRoles.ADMIN || 0) + (stats.userRoles.SUPER_ADMIN || 0) : 0);
+                document.getElementById('sa-pending-count').textContent = stats.pendingVerifications || 0;
+            }).catch(function() {});
 
             renderUsersTable();
         }

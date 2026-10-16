@@ -70,6 +70,9 @@ model User {
   schoolMemberships SchoolMembership[]
   schoolClaimRequests SchoolClaimRequest[]
   schoolVerificationRecords SchoolVerificationRecord[]
+  schoolLeadershipAppointments SchoolLeadershipAppointment[]
+  approvedMemberships SchoolMembership[] @relation("MembershipApprover")
+  approvedAppointments SchoolLeadershipAppointment[] @relation("AppointmentApprover")
   
   gameMatchesPlayer1 GameMatch[] @relation("Player1")
   gameMatchesPlayer2 GameMatch[] @relation("Player2")
@@ -629,16 +632,25 @@ model CurriculumChangeLog {
 
 model School {
   id              String   @id @default(uuid())
-  code            String   @unique
+  code            String?  @unique
   name            String
   nameEn          String
   nameRw          String?
   schoolType      String
   category        String?
+  ownership       String?
   status          String   @default("active")
   isVerified      Boolean  @default(false)
   verifiedAt      DateTime?
   verifiedBy      String?
+  registrationStatus String @default("pending")
+  logoUrl         String?
+  documents       Json?
+  registeredBy    String?
+  registeredAt    DateTime?
+  reviewNotes     String?
+  reviewedBy      String?
+  reviewedAt      DateTime?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -653,11 +665,13 @@ model School {
   classes        Class[]
   schoolAnnouncements SchoolAnnouncement[]
   studentEnrollments StudentEnrollment[]
+  leadershipAppointments SchoolLeadershipAppointment[]
 
   @@index([code])
   @@index([schoolType])
   @@index([status])
   @@index([isVerified])
+  @@index([registrationStatus])
 }
 
 model SchoolLocation {
@@ -738,16 +752,22 @@ model SchoolMembership {
   joinedAt    DateTime @default(now())
   leftAt      DateTime?
   status      String   @default("active")
+  approvedBy  String?
+  approvalDate DateTime?
+  endReason   String?
+  transferNotes String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   school School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  approver User? @relation("MembershipApprover", fields: [approvedBy], references: [id])
 
   @@unique([schoolId, userId])
   @@index([schoolId])
   @@index([userId])
   @@index([role])
+  @@index([status])
 }
 
 model SchoolClaimRequest {
@@ -788,6 +808,36 @@ model SchoolVerificationRecord {
   @@index([verifiedBy])
   @@index([status])
   @@index([verifiedAt])
+}
+
+model SchoolLeadershipAppointment {
+  id              String    @id @default(uuid())
+  schoolId        String
+  userId          String
+  position        String    @default("headteacher")
+  startDate       DateTime  @default(now())
+  endDate         DateTime?
+  status          String    @default("active")
+  approvedBy      String?
+  approvalDate    DateTime?
+  reason          String?
+  endReason       String?
+  transferNotes   String?
+  previousAppointmentId String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  school School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  approver User? @relation("AppointmentApprover", fields: [approvedBy], references: [id])
+  previousAppointment SchoolLeadershipAppointment? @relation("AppointmentSuccession", fields: [previousAppointmentId], references: [id])
+  nextAppointments SchoolLeadershipAppointment[] @relation("AppointmentSuccession")
+
+  @@index([schoolId])
+  @@index([userId])
+  @@index([status])
+  @@index([startDate])
+  @@unique([schoolId, userId, startDate])
 }
 
 model SchoolStaffProfile {

@@ -7,7 +7,7 @@ const { requireAuth } = require('../middleware/auth');
 
 const prisma = new PrismaClient();
 
-const PUBLIC_ROLES = ['STUDENT', 'TEACHER', 'PARENT'];
+const PUBLIC_ROLES = ['STUDENT', 'TEACHER', 'PARENT', 'HEADTEACHER'];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function normalizeEmail(email) {
@@ -33,6 +33,9 @@ async function createRoleRecord(userId, role) {
   }
   if (role === 'PARENT') {
     return prisma.parentProfile.create({ data: { userId } });
+  }
+  if (role === 'HEADTEACHER') {
+    return prisma.schoolStaffProfile.create({ data: { userId, position: 'headteacher' } });
   }
   return null;
 }
@@ -63,8 +66,8 @@ router.post('/register', async (req, res) => {
     }
 
     const passwordHash = await bcrypt.hash(String(password), 12);
-    // Teachers require admin verification before activation; students and parents are active immediately.
-    const status = selectedRole === 'TEACHER' ? 'PENDING' : 'ACTIVE';
+    // Teachers and headteachers require admin verification before activation; students and parents are active immediately.
+    const status = (selectedRole === 'TEACHER' || selectedRole === 'HEADTEACHER') ? 'PENDING' : 'ACTIVE';
 
     const user = await prisma.user.create({
       data: {

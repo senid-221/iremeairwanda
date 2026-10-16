@@ -121,6 +121,10 @@ var IremeAPI = (function() {
       return this.post('/api/auth/register', data);
     },
 
+    registerSchool: function(data) {
+      return this.post('/api/schools/register', data);
+    },
+
     googleLoginUrl: function(role) {
       return BASE_URL + '/api/auth/google?role=' + encodeURIComponent(role || 'STUDENT');
     },
@@ -191,6 +195,27 @@ var IremeAPI = (function() {
 
     toggleVideoLibrary: function(lessonId) {
       return this.post('/api/video-lessons/' + encodeURIComponent(lessonId) + '/library');
+    },
+
+    getDashboard: function(role) {
+      var endpoint = role === 'super_admin' ? 'super-admin' : String(role || '').toLowerCase();
+      return this.get('/api/dashboard/' + endpoint);
+    },
+
+    getSchool: function(schoolId) {
+      return this.get('/api/schools/' + encodeURIComponent(schoolId));
+    },
+
+    getMySchool: function() {
+      return this.get('/api/schools/my-school');
+    },
+
+    getSchoolStats: function(schoolId) {
+      return this.get('/api/schools/' + encodeURIComponent(schoolId) + '/stats');
+    },
+
+    getSchoolMembers: function(schoolId) {
+      return this.get('/api/schools/' + encodeURIComponent(schoolId) + '/members');
     },
   };
 })();

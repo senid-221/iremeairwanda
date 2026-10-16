@@ -43,28 +43,28 @@
                 <div class="col-md-3 wow fadeIn" data-wow-delay="0.1s">
                     <div class="service-item rounded text-center p-4">
                         <i class="fa fa-users fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold">1,247</h3>
+                        <h3 class="fw-bold" id="dash-admin-users">0</h3>
                         <p class="mb-0">Total Users</p>
                     </div>
                 </div>
                 <div class="col-md-3 wow fadeIn" data-wow-delay="0.2s">
                     <div class="service-item rounded text-center p-4">
                         <i class="fa fa-school fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold">18</h3>
+                        <h3 class="fw-bold" id="dash-admin-schools">0</h3>
                         <p class="mb-0">Schools</p>
                     </div>
                 </div>
                 <div class="col-md-3 wow fadeIn" data-wow-delay="0.3s">
                     <div class="service-item rounded text-center p-4">
-                        <i class="fa fa-question-circle fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold">3,456</h3>
-                        <p class="mb-0">Questions</p>
+                        <i class="fa fa-clock fa-2x text-primary mb-3"></i>
+                        <h3 class="fw-bold" id="dash-admin-pending">0</h3>
+                        <p class="mb-0">Pending Schools</p>
                     </div>
                 </div>
                 <div class="col-md-3 wow fadeIn" data-wow-delay="0.4s">
                     <div class="service-item rounded text-center p-4">
                         <i class="fa fa-gamepad fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold">892</h3>
+                        <h3 class="fw-bold" id="dash-admin-matches">0</h3>
                         <p class="mb-0">Matches Played</p>
                     </div>
                 </div>
@@ -171,6 +171,14 @@
     <script>
         IremeComponents.initPage('admin-dashboard.html');
         if (!IremeAuth.requireAnyRole(['admin', 'super_admin'])) { throw new Error('Access denied'); }
+
+        IremeAPI.getDashboard('admin').then(function(data) {
+            var stats = data.stats || {};
+            document.getElementById('dash-admin-users').textContent = stats.totalUsers || 0;
+            document.getElementById('dash-admin-schools').textContent = stats.totalSchools || 0;
+            document.getElementById('dash-admin-pending').textContent = stats.pendingSchools || 0;
+            document.getElementById('dash-admin-matches').textContent = stats.totalMatches || 0;
+        }).catch(function() {});
     </script>
 </body>
 </html>

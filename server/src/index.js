@@ -15,8 +15,10 @@ const gameRoutes = require('./routes/game');
 const healthRoutes = require('./routes/health');
 const curriculumRoutes = require('./routes/curriculum');
 const videoLessonRoutes = require('./routes/video-lessons');
+const dashboardRoutes = require('./routes/dashboard');
 const videoConfig = require('./config/video');
 const videoWorker = require('./services/video/worker');
+const schoolRoutes = require('./routes/schools');
 const { configurePassport } = require('./config/passport');
 
 const app = express();
@@ -87,9 +89,11 @@ configurePassport(passport, prisma);
 
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/game', gameRoutes);
 app.use('/api/curriculum', curriculumRoutes);
 app.use('/api/video-lessons', videoLessonRoutes);
+app.use('/api/schools', schoolRoutes);
 app.use('/api', healthRoutes);
 
 if (videoConfig.get().storage.mode === 'local') {

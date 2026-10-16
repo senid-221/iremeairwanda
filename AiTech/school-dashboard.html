@@ -26,7 +26,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb justify-content-center justify-content-lg-start mb-0">
                             <li class="breadcrumb-item"><a class="text-white" href="index.html" data-i18n="breadcrumb.home">Home</a></li>
-                            <li class="breadcrumb-item"><a class="text-white" href="#">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a class="text-white" href="school-dashboard.html">Dashboard</a></li>
                             <li class="breadcrumb-item text-white active">School</li>
                         </ol>
                     </nav>
@@ -66,29 +66,29 @@
                 <div class="col-md-3 wow fadeIn" data-wow-delay="0.1s">
                     <div class="service-item rounded text-center p-4">
                         <i class="bi bi-people-fill fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold">1,247</h3>
+                        <h3 class="fw-bold" id="dash-school-students">0</h3>
                         <p class="mb-0" data-i18n="schoolDashboard.students">Students Enrolled</p>
                     </div>
                 </div>
                 <div class="col-md-3 wow fadeIn" data-wow-delay="0.2s">
                     <div class="service-item rounded text-center p-4">
                         <i class="bi bi-person-badge fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold">45</h3>
+                        <h3 class="fw-bold" id="dash-school-teachers">0</h3>
                         <p class="mb-0" data-i18n="schoolDashboard.teachers">Teachers</p>
                     </div>
                 </div>
                 <div class="col-md-3 wow fadeIn" data-wow-delay="0.3s">
                     <div class="service-item rounded text-center p-4">
                         <i class="bi bi-book fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold">32</h3>
+                        <h3 class="fw-bold" id="dash-school-classes">0</h3>
                         <p class="mb-0" data-i18n="schoolDashboard.classes">Classes</p>
                     </div>
                 </div>
                 <div class="col-md-3 wow fadeIn" data-wow-delay="0.4s">
                     <div class="service-item rounded text-center p-4">
                         <i class="bi bi-check-circle fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold">75%</h3>
-                        <p class="mb-0" data-i18n="schoolDashboard.completion">Profile Completion</p>
+                        <h3 class="fw-bold" id="dash-school-status">—</h3>
+                        <p class="mb-0" data-i18n="schoolDashboard.registration">Registration</p>
                     </div>
                 </div>
             </div>
@@ -375,6 +375,17 @@
     <script>
         IremeComponents.initPage('school-dashboard.html');
         if (!IremeAuth.requireAnyRole(['school_admin', 'headteacher'])) { throw new Error('Access denied'); }
+
+        IremeAPI.getDashboard('headteacher').then(function(data) {
+            var stats = data.stats || {};
+            var school = data.school;
+            document.getElementById('dash-school-students').textContent = stats.students || 0;
+            document.getElementById('dash-school-teachers').textContent = stats.teachers || 0;
+            document.getElementById('dash-school-classes').textContent = stats.classes || 0;
+            if (school) {
+                document.getElementById('dash-school-status').textContent = school.registrationStatus || 'pending';
+            }
+        }).catch(function() {});
     </script>
 </body>
 </html>
