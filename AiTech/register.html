@@ -127,7 +127,7 @@
         var registerableRoles = ['student', 'teacher', 'parent', 'headteacher'];
         var roleIcons = { student: 'fa-user-graduate', teacher: 'fa-chalkboard-teacher', parent: 'fa-users', headteacher: 'fa-school' };
         var roleI18n = { student: 'auth.role.student', teacher: 'auth.role.teacher', parent: 'auth.role.parent', headteacher: 'auth.headteacherPortal' };
-        var roleColors = { student: '', teacher: '', parent: '', headteacher: 'btn-outline-warning' };
+        var roleColors = { student: '', teacher: '', parent: '', headteacher: '' };
 
         function renderRoleGrid() {
             var grid = document.getElementById('role-grid');
@@ -136,9 +136,9 @@
             registerableRoles.forEach(function(role) {
                 var btnClass = roleColors[role] || 'btn-outline-primary';
                 html += '<div class="col-6 col-md-3">' +
-                    '<button class="btn ' + btnClass + ' w-100 py-3" onclick="selectRole(\'' + role + '\')">' +
-                    '<i class="fa ' + roleIcons[role] + ' d-block mb-2 fa-lg"></i>' +
-                    '<span data-i18n="' + roleI18n[role] + '">' + (IremeAuth.ROLES[role] ? IremeAuth.ROLES[role].label : 'Headteacher') + '</span>' +
+                    '<button class="btn ' + btnClass + ' w-100 py-2" onclick="selectRole(\'' + role + '\')">' +
+                    '<i class="fa ' + roleIcons[role] + ' d-block mb-1 fa-lg"></i>' +
+                    '<small data-i18n="' + roleI18n[role] + '">' + (IremeAuth.ROLES[role] ? IremeAuth.ROLES[role].label : 'Headteacher') + '</small>' +
                     '</button></div>';
             });
             grid.innerHTML = html;

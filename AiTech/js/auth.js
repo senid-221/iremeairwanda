@@ -77,9 +77,9 @@ var IremeAuth = (function () {
     var ROLES = {
         student:            { label: 'Student',              dashboard: 'student-dashboard.html',            canRegister: true  },
         teacher:            { label: 'Teacher',              dashboard: 'teacher-dashboard.html',            canRegister: true  },
-        parent:             { label: 'Parent/Guardian',      dashboard: 'parent-dashboard.html',             canRegister: true  },
+        parent:             { label: 'Parent',               dashboard: 'parent-dashboard.html',             canRegister: true  },
         school_admin:       { label: 'School Administrator', dashboard: 'school-dashboard.html',             canRegister: false },
-        headteacher:        { label: 'Head Teacher',         dashboard: 'school-dashboard.html',             canRegister: true  },
+        headteacher:        { label: 'Headteacher',          dashboard: 'school-dashboard.html',             canRegister: true  },
         learner:            { label: 'TTC/TVET Learner',     dashboard: 'learner-dashboard.html',            canRegister: false },
         content_manager:    { label: 'Content Manager',      dashboard: 'content-manager-dashboard.html',    canRegister: false },
         curriculum_manager: { label: 'Curriculum Manager',   dashboard: 'curriculum-manager-dashboard.html', canRegister: false },
