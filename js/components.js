@@ -28,10 +28,8 @@ const IremeComponents = {
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><h6 class="dropdown-header text-truncate" style="max-width:200px;">${session.name}</h6></li>
                         <li><a class="dropdown-item" href="${dashboardUrl}"><i class="fa fa-tachometer-alt me-2"></i><span data-i18n="auth.goDashboard">Dashboard</span></a></li>
-                        <li><a class="dropdown-item" href="profile.html"><i class="fa fa-user me-2"></i><span data-i18n="auth.profile">Profile</span></a></li>
-                        <li><a class="dropdown-item" href="settings.html"><i class="fa fa-cog me-2"></i><span data-i18n="auth.settings">Settings</span></a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="#" onclick="IremeAuth.logout(); window.location.href='index.html'; return false;"><i class="fa fa-sign-out-alt me-2"></i><span data-i18n="auth.logout">Log Out</span></a></li>
+                        <li><a class="dropdown-item text-danger" href="#" onclick="IremeAuth.logout().then(function() { window.location.href = 'index.html'; }); return false;"><i class="fa fa-sign-out-alt me-2"></i><span data-i18n="auth.logout">Log Out</span></a></li>
                     </ul>
                 </div>`;
         } else {
@@ -180,6 +178,8 @@ const IremeComponents = {
             'lib/waypoints/waypoints.min.js',
             'js/main.js',
             'js/i18n.js',
+            'js/config.js',
+            'js/api-client.js',
             'js/auth.js',
             'js/components.js',
         ];
@@ -202,6 +202,7 @@ const IremeComponents = {
             if (btt) btt.outerHTML = this.renderBackToTop();
 
             if (typeof initLanguage === 'function') initLanguage();
+            if (typeof IremeAuth !== 'undefined' && IremeAuth.verifySession) IremeAuth.verifySession();
             new WOW().init();
         });
     }

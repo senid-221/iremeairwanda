@@ -56,7 +56,7 @@
 
                                 <div id="verification-notice" class="alert alert-warning d-none" role="alert">
                                     <i class="fa fa-info-circle me-2"></i>
-                                    <span data-i18n="auth.verificationRequired">Teacher and school administrator accounts require verification before access is granted.</span>
+                                    <span data-i18n="auth.verificationRequired">Teacher accounts require approval by an administrator before access is granted.</span>
                                 </div>
 
                                 <form id="register-form">
@@ -68,14 +68,6 @@
                                     <div class="mb-3">
                                         <label class="form-label" data-i18n="auth.email">Email Address</label>
                                         <input type="email" class="form-control" id="register-email" required data-i18n="auth.email">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label" data-i18n="auth.phone">Phone Number</label>
-                                        <input type="tel" class="form-control" id="register-phone" data-i18n="auth.phone">
-                                    </div>
-                                    <div class="mb-3" id="school-field-container">
-                                        <label class="form-label" data-i18n="auth.school">School</label>
-                                        <input type="text" class="form-control" id="register-school" data-i18n="auth.school">
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" data-i18n="auth.password">Password</label>
@@ -115,15 +107,17 @@
     <script src="js/main.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/components.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/api-client.js"></script>
     <script src="js/auth.js"></script>
     <script>
         IremeComponents.initPage('register.html');
 
         if (IremeAuth.isLoggedIn()) { IremeAuth.redirectToDashboard(); }
 
-        var registerableRoles = ['student', 'teacher', 'parent', 'school_admin', 'learner'];
-        var roleIcons = { student: 'fa-user-graduate', teacher: 'fa-chalkboard-teacher', parent: 'fa-users', school_admin: 'fa-school', learner: 'fa-book-open' };
-        var roleI18n = { student: 'auth.role.student', teacher: 'auth.role.teacher', parent: 'auth.role.parent', school_admin: 'auth.role.school_admin', learner: 'auth.role.learner' };
+        var registerableRoles = ['student', 'teacher', 'parent'];
+        var roleIcons = { student: 'fa-user-graduate', teacher: 'fa-chalkboard-teacher', parent: 'fa-users' };
+        var roleI18n = { student: 'auth.role.student', teacher: 'auth.role.teacher', parent: 'auth.role.parent' };
 
         function renderRoleGrid() {
             var grid = document.getElementById('role-grid');
@@ -145,11 +139,8 @@
             document.getElementById('role-selection').classList.add('d-none');
             document.getElementById('register-form-container').classList.remove('d-none');
 
-            var needsVerification = (role === 'teacher' || role === 'school_admin');
+            var needsVerification = (role === 'teacher');
             document.getElementById('verification-notice').classList.toggle('d-none', !needsVerification);
-
-            var showSchool = (role === 'student' || role === 'teacher' || role === 'learner' || role === 'school_admin');
-            document.getElementById('school-field-container').classList.toggle('d-none', !showSchool);
         }
 
         function showRoleSelection() {
@@ -164,6 +155,7 @@
             var alertEl = document.getElementById('register-alert');
             var password = document.getElementById('register-password').value;
             var confirmPassword = document.getElementById('register-confirm-password').value;
+            var submitBtn = this.querySelector('button[type="submit"]');
 
             if (password !== confirmPassword) {
                 alertEl.className = 'alert alert-danger';
@@ -173,27 +165,45 @@
             }
 
             var data = {
-                name: document.getElementById('register-name').value.trim(),
+                fullName: document.getElementById('register-name').value.trim(),
                 email: document.getElementById('register-email').value.trim(),
-                phone: document.getElementById('register-phone').value.trim(),
-                school: document.getElementById('register-school').value.trim(),
                 password: password,
                 role: document.getElementById('register-role').value
             };
 
-            var result = IremeAuth.register(data);
-            if (result.success) {
-                if (result.needsVerification) {
-                    window.location.href = 'account-pending.html';
-                } else {
-                    IremeAuth.login(data.email, data.password);
-                    IremeAuth.redirectToDashboard();
+            function setLoading(loading) {
+                if (submitBtn) {
+                    submitBtn.disabled = loading;
+                    if (loading) {
+                        submitBtn.dataset.originalHtml = submitBtn.innerHTML;
+                        submitBtn.textContent = 'Creating account...';
+                    } else if (submitBtn.dataset.originalHtml) {
+                        submitBtn.innerHTML = submitBtn.dataset.originalHtml;
+                    }
                 }
-            } else {
-                alertEl.className = 'alert alert-danger';
-                alertEl.textContent = result.error;
-                alertEl.classList.remove('d-none');
             }
+
+            alertEl.classList.add('d-none');
+            setLoading(true);
+
+            IremeAuth.register(data).then(function(result) {
+                if (result.success) {
+                    if (result.user && result.user.status === 'PENDING') {
+                        window.location.href = 'account-pending.html';
+                    } else if (IremeAuth.isLoggedIn()) {
+                        window.location.href = IremeAuth.getDashboardUrl(result.user ? result.user.role : data.role);
+                    } else {
+                        // Account created but not auto-signed-in: send to login.
+                        var loginPages = { student: 'student-login.html', teacher: 'account-pending.html', parent: 'parent-login.html' };
+                        window.location.href = loginPages[data.role] || 'login.html';
+                    }
+                } else {
+                    setLoading(false);
+                    alertEl.className = 'alert alert-danger';
+                    alertEl.textContent = result.error;
+                    alertEl.classList.remove('d-none');
+                }
+            });
         });
     </script>
 </body>

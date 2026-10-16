@@ -113,6 +113,14 @@ var IremeAPI = (function() {
       return this.get('/api/auth/me');
     },
 
+    login: function(email, password) {
+      return this.post('/api/auth/login', { email: email, password: password });
+    },
+
+    register: function(data) {
+      return this.post('/api/auth/register', data);
+    },
+
     googleLoginUrl: function(role) {
       return BASE_URL + '/api/auth/google?role=' + encodeURIComponent(role || 'STUDENT');
     },

@@ -144,25 +144,35 @@
     <script src="lib/waypoints/waypoints.min.js"></script>
     <script src="js/main.js"></script>
     <script src="js/i18n.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/api-client.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/components.js"></script>
     <script>
         IremeComponents.initPage('super-admin-dashboard.html');
         if (!IremeAuth.requireRole('super_admin')) { throw new Error('Access denied'); }
 
-        function renderSuperAdminDashboard() {
-            var stats = IremeAuth.getStats();
-            document.getElementById('sa-total-users').textContent = stats.total;
-            document.getElementById('sa-admin-count').textContent = (stats.byRole.admin || 0) + (stats.byRole.super_admin || 0);
-            document.getElementById('sa-pending-count').textContent = stats.byStatus.pending || 0;
-            document.getElementById('sa-suspended-count').textContent = stats.byStatus.suspended || 0;
+        var roleFilterPopulated = false;
 
-            var roleFilter = document.getElementById('sa-role-filter');
-            Object.keys(IremeAuth.ROLES).forEach(function(r) {
-                var opt = document.createElement('option');
-                opt.value = r;
-                opt.textContent = IremeAuth.ROLES[r].label;
-                roleFilter.appendChild(opt);
+        function renderSuperAdminDashboard() {
+            if (!roleFilterPopulated) {
+                var roleFilter = document.getElementById('sa-role-filter');
+                Object.keys(IremeAuth.ROLES).forEach(function(r) {
+                    var opt = document.createElement('option');
+                    opt.value = r;
+                    opt.textContent = IremeAuth.ROLES[r].label;
+                    roleFilter.appendChild(opt);
+                });
+                roleFilterPopulated = true;
+            }
+
+            IremeAuth.getStats().then(function(res) {
+                if (!res.success) return;
+                var stats = res.stats;
+                document.getElementById('sa-total-users').textContent = stats.total;
+                document.getElementById('sa-admin-count').textContent = (stats.byRole.admin || 0) + (stats.byRole.super_admin || 0);
+                document.getElementById('sa-pending-count').textContent = stats.byStatus.pending || 0;
+                document.getElementById('sa-suspended-count').textContent = stats.byStatus.suspended || 0;
             });
 
             renderUsersTable();
@@ -171,30 +181,36 @@
         function renderUsersTable() {
             var search = document.getElementById('sa-search').value;
             var roleFilter = document.getElementById('sa-role-filter').value;
-            var users = IremeAuth.getAllUsers({ search: search, role: roleFilter });
             var tbody = document.getElementById('sa-users-table');
-            if (users.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">No users found</td></tr>';
-                return;
-            }
-            tbody.innerHTML = users.map(function(u) {
-                var statusBadge = u.status === 'active' ? 'bg-success' : u.status === 'pending' ? 'bg-warning text-dark' : 'bg-danger';
-                return '<tr>' +
-                    '<td>' + u.name + '</td>' +
-                    '<td><small>' + u.email + '</small></td>' +
-                    '<td><span class="badge bg-primary">' + (IremeAuth.ROLES[u.role] ? IremeAuth.ROLES[u.role].label : u.role) + '</span></td>' +
-                    '<td><span class="badge ' + statusBadge + '">' + u.status + '</span></td>' +
-                    '<td>' +
-                    (u.status === 'pending' ? '<button class="btn btn-sm btn-outline-success me-1" onclick="approveUser(\'' + u.id + '\')">Approve</button>' : '') +
-                    (u.status === 'active' ? '<button class="btn btn-sm btn-outline-warning me-1" onclick="suspendUser(\'' + u.id + '\')">Suspend</button>' : '') +
-                    '<button class="btn btn-sm btn-outline-danger" onclick="removeUser(\'' + u.id + '\')">Delete</button>' +
-                    '</td></tr>';
-            }).join('');
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Loading...</td></tr>';
+
+            IremeAuth.getAllUsers({ search: search, role: roleFilter, limit: 1000 }).then(function(res) {
+                if (!res.success) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4">' + res.error + '</td></tr>';
+                    return;
+                }
+                var users = res.users;
+                if (users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">No users found</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = users.map(function(u) {
+                    var statusBadge = u.status === 'active' ? 'bg-success' : u.status === 'pending' ? 'bg-warning text-dark' : 'bg-danger';
+                    return '<tr>' +
+                        '<td>' + u.name + '</td>' +
+                        '<td><small>' + u.email + '</small></td>' +
+                        '<td><span class="badge bg-primary">' + (IremeAuth.ROLES[u.role] ? IremeAuth.ROLES[u.role].label : u.role) + '</span></td>' +
+                        '<td><span class="badge ' + statusBadge + '">' + u.status + '</span></td>' +
+                        '<td>' +
+                        (u.status === 'pending' ? '<button class="btn btn-sm btn-outline-success me-1" onclick="approveUser(\'' + u.id + '\')">Approve</button>' : '') +
+                        (u.status === 'active' ? '<button class="btn btn-sm btn-outline-warning me-1" onclick="suspendUser(\'' + u.id + '\')">Suspend</button>' : '') +
+                        '</td></tr>';
+                }).join('');
+            });
         }
 
-        function approveUser(id) { IremeAuth.approveUser(id); renderSuperAdminDashboard(); }
-        function suspendUser(id) { if (confirm('Suspend this user?')) { IremeAuth.suspendUser(id); renderSuperAdminDashboard(); } }
-        function removeUser(id) { if (confirm('Delete this user? This cannot be undone.')) { IremeAuth.deleteUser(id); renderSuperAdminDashboard(); } }
+        function approveUser(id) { IremeAuth.approveUser(id).then(renderSuperAdminDashboard); }
+        function suspendUser(id) { if (confirm('Suspend this user?')) { IremeAuth.suspendUser(id).then(renderSuperAdminDashboard); } }
 
         document.getElementById('sa-search').addEventListener('input', renderUsersTable);
         document.getElementById('sa-role-filter').addEventListener('change', renderUsersTable);

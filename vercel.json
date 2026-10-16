@@ -10,6 +10,11 @@
       ]
     }
   ],
-  "rewrites": [],
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://ireme-backend.onrender.com/api/:path*"
+    }
+  ],
   "redirects": []
 }

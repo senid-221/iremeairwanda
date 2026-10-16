@@ -104,6 +104,8 @@
     <script src="js/main.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/components.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/api-client.js"></script>
     <script src="js/auth.js"></script>
     <script>
         IremeComponents.initPage('parent-login.html');
@@ -113,18 +115,56 @@
             var email = document.getElementById('login-email').value.trim();
             var password = document.getElementById('login-password').value;
             var alertEl = document.getElementById('login-alert');
-            var result = IremeAuth.login(email, password);
-            if (result.success) {
-                if (result.session.role !== 'parent') { IremeAuth.logout(); alertEl.className = 'alert alert-danger'; alertEl.textContent = 'This account does not have parent access.'; alertEl.classList.remove('d-none'); return; }
-                alertEl.className = 'alert alert-success'; alertEl.textContent = 'Login successful! Redirecting...'; alertEl.classList.remove('d-none');
-                setTimeout(function() { window.location.href = 'parent-dashboard.html'; }, 1000);
-            } else { alertEl.className = 'alert alert-danger'; if (result.error === 'pending') { window.location.href = 'account-pending.html'; } else if (result.error === 'suspended') { window.location.href = 'account-suspended.html'; } else { alertEl.textContent = result.error; alertEl.classList.remove('d-none'); } }
+            var submitBtn = this.querySelector('button[type="submit"]');
+
+            function setLoading(loading) {
+                if (submitBtn) {
+                    submitBtn.disabled = loading;
+                    if (loading) {
+                        submitBtn.dataset.originalHtml = submitBtn.innerHTML;
+                        submitBtn.textContent = 'Signing in...';
+                    } else if (submitBtn.dataset.originalHtml) {
+                        submitBtn.innerHTML = submitBtn.dataset.originalHtml;
+                    }
+                }
+            }
+
+            alertEl.classList.add('d-none');
+            setLoading(true);
+
+            IremeAuth.login(email, password).then(function(result) {
+                if (result.success) {
+                    if (!IremeAuth.hasRole('parent')) {
+                        IremeAuth.logout();
+                        setLoading(false);
+                        alertEl.className = 'alert alert-danger';
+                        alertEl.textContent = 'This account does not have parent access.';
+                        alertEl.classList.remove('d-none');
+                        return;
+                    }
+                    alertEl.className = 'alert alert-success';
+                    alertEl.textContent = 'Login successful! Redirecting...';
+                    alertEl.classList.remove('d-none');
+                    setTimeout(function() { window.location.href = 'parent-dashboard.html'; }, 800);
+                } else {
+                    setLoading(false);
+                    alertEl.className = 'alert alert-danger';
+                    if (result.error === 'pending') {
+                        window.location.href = 'account-pending.html';
+                    } else if (result.error === 'suspended') {
+                        window.location.href = 'account-suspended.html';
+                    } else {
+                        alertEl.textContent = result.error;
+                        alertEl.classList.remove('d-none');
+                    }
+                }
+            });
         });
 
         document.getElementById('google-login-btn').addEventListener('click', function(e) {
             e.preventDefault();
-            var apiUrl = (typeof IremeAPI !== 'undefined' && IremeAPI.getBaseUrl()) || '';
-            window.location.href = apiUrl + '/api/auth/google?role=PARENT';
+            if (typeof IremeAPI === 'undefined') return;
+            window.location.href = IremeAPI.googleLoginUrl('PARENT');
         });
     </script>
 </body>
