@@ -167,6 +167,38 @@
             align-items: flex-end;
         }
 
+        .chat-action-btn {
+            background: #f0f0f5;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #666;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .chat-action-btn:hover {
+            background: #e0e0e5;
+            color: #1363C6;
+        }
+
+        .chat-action-btn.recording {
+            background: #ff3b30;
+            color: #fff;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
         .chat-input-field {
             flex: 1;
             border: 1px solid #d1d1d6;
@@ -182,6 +214,42 @@
         .chat-input-field:focus {
             outline: none;
             border-color: #1363C6;
+        }
+
+        .attachment-preview {
+            max-width: 900px;
+            margin: 0 auto 0.75rem;
+            display: none;
+        }
+
+        .attachment-preview.active {
+            display: block;
+        }
+
+        .attachment-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: #f0f0f5;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .attachment-item i {
+            color: #1363C6;
+        }
+
+        .attachment-remove {
+            cursor: pointer;
+            color: #999;
+            margin-left: 0.25rem;
+        }
+
+        .attachment-remove:hover {
+            color: #ff3b30;
         }
 
         .chat-send-btn {
@@ -321,7 +389,15 @@
         </div>
 
         <div class="chat-input-area">
+            <div class="attachment-preview" id="attachment-preview"></div>
             <div class="chat-input-wrapper">
+                <button class="chat-action-btn" id="chat-attach-btn" title="Attach file">
+                    <i class="fa fa-paperclip"></i>
+                </button>
+                <input type="file" id="chat-file-input" style="display:none;" multiple accept="image/*,.pdf,.doc,.docx,.txt">
+                <button class="chat-action-btn" id="chat-voice-btn" title="Voice input">
+                    <i class="fa fa-microphone"></i>
+                </button>
                 <textarea 
                     class="chat-input-field" 
                     id="chat-input" 
@@ -348,6 +424,9 @@
 
         var currentSubject = 'general';
         var conversationId = null;
+        var attachedFiles = [];
+        var isRecording = false;
+        var recognition = null;
 
         var chatContainer = document.getElementById('chat-container');
         var chatInput = document.getElementById('chat-input');
@@ -356,9 +435,46 @@
         var chatMessagesEl = document.getElementById('chat-messages');
         var typingIndicator = document.getElementById('typing-indicator');
         var subjectBadge = document.getElementById('chat-subject-badge');
+        var attachBtn = document.getElementById('chat-attach-btn');
+        var fileInput = document.getElementById('chat-file-input');
+        var attachmentPreview = document.getElementById('attachment-preview');
+        var voiceBtn = document.getElementById('chat-voice-btn');
+
+        // Initialize speech recognition
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+
+            recognition.onresult = function(event) {
+                var transcript = '';
+                for (var i = event.resultIndex; i < event.results.length; i++) {
+                    transcript += event.results[i][0].transcript;
+                }
+                chatInput.value = transcript;
+                chatSendBtn.disabled = !transcript.trim();
+            };
+
+            recognition.onend = function() {
+                isRecording = false;
+                voiceBtn.classList.remove('recording');
+                voiceBtn.querySelector('i').className = 'fa fa-microphone';
+            };
+
+            recognition.onerror = function(event) {
+                console.error('Speech recognition error:', event.error);
+                isRecording = false;
+                voiceBtn.classList.remove('recording');
+                voiceBtn.querySelector('i').className = 'fa fa-microphone';
+            };
+        } else {
+            voiceBtn.style.display = 'none';
+        }
 
         chatInput.addEventListener('input', function() {
-            chatSendBtn.disabled = !this.value.trim();
+            updateSendButton();
             this.style.height = 'auto';
             this.style.height = Math.min(this.scrollHeight, 150) + 'px';
         });
@@ -389,18 +505,98 @@
             });
         });
 
+        // Attachment button
+        attachBtn.addEventListener('click', function() {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', function(e) {
+            var files = Array.from(e.target.files);
+            files.forEach(function(file) {
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('File size must be less than 10MB');
+                    return;
+                }
+                attachedFiles.push(file);
+                addAttachmentPreview(file);
+            });
+            fileInput.value = '';
+            updateSendButton();
+        });
+
+        // Voice button
+        voiceBtn.addEventListener('click', function() {
+            if (!recognition) {
+                alert('Speech recognition is not supported in your browser');
+                return;
+            }
+
+            if (isRecording) {
+                recognition.stop();
+                isRecording = false;
+                voiceBtn.classList.remove('recording');
+                voiceBtn.querySelector('i').className = 'fa fa-microphone';
+            } else {
+                recognition.start();
+                isRecording = true;
+                voiceBtn.classList.add('recording');
+                voiceBtn.querySelector('i').className = 'fa fa-stop';
+            }
+        });
+
+        function addAttachmentPreview(file) {
+            attachmentPreview.classList.add('active');
+            var item = document.createElement('div');
+            item.className = 'attachment-item';
+            item.dataset.filename = file.name;
+            
+            var icon = file.type.startsWith('image/') ? 'fa-image' : 'fa-file';
+            item.innerHTML = '<i class="fa ' + icon + '"></i>' +
+                '<span>' + file.name + '</span>' +
+                '<span class="attachment-remove" onclick="removeAttachment(\'' + file.name + '\')"><i class="fa fa-times"></i></span>';
+            
+            attachmentPreview.appendChild(item);
+        }
+
+        function removeAttachment(filename) {
+            attachedFiles = attachedFiles.filter(function(f) { return f.name !== filename; });
+            var item = attachmentPreview.querySelector('[data-filename="' + filename + '"]');
+            if (item) item.remove();
+            
+            if (attachedFiles.length === 0) {
+                attachmentPreview.classList.remove('active');
+            }
+            updateSendButton();
+        }
+
+        function updateSendButton() {
+            chatSendBtn.disabled = !chatInput.value.trim() && attachedFiles.length === 0;
+        }
+
         function sendMessage() {
             var message = chatInput.value.trim();
-            if (!message) return;
+            if (!message && attachedFiles.length === 0) return;
 
             if (chatWelcome) {
                 chatWelcome.style.display = 'none';
             }
 
-            addMessage('user', message);
+            var displayMessage = message;
+            if (attachedFiles.length > 0) {
+                var fileNames = attachedFiles.map(function(f) { return f.name; }).join(', ');
+                displayMessage = message ? message + '\n\n📎 Attached: ' + fileNames : '📎 Attached: ' + fileNames;
+            }
+
+            addMessage('user', displayMessage);
             chatInput.value = '';
             chatInput.style.height = 'auto';
-            chatSendBtn.disabled = true;
+            
+            // Clear attachments
+            attachedFiles = [];
+            attachmentPreview.innerHTML = '';
+            attachmentPreview.classList.remove('active');
+            
+            updateSendButton();
 
             typingIndicator.style.display = 'flex';
             scrollToBottom();
