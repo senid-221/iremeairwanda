@@ -74,8 +74,8 @@ app.use(session({
     maxAge: 30 * 24 * 60 * 60 * 1000,
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    domain: process.env.NODE_ENV === 'production' ? undefined : undefined,
+    sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'lax',
+    path: '/',
   },
   name: 'ireme.sid',
 }));
