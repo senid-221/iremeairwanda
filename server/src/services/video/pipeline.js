@@ -35,11 +35,17 @@ async function assertNotCancelled(jobId) {
   if (!job || job.status === 'cancelled') throw CancelledError();
 }
 
-async function setProgress(jobId, stage, progress) {
+async function setProgress(jobId, stage, progress, backgroundJobId) {
   await prisma.videoGenerationJob.update({
     where: { id: jobId },
     data: { stage: stage, progress: progress },
   });
+  if (backgroundJobId) {
+    await prisma.backgroundJob.update({
+      where: { id: backgroundJobId },
+      data: { result: { stage: stage, progress: progress } },
+    }).catch(function () {});
+  }
 }
 
 function jobDirFor(jobId) {
@@ -90,13 +96,13 @@ async function loadContext(lessonId) {
   };
 }
 
-async function stageNarration(jobId, lessonId, scenes, dir) {
+async function stageNarration(jobId, lessonId, scenes, dir, language, backgroundJobId) {
   var results = [];
   var cursor = 0;
   for (var i = 0; i < scenes.length; i++) {
     await assertNotCancelled(jobId);
     var scene = scenes[i];
-    var audioBuffer = await generateSpeech(scene.narration, scene.language);
+    var audioBuffer = await generateSpeech(scene.narrationText, language);
     var audioPath = path.join(dir, `scene-${String(i + 1).padStart(2, '0')}.mp3`);
     fs.writeFileSync(audioPath, audioBuffer);
     var spoken = await renderer.probeMediaDuration(audioPath);
@@ -104,8 +110,8 @@ async function stageNarration(jobId, lessonId, scenes, dir) {
     results.push({
       sceneNumber: i + 1,
       title: scene.title,
-      narration: scene.narration,
-      caption: scene.caption || scene.narration,
+      narration: scene.narrationText,
+      caption: scene.captionText || scene.narrationText,
       visualDescription: scene.visualDescription,
       audioPath: audioPath,
       spokenSeconds: spoken,
@@ -114,12 +120,12 @@ async function stageNarration(jobId, lessonId, scenes, dir) {
     });
     cursor += durationSeconds;
     var pct = 30 + Math.round(((i + 1) / scenes.length) * 25);
-    await setProgress(jobId, 'narration', pct);
+    await setProgress(jobId, 'narration', pct, backgroundJobId);
   }
   return results;
 }
 
-async function stageVisuals(jobId, scenes, dir, scriptContext) {
+async function stageVisuals(jobId, scenes, dir, scriptContext, backgroundJobId) {
   for (var i = 0; i < scenes.length; i++) {
     await assertNotCancelled(jobId);
     var scene = scenes[i];
@@ -138,12 +144,12 @@ async function stageVisuals(jobId, scenes, dir, scriptContext) {
       scene.imagePath = null;
     }
     var pct = 55 + Math.round(((i + 1) / scenes.length) * 20);
-    await setProgress(jobId, 'visuals', pct);
+    await setProgress(jobId, 'visuals', pct, backgroundJobId);
   }
   return scenes;
 }
 
-async function stageRender(jobId, scenes, dir) {
+async function stageRender(jobId, scenes, dir, backgroundJobId) {
   var segments = [];
   for (var i = 0; i < scenes.length; i++) {
     await assertNotCancelled(jobId);
@@ -163,13 +169,13 @@ async function stageRender(jobId, scenes, dir) {
     });
     segments.push(segmentPath);
     var pct = 75 + Math.round(((i + 1) / scenes.length) * 12);
-    await setProgress(jobId, 'render', pct);
+    await setProgress(jobId, 'render', pct, backgroundJobId);
   }
 
   await assertNotCancelled(jobId);
   var finalPath = path.join(dir, 'lesson-final.mp4');
   await renderer.concatSegments(segments, finalPath);
-  await setProgress(jobId, 'render', 89);
+  await setProgress(jobId, 'render', 89, backgroundJobId);
 
   var validation = await renderer.validateVideo(finalPath);
   if (!validation.valid) {
@@ -178,7 +184,7 @@ async function stageRender(jobId, scenes, dir) {
   return { finalPath: finalPath, validation: validation };
 }
 
-async function stageUpload(jobId, lessonId, language, scenes, rendered, dir) {
+async function stageUpload(jobId, lessonId, language, scenes, rendered, dir, backgroundJobId) {
   await assertNotCancelled(jobId);
   var base = `video-lessons/${lessonId}`;
   var assets = [];
@@ -210,7 +216,7 @@ async function stageUpload(jobId, lessonId, language, scenes, rendered, dir) {
     }
   }
 
-  await setProgress(jobId, 'upload', 97);
+  await setProgress(jobId, 'upload', 97, backgroundJobId);
   return { assets: assets, videoUrl: videoUpload.url, captionUrl: vttUpload.url };
 }
 
@@ -322,9 +328,21 @@ async function notifyUser(lessonId, userId, title, language) {
 /**
  * Process one queued job end to end. Throws on failure; the caller (worker)
  * decides retry policy. Cancellation is signaled with err.isCancellation.
+ * When backgroundJobId is provided, the corresponding BackgroundJob row is
+ * kept in sync so admins can monitor progress via /api/jobs.
  */
-async function runJob(jobId) {
+async function runJob(jobId, backgroundJobId) {
   var dir = null;
+  var job = null;
+
+  async function updateBg(data) {
+    if (!backgroundJobId) return;
+    await prisma.backgroundJob.update({
+      where: { id: backgroundJobId },
+      data: data,
+    }).catch(function () {});
+  }
+
   try {
     var cfg = videoConfig.get();
     var readiness = cfg.isReady();
@@ -332,7 +350,7 @@ async function runJob(jobId) {
       throw new Error('Video generation is not configured: ' + readiness.problems.join('; '));
     }
 
-    var job = await prisma.videoGenerationJob.findUnique({ where: { id: jobId } });
+    job = await prisma.videoGenerationJob.findUnique({ where: { id: jobId } });
     if (!job) throw new Error(`Job ${jobId} not found`);
     if (job.status !== 'queued' && job.status !== 'processing') {
       return { skipped: true, status: job.status };
@@ -343,12 +361,13 @@ async function runJob(jobId) {
       where: { id: jobId },
       data: { status: 'processing', stage: 'planning', progress: 5, startedAt: job.startedAt || new Date(), error: null },
     });
+    await updateBg({ status: 'running', startedAt: new Date(), result: { stage: 'planning', progress: 5 } });
 
     var ctx = await loadContext(job.videoLessonId);
     await assertNotCancelled(jobId);
 
     // Stage 1: lesson script via Responses API (+ web search when enabled)
-    await setProgress(jobId, 'planning', 10);
+    await setProgress(jobId, 'planning', 10, backgroundJobId);
     var generated = await generateLessonScript(ctx.scriptContext);
     await assertNotCancelled(jobId);
     ctx.script = generated.script;
@@ -367,18 +386,18 @@ async function runJob(jobId) {
     });
 
     // Stage 2: narration audio per scene
-    var scenes = await stageNarration(jobId, ctx.lesson.id, generated.script.scenes, dir);
+    var scenes = await stageNarration(jobId, ctx.lesson.id, generated.script.scenes, dir, ctx.lesson.language, backgroundJobId);
 
     // Stage 3: visuals per scene
-    await setProgress(jobId, 'visuals', 55);
-    scenes = await stageVisuals(jobId, scenes, dir, ctx.scriptContext);
+    await setProgress(jobId, 'visuals', 55, backgroundJobId);
+    scenes = await stageVisuals(jobId, scenes, dir, ctx.scriptContext, backgroundJobId);
 
     // Stage 4: render + validate
-    await setProgress(jobId, 'render', 75);
-    var rendered = await stageRender(jobId, scenes, dir);
+    await setProgress(jobId, 'render', 75, backgroundJobId);
+    var rendered = await stageRender(jobId, scenes, dir, backgroundJobId);
 
     // Stage 5: upload to object storage
-    var uploaded = await stageUpload(jobId, ctx.lesson.id, ctx.lesson.language, scenes, rendered, dir);
+    var uploaded = await stageUpload(jobId, ctx.lesson.id, ctx.lesson.language, scenes, rendered, dir, backgroundJobId);
 
     // Stage 6: persist everything and mark complete
     await persistResults(ctx.lesson.id, ctx, scenes, rendered, uploaded);
@@ -386,6 +405,7 @@ async function runJob(jobId) {
       where: { id: jobId },
       data: { status: 'completed', stage: 'complete', progress: 100, completedAt: new Date(), error: null },
     });
+    await updateBg({ status: 'completed', completedAt: new Date(), result: { stage: 'complete', progress: 100, lessonId: ctx.lesson.id, durationSeconds: rendered.validation.duration } });
     await notifyUser(ctx.lesson.id, ctx.lesson.userId, ctx.script.title, ctx.lesson.language);
 
     cleanupDir(dir);
@@ -397,6 +417,7 @@ async function runJob(jobId) {
         where: { id: job ? job.videoLessonId : '', status: { in: ['generating', 'queued'] } },
         data: { status: 'cancelled' },
       }).catch(function () {});
+      await updateBg({ status: 'cancelled', completedAt: new Date() });
       throw err;
     }
     var message = String(err && err.message ? err.message : err).slice(0, 2000);
@@ -404,6 +425,7 @@ async function runJob(jobId) {
       where: { id: jobId, status: { notIn: ['cancelled'] } },
       data: { status: 'failed', stage: 'failed', error: message },
     }).catch(function () {});
+    await updateBg({ status: 'failed', error: message, completedAt: new Date() });
     if (job) {
       await prisma.videoLesson.updateMany({
         where: { id: job.videoLessonId, status: { notIn: ['cancelled'] } },

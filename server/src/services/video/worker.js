@@ -31,6 +31,7 @@ async function tryClaimJob() {
     where: { status: 'queued' },
     orderBy: { queuedAt: 'asc' },
     take: 1,
+    include: { videoLesson: { select: { topicName: true } } },
   });
   var candidate = candidates[0];
   if (!candidate) return false;
@@ -42,9 +43,29 @@ async function tryClaimJob() {
   });
   if (claimed.count !== 1) return false;
 
+  // Create a BackgroundJob entry so admins can monitor via /api/jobs.
+  var bgJob = null;
+  try {
+    bgJob = await prisma.backgroundJob.create({
+      data: {
+        jobType: 'video_generation',
+        jobName: 'Video: ' + (candidate.videoLesson ? candidate.videoLesson.topicName : candidate.id),
+        status: 'running',
+        payload: { videoGenerationJobId: candidate.id, videoLessonId: candidate.videoLessonId },
+        priority: 0,
+        maxAttempts: candidate.maxAttempts,
+        attempts: candidate.attempts + 1,
+        scheduledAt: new Date(),
+        startedAt: new Date(),
+      },
+    });
+  } catch (bgErr) {
+    log('failed to create BackgroundJob for', candidate.id, bgErr.message);
+  }
+
   activeCount++;
   log('claimed job', candidate.id, `(active: ${activeCount})`);
-  pipeline.runJob(candidate.id)
+  pipeline.runJob(candidate.id, bgJob ? bgJob.id : null)
     .then(function (result) {
       log('job', candidate.id, 'finished:', JSON.stringify(result));
     })

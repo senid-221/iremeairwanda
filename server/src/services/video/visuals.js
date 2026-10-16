@@ -1,5 +1,5 @@
-const { generateImage } = require('./openai-client');
-const videoConfig = require('../../config/video');
+var { generateImage } = require('./openai-client');
+var videoConfig = require('../../config/video');
 
 function isPng(buffer) {
   return buffer && buffer.length > 8 &&
@@ -11,13 +11,13 @@ function isJpeg(buffer) {
 }
 
 async function generateSceneImage(scene, lessonContext, sceneNumber, totalScenes) {
-  const cfg = videoConfig.get();
+  var cfg = videoConfig.get();
 
   if (!cfg.openai.apiKey) {
     return { buffer: null, kind: 'title-card', reason: 'no-image-model-configured' };
   }
 
-  const prompt = [
+  var prompt = [
     `Educational illustration for a school video lesson, clean flat vector style, friendly and clear.`,
     `Subject: ${lessonContext.subjectName || 'general studies'}.`,
     `Education level: ${lessonContext.levelCode || 'general'}.`,
@@ -31,7 +31,7 @@ async function generateSceneImage(scene, lessonContext, sceneNumber, totalScenes
   ].join(' ');
 
   try {
-    const buffer = await generateImage(prompt);
+    var buffer = await generateImage(prompt);
     if (isPng(buffer) || isJpeg(buffer)) {
       return { buffer, kind: 'generated', reason: null };
     }
