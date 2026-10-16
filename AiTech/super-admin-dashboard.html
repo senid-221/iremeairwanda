@@ -150,7 +150,7 @@
     <script src="js/components.js"></script>
     <script>
         IremeComponents.initPage('super-admin-dashboard.html');
-        if (!IremeAuth.requireRole('super_admin')) { throw new Error('Access denied'); }
+        if (!IremeAuth.requireRole('super_admin')) { /* verifySession will redirect */ }
 
         var roleFilterPopulated = false;
 

@@ -150,7 +150,7 @@
     <script src="js/components.js"></script>
     <script>
         IremeComponents.initPage('curriculum-manager-dashboard.html');
-        if (!IremeAuth.requireRole('curriculum_manager')) { throw new Error('Access denied'); }
+        if (!IremeAuth.requireRole('curriculum_manager')) { /* verifySession will redirect */ }
     </script>
 </body>
 </html>

@@ -374,7 +374,7 @@
     <script src="js/components.js"></script>
     <script>
         IremeComponents.initPage('school-dashboard.html');
-        if (!IremeAuth.requireAnyRole(['school_admin', 'headteacher'])) { throw new Error('Access denied'); }
+        if (!IremeAuth.requireAnyRole(['school_admin', 'headteacher'])) { /* verifySession will redirect */ }
 
         IremeAPI.getDashboard('headteacher').then(function(data) {
             var stats = data.stats || {};

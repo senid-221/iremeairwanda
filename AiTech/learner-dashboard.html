@@ -229,7 +229,7 @@
     <script src="js/components.js"></script>
     <script>
         IremeComponents.initPage('learner-dashboard.html');
-        if (!IremeAuth.requireAnyRole(['learner', 'student'])) { throw new Error('Access denied'); }
+        if (!IremeAuth.requireAnyRole(['learner', 'student'])) { /* verifySession will redirect */ }
         var user = IremeAuth.currentUser();
         if (user) {
             var el = document.getElementById('learner-welcome');

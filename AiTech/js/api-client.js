@@ -133,6 +133,10 @@ var IremeAPI = (function() {
       return this.post('/api/auth/logout');
     },
 
+    exchangeToken: function(token) {
+      return this.post('/api/auth/exchange-token', { token: token });
+    },
+
     getMatchHistory: function(page, limit) {
       var params = '';
       if (page) params += '?page=' + page;

@@ -175,7 +175,7 @@
     <script src="js/components.js"></script>
     <script>
         IremeComponents.initPage('finance-dashboard.html');
-        if (!IremeAuth.requireRole('finance')) { throw new Error('Access denied'); }
+        if (!IremeAuth.requireRole('finance')) { /* verifySession will redirect */ }
     </script>
 </body>
 </html>

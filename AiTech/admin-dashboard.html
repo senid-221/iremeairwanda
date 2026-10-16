@@ -170,7 +170,7 @@
     <script src="js/components.js"></script>
     <script>
         IremeComponents.initPage('admin-dashboard.html');
-        if (!IremeAuth.requireAnyRole(['admin', 'super_admin'])) { throw new Error('Access denied'); }
+        if (!IremeAuth.requireAnyRole(['admin', 'super_admin'])) { /* verifySession will redirect */ }
 
         IremeAPI.getDashboard('admin').then(function(data) {
             var stats = data.stats || {};

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const { PrismaClient } = require('@prisma/client');
 const { requireAuth } = require('../middleware/auth');
 
@@ -150,22 +151,59 @@ router.get('/google/callback',
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
     const user = req.user;
 
-    let redirectPath = '/student-dashboard.html';
-    if (user.role === 'STUDENT' && user.status === 'PENDING') {
-      redirectPath = '/account-pending.html';
-    } else if (user.role === 'TEACHER') {
-      redirectPath = user.status === 'ACTIVE' ? '/teacher-dashboard.html' : '/account-pending.html';
-    } else if (user.role === 'PARENT') {
-      redirectPath = '/parent-dashboard.html';
-    } else if (user.role === 'HEADTEACHER') {
-      redirectPath = '/school-dashboard.html';
-    } else if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') {
-      redirectPath = '/admin-dashboard.html';
-    }
+    const sessionSecret = process.env.SESSION_SECRET || 'fallback_secret_change_me';
+    const oauthToken = jwt.sign(
+      { userId: user.id, role: user.role, status: user.status },
+      sessionSecret,
+      { expiresIn: '60s' }
+    );
 
-    res.redirect(frontendUrl + redirectPath);
+    res.redirect(frontendUrl + '/oauth-callback.html#token=' + oauthToken);
   }
 );
+
+router.post('/exchange-token', (req, res) => {
+  const { token } = req.body || {};
+  if (!token) {
+    return res.status(400).json({ error: 'Token is required' });
+  }
+
+  const sessionSecret = process.env.SESSION_SECRET || 'fallback_secret_change_me';
+  let payload;
+  try {
+    payload = jwt.verify(token, sessionSecret);
+  } catch (err) {
+    return res.status(401).json({ error: 'Invalid or expired token' });
+  }
+
+  prisma.user.findUnique({
+    where: { id: payload.userId },
+    include: { studentProfile: true, parentProfile: true },
+  }).then((user) => {
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    req.login(user, (err) => {
+      if (err) {
+        return res.status(500).json({ error: 'Failed to establish session' });
+      }
+
+      prisma.user.update({
+        where: { id: user.id },
+        data: { lastLoginAt: new Date() },
+      }).catch(() => {});
+
+      res.json({
+        message: 'Session established',
+        user: sanitizeUser(user),
+      });
+    });
+  }).catch((err) => {
+    console.error('Exchange token error:', err);
+    res.status(500).json({ error: 'Failed to exchange token' });
+  });
+});
 
 router.get('/me', requireAuth, (req, res) => {
   const user = req.user;

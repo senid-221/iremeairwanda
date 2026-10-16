@@ -245,7 +245,7 @@
     <script src="js/game-dropdown.js"></script>
     <script>
         IremeComponents.initPage('video-lessons.html', ['js/game-dropdown.js']);
-        if (!IremeAuth.requireRole('student')) { throw new Error('Access denied'); }
+        if (!IremeAuth.requireRole('student')) { /* verifySession will redirect */ }
 
         var state = {
             levels: [], subjects: [], topics: [],

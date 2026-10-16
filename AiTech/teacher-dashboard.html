@@ -129,7 +129,7 @@
     <script src="js/components.js"></script>
     <script>
         IremeComponents.initPage('teacher-dashboard.html');
-        if (!IremeAuth.requireRole('teacher')) { throw new Error('Access denied'); }
+        if (!IremeAuth.requireRole('teacher')) { /* verifySession will redirect */ }
         var user = IremeAuth.currentUser();
         if (user) {
             var welcomeEl = document.querySelector('[data-i18n="dashboard.welcome"]');

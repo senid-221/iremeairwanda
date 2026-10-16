@@ -155,7 +155,7 @@
     <script src="js/game-state.js"></script>
     <script>
         IremeComponents.initPage('student-dashboard.html', ['js/game-state.js']);
-        if (!IremeAuth.requireRole('student')) { throw new Error('Access denied'); }
+        if (!IremeAuth.requireRole('student')) { /* verifySession will redirect if needed */ }
         var user = IremeAuth.currentUser();
         if (user) {
             var welcomeEl = document.querySelector('[data-i18n="dashboard.welcome"]');

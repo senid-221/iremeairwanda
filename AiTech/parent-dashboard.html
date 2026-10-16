@@ -171,7 +171,7 @@
     <script src="js/components.js"></script>
     <script>
         IremeComponents.initPage('parent-dashboard.html');
-        if (!IremeAuth.requireRole('parent')) { throw new Error('Access denied'); }
+        if (!IremeAuth.requireRole('parent')) { /* verifySession will redirect */ }
         var user = IremeAuth.currentUser();
         if (user) {
             var welcomeEl = document.getElementById('parent-welcome');

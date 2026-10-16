@@ -152,7 +152,7 @@
     <script src="js/components.js"></script>
     <script>
         IremeComponents.initPage('support-dashboard.html');
-        if (!IremeAuth.requireRole('support')) { throw new Error('Access denied'); }
+        if (!IremeAuth.requireRole('support')) { /* verifySession will redirect */ }
     </script>
 </body>
 </html>

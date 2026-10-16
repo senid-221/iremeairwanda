@@ -213,7 +213,6 @@ var IremeAuth = (function () {
             guardRequired = true;
             this.verifySession();
             if (!this.isLoggedIn()) {
-                window.location.href = redirectUrl || 'login.html';
                 return false;
             }
             return true;
@@ -223,7 +222,6 @@ var IremeAuth = (function () {
             guardRequired = true;
             this.verifySession();
             if (!this.isLoggedIn()) {
-                window.location.href = 'login.html';
                 return false;
             }
             if (!this.hasRole(role)) {
@@ -237,7 +235,6 @@ var IremeAuth = (function () {
             guardRequired = true;
             this.verifySession();
             if (!this.isLoggedIn()) {
-                window.location.href = 'login.html';
                 return false;
             }
             if (!this.hasAnyRole(roles)) {
@@ -253,9 +250,9 @@ var IremeAuth = (function () {
          * local session when the server reports no authentication.
          */
         verifySession: function () {
+            var self = this;
             var client = api();
             if (!client) return;
-            var hadSession = !!readSession();
             client.getAuthStatus().then(function (status) {
                 if (status && status.authenticated && status.user) {
                     var existing = readSession();
@@ -277,15 +274,13 @@ var IremeAuth = (function () {
                         clearSession();
                         window.location.href = 'account-pending.html';
                     }
-                } else if (hadSession) {
+                } else {
                     clearSession();
                     if (guardRequired) {
                         window.location.href = 'login.html';
                     }
                 }
             }).catch(function () {
-                // Network/backend unavailable: keep the cached session for this
-                // page view instead of bouncing the user to login.
             });
         },
 

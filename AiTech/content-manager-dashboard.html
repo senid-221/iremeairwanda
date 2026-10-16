@@ -147,7 +147,7 @@
     <script src="js/components.js"></script>
     <script>
         IremeComponents.initPage('content-manager-dashboard.html');
-        if (!IremeAuth.requireRole('content_manager')) { throw new Error('Access denied'); }
+        if (!IremeAuth.requireRole('content_manager')) { /* verifySession will redirect */ }
     </script>
 </body>
 </html>

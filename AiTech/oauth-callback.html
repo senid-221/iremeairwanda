@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>IREME - Logging in...</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="img/ireme-icon.png" rel="icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div id="component-spinner"></div>
+    <div id="component-navbar"></div>
+
+    <div class="container-fluid pt-5 bg-primary hero-header">
+        <div class="container pt-5">
+            <div class="row g-5 pt-5">
+                <div class="col-lg-12 align-self-center text-center mb-lg-5">
+                    <h1 class="display-4 text-white mb-4 animated slideInRight">Logging you in...</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6 text-center">
+                    <div class="service-item rounded p-5">
+                        <div class="spinner-border text-primary mb-4" role="status" style="width:3rem;height:3rem">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <h4 id="oauth-status">Completing your login...</h4>
+                        <p class="text-muted mb-0" id="oauth-message">Please wait while we set up your session.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="component-footer"></div>
+    <div id="component-backtotop"></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/api-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+        IremeComponents.initPage('oauth-callback.html');
+
+        (function() {
+            var hash = window.location.hash;
+            var token = null;
+            if (hash && hash.indexOf('#token=') === 0) {
+                token = hash.substring(7);
+            }
+
+            if (!token) {
+                document.getElementById('oauth-status').textContent = 'Login failed';
+                document.getElementById('oauth-message').textContent = 'No authentication token received. Redirecting to login...';
+                setTimeout(function() { window.location.href = 'login.html'; }, 2000);
+                return;
+            }
+
+            IremeAPI.exchangeToken(token).then(function(data) {
+                if (data.user) {
+                    var session = {
+                        userId: data.user.id,
+                        email: data.user.email,
+                        name: data.user.fullName,
+                        fullName: data.user.fullName,
+                        role: data.user.role,
+                        status: data.user.status,
+                        avatarUrl: data.user.avatarUrl || null,
+                        expiresAt: Date.now() + 24 * 60 * 60 * 1000,
+                    };
+                    localStorage.setItem('ireme-auth-session', JSON.stringify(session));
+
+                    window.location.hash = '';
+
+                    var dashboard = IremeAuth.getDashboardUrl(data.user.role);
+                    if (data.user.status === 'PENDING') {
+                        window.location.href = 'account-pending.html';
+                    } else if (data.user.status === 'SUSPENDED') {
+                        window.location.href = 'account-suspended.html';
+                    } else {
+                        window.location.href = dashboard;
+                    }
+                } else {
+                    throw new Error('No user data received');
+                }
+            }).catch(function(err) {
+                document.getElementById('oauth-status').textContent = 'Login failed';
+                document.getElementById('oauth-message').textContent = err.message || 'Something went wrong. Redirecting to login...';
+                setTimeout(function() { window.location.href = 'login.html?error=oauth_failed'; }, 2000);
+            });
+        })();
+    </script>
+</body>
+</html>
