@@ -2,48 +2,105 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>IREME - AI Tutor</title>
+    <title>IREME - AI Chat</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="IREME AI Tutor, AI Learning Assistant Rwanda, Ireme AI Education" name="keywords">
-    <meta content="Ireme AI Tutor - Your intelligent learning assistant for Rwandan education. Get help with subjects, revision notes, practice exercises, and more." name="description">
-
-    <!-- Favicon -->
     <link href="img/ireme-icon.png" rel="icon">
 
-    <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap" rel="stylesheet">
 
-    <!-- Icon Font Stylesheet -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
-
-    <!-- Libraries Stylesheet -->
-    <link href="lib/animate/animate.min.css" rel="stylesheet">
-
-    <!-- Customized Bootstrap Stylesheet -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f7f7f8;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .chat-page {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            background: #fff;
+            border-bottom: 1px solid #e5e5e7;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .chat-header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .chat-header-left i {
+            font-size: 1.5rem;
+            color: #1363C6;
+        }
+
+        .chat-header-left h5 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #1a1a1a;
+        }
+
+        .chat-subject-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            background: #e3f2fd;
+            color: #1363C6;
+            font-weight: 500;
+        }
+
         .chat-container {
-            min-height: 400px;
-            max-height: 600px;
+            flex: 1;
             overflow-y: auto;
-            padding: 1.5rem;
-            background-color: #f8f9fa;
-            border-radius: 0.5rem;
+            padding: 2rem;
+            background-color: #fff;
+        }
+
+        .chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background: #d1d1d6;
+            border-radius: 3px;
         }
 
         .chat-message {
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.5rem;
             display: flex;
+            animation: fadeIn 0.3s ease-in;
         }
 
-        .chat-message.student {
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chat-message.user {
             justify-content: flex-end;
         }
 
@@ -52,191 +109,103 @@
         }
 
         .chat-message .message-bubble {
-            max-width: 75%;
-            padding: 1rem 1.25rem;
-            border-radius: 1rem;
+            max-width: 70%;
+            padding: 0.875rem 1.125rem;
+            border-radius: 18px;
             position: relative;
+            line-height: 1.5;
         }
 
-        .chat-message.student .message-bubble {
-            background-color: #00785a;
+        .chat-message.user .message-bubble {
+            background: linear-gradient(135deg, #1363C6 0%, #0d4a94 100%);
             color: #fff;
-            border-bottom-right-radius: 0.25rem;
+            border-bottom-right-radius: 4px;
         }
 
         .chat-message.ai .message-bubble {
-            background-color: #e9ecef;
-            color: #212529;
-            border-bottom-left-radius: 0.25rem;
+            background-color: #f0f0f5;
+            color: #1a1a1a;
+            border-bottom-left-radius: 4px;
         }
 
         .chat-message .message-sender {
             font-size: 0.75rem;
             font-weight: 600;
             margin-bottom: 0.25rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            opacity: 0.7;
         }
 
-        .chat-message.student .message-sender {
+        .chat-message.user .message-sender {
             text-align: right;
-            color: rgba(255, 255, 255, 0.8);
         }
 
-        .chat-message.ai .message-sender {
-            color: #6c757d;
+        .chat-message .message-text {
+            font-size: 0.95rem;
+            word-wrap: break-word;
         }
 
-        .chat-message .source-citation {
-            display: block;
-            margin-top: 0.75rem;
-            padding-left: 0.75rem;
-            border-left: 3px solid #00785a;
-            font-size: 0.8rem;
-            font-style: italic;
-            color: #6c757d;
+        .chat-message .message-text p {
+            margin-bottom: 0.5rem;
         }
 
-        .chat-message .message-text ol,
-        .chat-message .message-text ul {
-            padding-left: 1.25rem;
+        .chat-message .message-text p:last-child {
             margin-bottom: 0;
-        }
-
-        .chat-message .message-text ol li,
-        .chat-message .message-text ul li {
-            margin-bottom: 0.35rem;
-        }
-
-        .conversation-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .conversation-item {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-            margin-bottom: 0.25rem;
-            text-decoration: none;
-            color: #212529;
-        }
-
-        .conversation-item:hover {
-            background-color: #e9ecef;
-            color: #212529;
-        }
-
-        .conversation-item.active {
-            background-color: #d1e7dd;
-            color: #00785a;
-            font-weight: 600;
-        }
-
-        .conversation-item .conversation-date {
-            font-size: 0.7rem;
-            color: #6c757d;
-            margin-left: auto;
-            white-space: nowrap;
-        }
-
-        .conversation-item .conversation-title {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            flex: 1;
-            margin-right: 0.5rem;
-        }
-
-        .subject-btn {
-            display: inline-block;
-            padding: 0.35rem 0.85rem;
-            border-radius: 50rem;
-            border: 1px solid #dee2e6;
-            background-color: #fff;
-            color: #495057;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            margin: 0.2rem;
-        }
-
-        .subject-btn:hover,
-        .subject-btn.active {
-            background-color: #00785a;
-            color: #fff;
-            border-color: #00785a;
-        }
-
-        .chat-header {
-            background-color: #fff;
-            border-bottom: 1px solid #dee2e6;
-            padding: 1rem 1.5rem;
-            border-radius: 0.5rem 0.5rem 0 0;
-            display: flex;
-            align-items: center;
-        }
-
-        .chat-header .context-badge {
-            font-size: 0.8rem;
-            padding: 0.25rem 0.75rem;
         }
 
         .chat-input-area {
             background-color: #fff;
-            border-top: 1px solid #dee2e6;
-            padding: 1rem 1.5rem;
-            border-radius: 0 0 0.5rem 0.5rem;
+            border-top: 1px solid #e5e5e7;
+            padding: 1.25rem 1.5rem;
+            flex-shrink: 0;
         }
 
-        .welcome-card {
-            background: linear-gradient(135deg, #d1e7dd 0%, #e8f5e9 100%);
-            border: 1px solid #b7dfc9;
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
+        .chat-input-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-end;
         }
 
-        .welcome-card h5 {
-            color: #00785a;
+        .chat-input-field {
+            flex: 1;
+            border: 1px solid #d1d1d6;
+            border-radius: 24px;
+            padding: 0.75rem 1.25rem;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+            resize: none;
+            max-height: 150px;
+            font-family: inherit;
         }
 
-        .welcome-card ul {
-            padding-left: 1.25rem;
+        .chat-input-field:focus {
+            outline: none;
+            border-color: #1363C6;
         }
 
-        .welcome-card ul li {
-            margin-bottom: 0.35rem;
+        .chat-send-btn {
+            background: linear-gradient(135deg, #1363C6 0%, #0d4a94 100%);
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+            color: #fff;
+            flex-shrink: 0;
         }
 
-        .disclaimer-notice {
-            background-color: #fff3cd;
-            border: 1px solid #ffecb5;
-            border-radius: 0.5rem;
-            padding: 1rem 1.5rem;
+        .chat-send-btn:hover:not(:disabled) {
+            transform: scale(1.05);
         }
 
-        .language-note {
-            font-size: 0.78rem;
-            color: #6c757d;
-        }
-
-        .sidebar-section {
-            margin-bottom: 1.75rem;
-        }
-
-        .sidebar-section h6 {
-            font-weight: 700;
-            margin-bottom: 0.75rem;
-            color: #495057;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.5px;
+        .chat-send-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
         }
 
         .typing-dots span {
@@ -247,760 +216,253 @@
         }
         .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
         .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
         @keyframes typingBlink {
             0%, 20% { opacity: 0.2; }
             50% { opacity: 1; }
             80%, 100% { opacity: 0.2; }
         }
 
-        #chat-send-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #8e8e93;
         }
 
-        .conversation-item .delete-conversation {
-            display: none;
-            margin-left: 0.25rem;
-            font-size: 0.7rem;
-            color: #dc3545;
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .empty-state h5 {
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .empty-state p {
+            font-size: 0.95rem;
+            margin-bottom: 0;
+        }
+
+        .subject-selector {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .subject-btn {
+            padding: 0.375rem 0.875rem;
+            border-radius: 20px;
+            border: 1px solid #d1d1d6;
+            background-color: #fff;
+            color: #1a1a1a;
+            font-size: 0.85rem;
             cursor: pointer;
-            padding: 0.15rem 0.3rem;
-            border-radius: 0.25rem;
+            transition: all 0.2s ease;
         }
-        .conversation-item:hover .delete-conversation {
-            display: inline-block;
+
+        .subject-btn:hover,
+        .subject-btn.active {
+            background: linear-gradient(135deg, #1363C6 0%, #0d4a94 100%);
+            color: #fff;
+            border-color: #1363C6;
         }
-        .conversation-item .delete-conversation:hover {
-            background-color: #f8d7da;
+
+        @media (max-width: 768px) {
+            .chat-container {
+                padding: 1rem;
+            }
+
+            .chat-message .message-bubble {
+                max-width: 85%;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div id="component-spinner"></div>
-    <div id="component-navbar"></div>
+    <div class="chat-page">
+        <div class="chat-header">
+            <div class="chat-header-left">
+                <i class="fa fa-robot"></i>
+                <h5>Ireme AI</h5>
+            </div>
+            <span class="chat-subject-badge" id="chat-subject-badge">General</span>
+        </div>
 
-    <!-- Hero Start -->
-    <div class="container-fluid pt-5 bg-primary hero-header">
-        <div class="container pt-5">
-            <div class="row g-5 pt-5">
-                <div class="col-lg-6 align-self-center text-center text-lg-start mb-lg-5">
-                    <h1 class="display-4 text-white mb-4 animated slideInRight" data-i18n="aiTutor.title">Ireme AI Tutor</h1>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb justify-content-center justify-content-lg-start mb-0">
-                            <li class="breadcrumb-item"><a class="text-white" href="index.html" data-i18n="breadcrumb.home">Home</a></li>
-                            <li class="breadcrumb-item text-white active" data-i18n="aiTutor.title">Ireme AI Tutor</li>
-                        </ol>
-                    </nav>
+        <div class="chat-container" id="chat-container">
+            <div id="chat-welcome" class="empty-state">
+                <i class="fa fa-robot"></i>
+                <h5>How can I help you today?</h5>
+                <p>Ask me anything about your studies</p>
+                <div class="subject-selector">
+                    <button class="subject-btn active" data-subject="general">General</button>
+                    <button class="subject-btn" data-subject="math">Math</button>
+                    <button class="subject-btn" data-subject="science">Science</button>
+                    <button class="subject-btn" data-subject="english">English</button>
+                    <button class="subject-btn" data-subject="kinyarwanda">Kinyarwanda</button>
                 </div>
-                <div class="col-lg-6 align-self-end text-center text-lg-end">
-                    <img class="img-fluid" src="img/hero-img.png" alt="" style="max-height: 300px;">
+            </div>
+
+            <div id="chat-messages"></div>
+
+            <div id="typing-indicator" class="chat-message ai" style="display:none;">
+                <div class="message-bubble">
+                    <div class="message-sender"><i class="fa fa-robot me-1"></i> Ireme AI</div>
+                    <div class="message-text">
+                        <span class="typing-dots"><span>.</span><span>.</span><span>.</span></span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <!-- Hero End -->
 
-    <!-- AI Tutor Content Start -->
-    <div class="container-fluid py-5">
-        <div class="container py-5">
-            <div class="row g-4">
-
-                <!-- Left Sidebar -->
-                <div class="col-lg-3 wow fadeIn" data-wow-delay="0.1s">
-                    <!-- New Conversation -->
-                    <div class="sidebar-section">
-                        <button class="btn btn-primary w-100 rounded-pill py-2" id="new-conversation-btn" data-i18n="aiTutor.newConversation">
-                            <i class="fa fa-plus me-2"></i>New Conversation
-                        </button>
-                    </div>
-
-                    <!-- Conversation History -->
-                    <div class="sidebar-section">
-                        <h6 data-i18n="aiTutor.conversationHistory">Conversation History</h6>
-                        <div id="conversation-list-loading" class="text-center text-muted py-3" style="display:none;">
-                            <i class="fa fa-spinner fa-spin"></i>
-                        </div>
-                        <ul class="conversation-list" id="conversation-list">
-                        </ul>
-                        <div id="conversation-list-empty" class="text-muted small px-2 py-3" style="display:none;" data-i18n="aiTutor.noConversations">
-                            No conversations yet. Start one above!
-                        </div>
-                    </div>
-
-                    <!-- Quick Subjects -->
-                    <div class="sidebar-section">
-                        <h6 data-i18n="aiTutor.quickSubjects">Quick Subjects</h6>
-                        <div class="d-flex flex-wrap">
-                            <a href="#" class="subject-btn active" data-subject="general" data-i18n="aiTutor.generalHelp">General Help</a>
-                            <a href="#" class="subject-btn" data-subject="math">Math</a>
-                            <a href="#" class="subject-btn" data-subject="science">Science</a>
-                            <a href="#" class="subject-btn" data-subject="english">English</a>
-                            <a href="#" class="subject-btn" data-subject="kinyarwanda">Kinyarwanda</a>
-                            <a href="#" class="subject-btn" data-subject="social">Social Studies</a>
-                        </div>
-                    </div>
-
-                    <!-- Ask About Resource -->
-                    <div class="sidebar-section">
-                        <a href="resources.html" class="text-decoration-none" data-i18n="aiTutor.askAboutResource">
-                            <i class="fa fa-book me-2"></i>Ask about a resource
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Main Chat Area -->
-                <div class="col-lg-9 wow fadeIn" data-wow-delay="0.3s">
-                    <!-- Chat Card -->
-                    <div class="border rounded" style="background-color: #fff;">
-                        <!-- Chat Header -->
-                        <div class="chat-header">
-                            <i class="fa fa-robot text-primary me-2 fa-lg"></i>
-                            <h5 class="mb-0 me-3" data-i18n="aiTutor.generalHelp">General Learning Help</h5>
-                            <span class="badge bg-success chat-context context-badge" id="chat-context-badge" data-i18n="aiTutor.context">General</span>
-                        </div>
-
-                        <!-- Chat Container -->
-                        <div class="chat-container" id="chat-container">
-                            <!-- Welcome Message (shown when no conversation is active) -->
-                            <div id="chat-welcome" class="welcome-card">
-                                <h5 data-i18n="aiTutor.welcomeTitle">Hello! I'm Ireme AI, your learning assistant.</h5>
-                                <p class="mb-2" data-i18n="aiTutor.welcomeIntro">I can help you with:</p>
-                                <ul data-i18n-html="aiTutor.welcomeText">
-                                    <li>Explaining difficult concepts step by step</li>
-                                    <li>Answering questions about your subjects</li>
-                                    <li>Creating revision notes and summaries</li>
-                                    <li>Generating practice exercises</li>
-                                    <li>Explaining exam answers</li>
-                                    <li>Recommending study resources</li>
-                                </ul>
-                                <p class="mb-0 fw-semibold" data-i18n="aiTutor.welcomeCTA">Select a subject or type your question below to get started.</p>
-                            </div>
-
-                            <!-- Loading indicator for conversation loading -->
-                            <div id="chat-loading" class="text-center py-5" style="display:none;">
-                                <i class="fa fa-spinner fa-spin fa-2x text-primary"></i>
-                                <p class="text-muted mt-2" data-i18n="aiTutor.loadingConversation">Loading conversation...</p>
-                            </div>
-
-                            <!-- Error message area -->
-                            <div id="chat-error" class="alert alert-warning mx-3 mt-3" style="display:none;">
-                                <i class="fa fa-exclamation-triangle me-2"></i>
-                                <span id="chat-error-text"></span>
-                            </div>
-
-                            <!-- Messages will be dynamically inserted here -->
-                            <div id="chat-messages"></div>
-
-                            <!-- Typing indicator -->
-                            <div id="typing-indicator" class="chat-message ai" style="display:none;">
-                                <div class="message-bubble">
-                                    <div class="message-sender"><i class="fa fa-robot me-1"></i> Ireme AI</div>
-                                    <div class="message-text">
-                                        <span class="typing-dots"><span>.</span><span>.</span><span>.</span></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Chat Input Area -->
-                        <div class="chat-input-area">
-                            <div class="row g-2 align-items-end">
-                                <div class="col">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control py-3" id="chat-input" data-i18n="aiTutor.placeholder" placeholder="Ask Ireme AI a question..." aria-label="Chat input">
-                                        <button class="btn btn-primary px-4" id="chat-send-btn" data-i18n="aiTutor.send">
-                                            <i class="fa fa-paper-plane me-1"></i> Send
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="col-auto">
-                                    <select class="form-select py-3" id="subject-context-select" aria-label="Subject context">
-                                        <option value="general" data-i18n="aiTutor.generalHelp">General Learning Help</option>
-                                        <option value="math">Mathematics</option>
-                                        <option value="science">Science</option>
-                                        <option value="english">English</option>
-                                        <option value="kinyarwanda">Kinyarwanda</option>
-                                        <option value="social">Social Studies</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="mt-2 language-note">
-                                <i class="fa fa-globe me-1"></i> <span data-i18n="aiTutor.languageNote">Available in English and Kinyarwanda</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recommended Resources Section -->
-            <div class="mt-5 wow fadeIn" data-wow-delay="0.1s">
-                <div class="d-flex align-items-center mb-4">
-                    <h4 class="mb-0" data-i18n="aiTutor.recommendedResources">Recommended Resources</h4>
-                </div>
-                <div class="row g-4">
-                    <div class="col-md-6 col-lg-3">
-                        <div class="service-item rounded p-4 h-100">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <span class="badge bg-primary" data-i18n="resources.lesson">Lesson</span>
-                                <span class="badge bg-success" data-i18n="resources.official">Official REB Material</span>
-                            </div>
-                            <h5>Integrated Science P6</h5>
-                            <p class="text-muted small mb-2">Primary P6 &bull; Science &bull; REB Curriculum 2024</p>
-                            <p>Covers photosynthesis, plant biology, and ecosystems aligned with the national curriculum.</p>
-                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="aiTutor.viewResource">View</a>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 col-lg-3">
-                        <div class="service-item rounded p-4 h-100">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <span class="badge bg-info" data-i18n="resources.quiz">Quiz</span>
-                            </div>
-                            <h5>Science Practice Quiz - P6</h5>
-                            <p class="text-muted small mb-2">Primary P6 &bull; Science</p>
-                            <p>Practice questions covering plant biology, human body, and environmental science topics.</p>
-                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="aiTutor.viewResource">View</a>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 col-lg-3">
-                        <div class="service-item rounded p-4 h-100">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <span class="badge bg-primary" data-i18n="resources.lesson">Lesson</span>
-                                <span class="badge bg-success" data-i18n="resources.official">Official REB Material</span>
-                            </div>
-                            <h5>Mathematics S1 Guide</h5>
-                            <p class="text-muted small mb-2">Secondary S1 &bull; Mathematics &bull; REB Curriculum 2024</p>
-                            <p>Comprehensive guide to algebra, geometry, and number concepts for Senior 1 students.</p>
-                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="aiTutor.viewResource">View</a>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 col-lg-3">
-                        <div class="service-item rounded p-4 h-100">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <span class="badge bg-secondary" data-i18n="resources.document">Document</span>
-                                <span class="badge bg-success" data-i18n="resources.official">Official REB Material</span>
-                            </div>
-                            <h5>English Grammar Handbook</h5>
-                            <p class="text-muted small mb-2">Primary P5-P6 &bull; English &bull; REB Curriculum 2024</p>
-                            <p>Essential grammar rules and exercises for primary school English language learners.</p>
-                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="aiTutor.viewResource">View</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Disclaimer -->
-            <div class="mt-5 wow fadeIn" data-wow-delay="0.1s">
-                <div class="disclaimer-notice text-center">
-                    <p class="mb-0 text-warning">
-                        <i class="fa fa-exclamation-triangle me-2"></i>
-                        <span data-i18n="aiTutor.disclaimer">Ireme AI provides supplementary learning support. Always verify important information with your teacher and official textbooks.</span>
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- AI Tutor Content End -->
-
-    <!-- New Conversation Modal -->
-    <div class="modal fade" id="newConversationModal" tabindex="-1" aria-labelledby="newConversationModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="newConversationModalLabel" data-i18n="aiTutor.newConversation">New Conversation</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="new-conv-title" class="form-label" data-i18n="aiTutor.conversationTitle">Title (optional)</label>
-                        <input type="text" class="form-control" id="new-conv-title" data-i18n="aiTutor.conversationTitlePlaceholder" placeholder="e.g. Photosynthesis help">
-                    </div>
-                    <div class="mb-3">
-                        <label for="new-conv-subject" class="form-label" data-i18n="aiTutor.subject">Subject</label>
-                        <select class="form-select" id="new-conv-subject">
-                            <option value="" data-i18n="aiTutor.generalHelp">General</option>
-                        </select>
-                    </div>
-                    <div class="mb-3" id="new-conv-topic-group" style="display:none;">
-                        <label for="new-conv-topic" class="form-label" data-i18n="aiTutor.topic">Topic</label>
-                        <select class="form-select" id="new-conv-topic">
-                            <option value="" data-i18n="aiTutor.anyTopic">Any topic</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="new-conv-message" class="form-label" data-i18n="aiTutor.firstMessage">Your first message</label>
-                        <textarea class="form-control" id="new-conv-message" rows="3" data-i18n="aiTutor.firstMessagePlaceholder" placeholder="Type your question to start the conversation..."></textarea>
-                    </div>
-                    <div id="new-conv-error" class="alert alert-danger" style="display:none;"></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="common.cancel">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="new-conv-start-btn" data-i18n="aiTutor.startConversation">
-                        <i class="fa fa-paper-plane me-1"></i> Start Conversation
-                    </button>
-                </div>
+        <div class="chat-input-area">
+            <div class="chat-input-wrapper">
+                <textarea 
+                    class="chat-input-field" 
+                    id="chat-input" 
+                    placeholder="Message Ireme AI..." 
+                    rows="1"
+                    aria-label="Chat input"
+                ></textarea>
+                <button class="chat-send-btn" id="chat-send-btn" disabled>
+                    <i class="fa fa-paper-plane"></i>
+                </button>
             </div>
         </div>
     </div>
 
-    <div id="component-footer"></div>
-    <div id="component-backtotop"></div>
-
-    <!-- JavaScript Libraries -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="lib/wow/wow.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/waypoints/waypoints.min.js"></script>
-
-    <!-- Template Javascript -->
-    <script src="js/main.js"></script>
-    <script src="js/i18n.js"></script>
     <script src="js/config.js"></script>
     <script src="js/api-client.js"></script>
     <script src="js/auth.js"></script>
-    <script src="js/components.js"></script>
-    <script src="js/offline-sync.js"></script>
     <script>
-        IremeComponents.initPage('ai-tutor.html');
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(function() {});
+        if (!IremeAuth.isLoggedIn()) {
+            window.location.href = 'login.html';
         }
 
-        // Auth guard
-        IremeAuth.requireAuth('login.html');
+        var currentSubject = 'general';
+        var conversationId = null;
 
-        (function() {
-            // State
-            var conversations = [];
-            var currentConversationId = null;
-            var isLoading = false;
-            var isSending = false;
-            var curriculumSubjects = [];
+        var chatContainer = document.getElementById('chat-container');
+        var chatInput = document.getElementById('chat-input');
+        var chatSendBtn = document.getElementById('chat-send-btn');
+        var chatWelcome = document.getElementById('chat-welcome');
+        var chatMessagesEl = document.getElementById('chat-messages');
+        var typingIndicator = document.getElementById('typing-indicator');
+        var subjectBadge = document.getElementById('chat-subject-badge');
 
-            // DOM refs
-            var conversationListEl = document.getElementById('conversation-list');
-            var conversationListLoading = document.getElementById('conversation-list-loading');
-            var conversationListEmpty = document.getElementById('conversation-list-empty');
-            var chatWelcome = document.getElementById('chat-welcome');
-            var chatLoading = document.getElementById('chat-loading');
-            var chatError = document.getElementById('chat-error');
-            var chatErrorText = document.getElementById('chat-error-text');
-            var chatMessages = document.getElementById('chat-messages');
-            var chatContainer = document.getElementById('chat-container');
-            var typingIndicator = document.getElementById('typing-indicator');
-            var chatInput = document.getElementById('chat-input');
-            var chatSendBtn = document.getElementById('chat-send-btn');
-            var newConvBtn = document.getElementById('new-conversation-btn');
-            var contextBadge = document.getElementById('chat-context-badge');
-            var subjectContextSelect = document.getElementById('subject-context-select');
+        chatInput.addEventListener('input', function() {
+            chatSendBtn.disabled = !this.value.trim();
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 150) + 'px';
+        });
 
-            // Modal refs
-            var newConvModal = null;
-            var newConvTitle = document.getElementById('new-conv-title');
-            var newConvSubject = document.getElementById('new-conv-subject');
-            var newConvTopic = document.getElementById('new-conv-topic');
-            var newConvTopicGroup = document.getElementById('new-conv-topic-group');
-            var newConvMessage = document.getElementById('new-conv-message');
-            var newConvStartBtn = document.getElementById('new-conv-start-btn');
-            var newConvError = document.getElementById('new-conv-error');
-
-            // ---- Utility ----
-            function escapeHtml(text) {
-                var div = document.createElement('div');
-                div.appendChild(document.createTextNode(text));
-                return div.innerHTML;
-            }
-
-            function formatDate(dateStr) {
-                if (!dateStr) return '';
-                var d = new Date(dateStr);
-                var now = new Date();
-                var diff = now - d;
-                var oneDay = 86400000;
-                if (diff < oneDay && d.getDate() === now.getDate()) return 'Today';
-                if (diff < 2 * oneDay) return 'Yesterday';
-                if (diff < 7 * oneDay) return d.toLocaleDateString('en', { weekday: 'short' });
-                return d.toLocaleDateString('en', { month: 'short', day: 'numeric' });
-            }
-
-            function showChatError(msg) {
-                chatErrorText.textContent = msg;
-                chatError.style.display = 'block';
-                setTimeout(function() { chatError.style.display = 'none'; }, 8000);
-            }
-
-            function hideChatError() {
-                chatError.style.display = 'none';
-            }
-
-            function scrollChatToBottom() {
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            }
-
-            // ---- Render helpers ----
-            function renderConversationList() {
-                conversationListEl.innerHTML = '';
-                if (conversations.length === 0) {
-                    conversationListEmpty.style.display = 'block';
-                    return;
-                }
-                conversationListEmpty.style.display = 'none';
-                conversations.forEach(function(conv) {
-                    var li = document.createElement('li');
-                    var isActive = conv.id === currentConversationId;
-                    li.innerHTML =
-                        '<a href="#" class="conversation-item' + (isActive ? ' active' : '') + '" data-id="' + escapeHtml(conv.id) + '">' +
-                            '<i class="fa fa-comment-dots me-2 ' + (isActive ? 'text-primary' : 'text-muted') + '"></i>' +
-                            '<span class="conversation-title">' + escapeHtml(conv.title || 'Untitled') + '</span>' +
-                            '<span class="conversation-date">' + escapeHtml(formatDate(conv.updatedAt || conv.createdAt)) + '</span>' +
-                            '<span class="delete-conversation" data-id="' + escapeHtml(conv.id) + '" title="Delete"><i class="fa fa-trash"></i></span>' +
-                        '</a>';
-                    conversationListEl.appendChild(li);
-                });
-
-                // Attach click handlers
-                conversationListEl.querySelectorAll('.conversation-item').forEach(function(item) {
-                    item.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        var id = this.getAttribute('data-id');
-                        if (id && id !== currentConversationId) {
-                            loadConversation(id);
-                        }
-                    });
-                });
-
-                // Attach delete handlers
-                conversationListEl.querySelectorAll('.delete-conversation').forEach(function(btn) {
-                    btn.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        var id = this.getAttribute('data-id');
-                        if (id && confirm('Delete this conversation?')) {
-                            deleteConversation(id);
-                        }
-                    });
-                });
-            }
-
-            function renderMessage(msg) {
-                var role = (msg.role || msg.senderRole || '').toLowerCase();
-                var isStudent = role === 'student' || role === 'user';
-                var div = document.createElement('div');
-                div.className = 'chat-message ' + (isStudent ? 'student' : 'ai');
-
-                var senderLabel = isStudent ? 'Student' : '<i class="fa fa-robot me-1"></i> Ireme AI';
-                var content = msg.content || msg.message || '';
-
-                // Render content - preserve basic formatting (newlines to <br>)
-                var renderedContent = escapeHtml(content).replace(/\n/g, '<br>');
-
-                div.innerHTML =
-                    '<div class="message-bubble">' +
-                        '<div class="message-sender">' + senderLabel + '</div>' +
-                        '<div class="message-text">' + renderedContent + '</div>' +
-                    '</div>';
-                return div;
-            }
-
-            function renderMessages(messages) {
-                chatMessages.innerHTML = '';
-                if (!messages || messages.length === 0) return;
-                messages.forEach(function(msg) {
-                    chatMessages.appendChild(renderMessage(msg));
-                });
-                scrollChatToBottom();
-            }
-
-            // ---- API calls ----
-            function loadConversations() {
-                conversationListLoading.style.display = 'block';
-                conversationListEmpty.style.display = 'none';
-                IremeAPI.getConversations().then(function(data) {
-                    conversations = data.conversations || data || [];
-                    conversationListLoading.style.display = 'none';
-                    renderConversationList();
-                }).catch(function(err) {
-                    conversationListLoading.style.display = 'none';
-                    showChatError('Could not load conversations. ' + (err.message || ''));
-                });
-            }
-
-            function loadConversation(id) {
-                currentConversationId = id;
-                chatWelcome.style.display = 'none';
-                chatMessages.innerHTML = '';
-                chatLoading.style.display = 'block';
-                hideChatError();
-
-                // Update sidebar active state
-                conversationListEl.querySelectorAll('.conversation-item').forEach(function(item) {
-                    var isActive = item.getAttribute('data-id') === id;
-                    item.classList.toggle('active', isActive);
-                    item.querySelector('.fa-comment-dots').classList.toggle('text-primary', isActive);
-                    item.querySelector('.fa-comment-dots').classList.toggle('text-muted', !isActive);
-                });
-
-                IremeAPI.getConversation(id).then(function(data) {
-                    chatLoading.style.display = 'none';
-                    var conv = data.conversation || data;
-                    var messages = conv.messages || data.messages || [];
-
-                    // Update header context
-                    if (conv.subject && contextBadge) {
-                        contextBadge.textContent = conv.subject.name || conv.subject;
-                    }
-
-                    renderMessages(messages);
-                }).catch(function(err) {
-                    chatLoading.style.display = 'none';
-                    showChatError('Could not load conversation. ' + (err.message || ''));
-                });
-            }
-
-            function deleteConversation(id) {
-                IremeAPI.archiveConversation(id).then(function() {
-                    conversations = conversations.filter(function(c) { return c.id !== id; });
-                    if (currentConversationId === id) {
-                        currentConversationId = null;
-                        chatMessages.innerHTML = '';
-                        chatWelcome.style.display = 'block';
-                        if (contextBadge) contextBadge.textContent = 'General';
-                    }
-                    renderConversationList();
-                }).catch(function(err) {
-                    showChatError('Could not delete conversation. ' + (err.message || ''));
-                });
-            }
-
-            function sendNewConversation() {
-                var title = newConvTitle.value.trim();
-                var subjectId = newConvSubject.value || undefined;
-                var topicId = newConvTopic.value || undefined;
-                var message = newConvMessage.value.trim();
-
-                if (!message) {
-                    newConvError.textContent = 'Please type a message to start the conversation.';
-                    newConvError.style.display = 'block';
-                    return;
-                }
-
-                newConvStartBtn.disabled = true;
-                newConvError.style.display = 'none';
-
-                var payload = { message: message };
-                if (title) payload.title = title;
-                if (subjectId) payload.subjectId = subjectId;
-                if (topicId) payload.topicId = topicId;
-
-                IremeAPI.startConversation(payload).then(function(data) {
-                    var conv = data.conversation || data;
-                    currentConversationId = conv.id;
-
-                    // Close modal and reset
-                    if (newConvModal) newConvModal.hide();
-                    newConvTitle.value = '';
-                    newConvMessage.value = '';
-                    newConvStartBtn.disabled = false;
-
-                    // Add to conversations list
-                    conversations.unshift(conv);
-                    renderConversationList();
-
-                    // Show the messages
-                    chatWelcome.style.display = 'none';
-                    var messages = conv.messages || [];
-                    renderMessages(messages);
-
-                    // Update header
-                    if (contextBadge) {
-                        var selectedText = newConvSubject.options[newConvSubject.selectedIndex].textContent.trim();
-                        contextBadge.textContent = selectedText || 'General';
-                    }
-                }).catch(function(err) {
-                    newConvStartBtn.disabled = false;
-                    newConvError.textContent = 'Could not start conversation. ' + (err.message || '');
-                    newConvError.style.display = 'block';
-                });
-            }
-
-            function sendMessage() {
-                var message = chatInput.value.trim();
-                if (!message || isSending) return;
-
-                hideChatError();
-
-                if (!currentConversationId) {
-                    // No active conversation - open new conversation modal with the message pre-filled
-                    newConvMessage.value = message;
-                    chatInput.value = '';
-                    if (newConvModal) newConvModal.show();
-                    return;
-                }
-
-                isSending = true;
-                chatSendBtn.disabled = true;
-                chatInput.value = '';
-
-                // Display user message immediately
-                var userMsgEl = document.createElement('div');
-                userMsgEl.className = 'chat-message student';
-                userMsgEl.innerHTML =
-                    '<div class="message-bubble">' +
-                        '<div class="message-sender">Student</div>' +
-                        '<div class="message-text">' + escapeHtml(message) + '</div>' +
-                    '</div>';
-                chatMessages.appendChild(userMsgEl);
-                scrollChatToBottom();
-
-                // Show typing indicator
-                typingIndicator.style.display = 'block';
-                scrollChatToBottom();
-
-                IremeAPI.sendMessage(currentConversationId, message).then(function(data) {
-                    typingIndicator.style.display = 'none';
-                    isSending = false;
-                    chatSendBtn.disabled = false;
-
-                    // Display AI response
-                    var aiContent = '';
-                    if (data.message) {
-                        aiContent = data.message.content || data.message.message || '';
-                    } else if (data.response) {
-                        aiContent = data.response;
-                    } else if (data.content) {
-                        aiContent = data.content;
-                    }
-
-                    if (aiContent) {
-                        var aiMsgEl = document.createElement('div');
-                        aiMsgEl.className = 'chat-message ai';
-                        aiMsgEl.innerHTML =
-                            '<div class="message-bubble">' +
-                                '<div class="message-sender"><i class="fa fa-robot me-1"></i> Ireme AI</div>' +
-                                '<div class="message-text">' + escapeHtml(aiContent).replace(/\n/g, '<br>') + '</div>' +
-                            '</div>';
-                        chatMessages.appendChild(aiMsgEl);
-                        scrollChatToBottom();
-                    }
-                }).catch(function(err) {
-                    typingIndicator.style.display = 'none';
-                    isSending = false;
-                    chatSendBtn.disabled = false;
-                    showChatError('Ireme AI is currently unavailable. Please try again later.');
-                });
-            }
-
-            // ---- Load curriculum subjects for dropdowns ----
-            function loadSubjects() {
-                IremeAPI.getCurriculumSubjects().then(function(data) {
-                    curriculumSubjects = data.subjects || data || [];
-                    // Populate the new conversation subject dropdown
-                    curriculumSubjects.forEach(function(subj) {
-                        var opt = document.createElement('option');
-                        opt.value = subj.id;
-                        opt.textContent = subj.name || subj.title || subj.code || 'Subject';
-                        newConvSubject.appendChild(opt);
-                    });
-                }).catch(function() {
-                    // Silently fail - subjects will just not be available in dropdown
-                });
-            }
-
-            // ---- Event listeners ----
-
-            // Send button
-            chatSendBtn.addEventListener('click', sendMessage);
-
-            // Enter key to send
-            chatInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
+        chatInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (this.value.trim()) {
                     sendMessage();
                 }
+            }
+        });
+
+        chatSendBtn.addEventListener('click', function() {
+            if (chatInput.value.trim()) {
+                sendMessage();
+            }
+        });
+
+        document.querySelectorAll('.subject-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.subject-btn').forEach(function(b) {
+                    b.classList.remove('active');
+                });
+                this.classList.add('active');
+                currentSubject = this.dataset.subject;
+                subjectBadge.textContent = this.textContent;
             });
+        });
 
-            // New conversation button
-            newConvBtn.addEventListener('click', function() {
-                newConvError.style.display = 'none';
-                newConvMessage.value = '';
-                newConvTitle.value = '';
-                if (newConvModal) newConvModal.show();
-            });
+        function sendMessage() {
+            var message = chatInput.value.trim();
+            if (!message) return;
 
-            // New conversation start button
-            newConvStartBtn.addEventListener('click', sendNewConversation);
+            if (chatWelcome) {
+                chatWelcome.style.display = 'none';
+            }
 
-            // Subject change in modal -> load topics
-            newConvSubject.addEventListener('change', function() {
-                var subjectId = this.value;
-                newConvTopic.innerHTML = '<option value="">Any topic</option>';
-                if (!subjectId) {
-                    newConvTopicGroup.style.display = 'none';
-                    return;
+            addMessage('user', message);
+            chatInput.value = '';
+            chatInput.style.height = 'auto';
+            chatSendBtn.disabled = true;
+
+            typingIndicator.style.display = 'flex';
+            scrollToBottom();
+
+            IremeAPI.post('/api/ai/chat', {
+                message: message,
+                subject: currentSubject,
+                conversationId: conversationId
+            }).then(function(res) {
+                typingIndicator.style.display = 'none';
+                
+                if (res.conversationId) {
+                    conversationId = res.conversationId;
                 }
-                // Try loading topics for this subject
-                IremeAPI.getVideoTopics(subjectId).then(function(data) {
-                    var topics = data.topics || data || [];
-                    if (topics.length > 0) {
-                        newConvTopicGroup.style.display = 'block';
-                        topics.forEach(function(t) {
-                            var opt = document.createElement('option');
-                            opt.value = t.id;
-                            opt.textContent = t.name || t.title || 'Topic';
-                            newConvTopic.appendChild(opt);
-                        });
-                    } else {
-                        newConvTopicGroup.style.display = 'none';
-                    }
-                }).catch(function() {
-                    newConvTopicGroup.style.display = 'none';
-                });
+
+                if (res.reply) {
+                    addMessage('ai', res.reply);
+                } else {
+                    addMessage('ai', 'Sorry, I encountered an error. Please try again.');
+                }
+
+                scrollToBottom();
+            }).catch(function(err) {
+                typingIndicator.style.display = 'none';
+                console.error('Chat error:', err);
+                addMessage('ai', 'Sorry, I encountered an error. Please try again.');
+                scrollToBottom();
             });
+        }
 
-            // Subject quick-select buttons (sidebar)
-            document.querySelectorAll('.subject-btn').forEach(function(btn) {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    document.querySelectorAll('.subject-btn').forEach(function(b) { b.classList.remove('active'); });
-                    this.classList.add('active');
-                    var subject = this.getAttribute('data-subject');
-                    if (subjectContextSelect) {
-                        subjectContextSelect.value = subject;
-                    }
-                    if (contextBadge) {
-                        contextBadge.textContent = this.textContent.trim();
-                    }
-                });
-            });
+        function addMessage(sender, text) {
+            var messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-message ' + sender;
 
-            // Subject context dropdown sync
-            if (subjectContextSelect) {
-                subjectContextSelect.addEventListener('change', function() {
-                    var selectedText = this.options[this.selectedIndex].textContent.trim();
-                    if (contextBadge) {
-                        contextBadge.textContent = selectedText;
-                    }
-                    var value = this.value;
-                    document.querySelectorAll('.subject-btn').forEach(function(b) {
-                        b.classList.toggle('active', b.getAttribute('data-subject') === value);
-                    });
-                });
-            }
+            var bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
 
-            // ---- Initialize ----
-            // Init Bootstrap modal
-            if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-                newConvModal = new bootstrap.Modal(document.getElementById('newConversationModal'));
-            }
+            var senderLabel = document.createElement('div');
+            senderLabel.className = 'message-sender';
+            senderLabel.textContent = sender === 'user' ? 'You' : 'Ireme AI';
 
-            loadConversations();
-            loadSubjects();
-        })();
+            var textDiv = document.createElement('div');
+            textDiv.className = 'message-text';
+            textDiv.innerHTML = formatMessage(text);
+
+            bubble.appendChild(senderLabel);
+            bubble.appendChild(textDiv);
+            messageDiv.appendChild(bubble);
+
+            chatMessagesEl.appendChild(messageDiv);
+        }
+
+        function formatMessage(text) {
+            text = text.replace(/\n/g, '<br>');
+            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            return text;
+        }
+
+        function scrollToBottom() {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
     </script>
 </body>
 </html>
