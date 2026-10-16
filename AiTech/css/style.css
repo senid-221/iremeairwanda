@@ -543,29 +543,6 @@ h6,
     display: inline-block;
 }
 
-.google-signin-btn {
-    background-color: #4285F4 !important;
-    border-color: #4285F4 !important;
-    color: #fff !important;
-    font-size: 0.875rem;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    padding: 4px 20px;
-    width: auto;
-    display: inline-block;
-    transition: background-color 0.3s, border-color 0.3s;
-}
-
-.google-signin-btn:hover {
-    background-color: #3367D6 !important;
-    border-color: #3367D6 !important;
-    color: #fff !important;
-}
-
-.google-signin-btn svg {
-    flex-shrink: 0;
-}
-
 /* ============================================
    Rwanda Location Selector Component
    ============================================ */
