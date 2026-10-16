@@ -13,11 +13,11 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://ireme-backend.onrender.com/api/:path*"
+      "destination": "https://iremeairwanda-1.onrender.com/api/:path*"
     },
     {
       "source": "/media/:path*",
-      "destination": "https://ireme-backend.onrender.com/media/:path*"
+      "destination": "https://iremeairwanda-1.onrender.com/media/:path*"
     }
   ],
   "redirects": []
