@@ -20,6 +20,7 @@ const videoConfig = require('./config/video');
 const videoWorker = require('./services/video/worker');
 const schoolRoutes = require('./routes/schools');
 const { configurePassport } = require('./config/passport');
+const { SESSION_SECRET } = require('./config/secrets');
 
 const app = express();
 const prisma = new PrismaClient();
@@ -38,7 +39,10 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
 }));
 
-const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:3000').split(',');
+const rawOrigins = (process.env.CORS_ORIGIN || 'http://localhost:3000').split(',');
+const allowedOrigins = process.env.NODE_ENV === 'production'
+  ? rawOrigins.filter(o => !o.includes('localhost'))
+  : rawOrigins;
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
@@ -69,7 +73,7 @@ app.use(session({
     tableName: 'session_store',
     createTableIfMissing: true,
   }),
-  secret: process.env.SESSION_SECRET || 'fallback_secret_change_me',
+  secret: SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {

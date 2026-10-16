@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { PrismaClient } = require('@prisma/client');
 const { requireAuth } = require('../middleware/auth');
+const { SESSION_SECRET } = require('../config/secrets');
 
 const prisma = new PrismaClient();
 
@@ -151,10 +152,9 @@ router.get('/google/callback',
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
     const user = req.user;
 
-    const sessionSecret = process.env.SESSION_SECRET || 'fallback_secret_change_me';
     const oauthToken = jwt.sign(
       { userId: user.id, role: user.role, status: user.status },
-      sessionSecret,
+      SESSION_SECRET,
       { expiresIn: '60s' }
     );
 
@@ -168,10 +168,9 @@ router.post('/exchange-token', (req, res) => {
     return res.status(400).json({ error: 'Token is required' });
   }
 
-  const sessionSecret = process.env.SESSION_SECRET || 'fallback_secret_change_me';
   let payload;
   try {
-    payload = jwt.verify(token, sessionSecret);
+    payload = jwt.verify(token, SESSION_SECRET);
   } catch (err) {
     return res.status(401).json({ error: 'Invalid or expired token' });
   }
@@ -216,11 +215,51 @@ router.get('/me', requireAuth, (req, res) => {
     emailVerified: user.emailVerified,
     avatarUrl: user.avatarUrl,
     phone: user.phone,
+    preferredLanguage: user.preferredLanguage,
+    timezone: user.timezone,
     createdAt: user.createdAt,
     lastLoginAt: user.lastLoginAt,
     studentProfile: user.studentProfile || null,
     parentProfile: user.parentProfile || null,
   });
+});
+
+router.patch('/profile', requireAuth, async (req, res) => {
+  try {
+    const { fullName, phone, preferredLanguage, timezone } = req.body || {};
+    const updates = {};
+
+    if (fullName !== undefined) {
+      const trimmed = String(fullName).trim();
+      if (trimmed.length < 3) {
+        return res.status(400).json({ error: 'Full name must be at least 3 characters' });
+      }
+      updates.fullName = trimmed;
+    }
+    if (phone !== undefined) updates.phone = phone ? String(phone).trim() : null;
+    if (preferredLanguage !== undefined) {
+      if (!['en', 'rw'].includes(preferredLanguage)) {
+        return res.status(400).json({ error: 'Invalid language. Supported: en, rw' });
+      }
+      updates.preferredLanguage = preferredLanguage;
+    }
+    if (timezone !== undefined) updates.timezone = timezone ? String(timezone).trim() : null;
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ error: 'No valid fields to update' });
+    }
+
+    const updated = await prisma.user.update({
+      where: { id: req.user.id },
+      data: updates,
+      select: { id: true, email: true, fullName: true, phone: true, preferredLanguage: true, timezone: true },
+    });
+
+    res.json({ message: 'Profile updated', user: updated });
+  } catch (err) {
+    console.error('Profile update error:', err);
+    res.status(500).json({ error: 'Failed to update profile' });
+  }
 });
 
 router.post('/logout', (req, res) => {

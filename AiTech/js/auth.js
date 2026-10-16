@@ -211,37 +211,39 @@ var IremeAuth = (function () {
 
         requireAuth: function (redirectUrl) {
             guardRequired = true;
-            this.verifySession();
-            if (!this.isLoggedIn()) {
-                return false;
-            }
-            return true;
+            var self = this;
+            this.verifySession().then(function () {
+                if (!self.isLoggedIn()) {
+                    window.location.href = redirectUrl || 'login.html';
+                }
+            });
+            return this.isLoggedIn();
         },
 
         requireRole: function (role) {
             guardRequired = true;
-            this.verifySession();
-            if (!this.isLoggedIn()) {
-                return false;
-            }
-            if (!this.hasRole(role)) {
-                window.location.href = 'access-denied.html';
-                return false;
-            }
-            return true;
+            var self = this;
+            this.verifySession().then(function () {
+                if (!self.isLoggedIn()) {
+                    window.location.href = 'login.html';
+                } else if (!self.hasRole(role)) {
+                    window.location.href = 'access-denied.html';
+                }
+            });
+            return this.isLoggedIn() && this.hasRole(role);
         },
 
         requireAnyRole: function (roles) {
             guardRequired = true;
-            this.verifySession();
-            if (!this.isLoggedIn()) {
-                return false;
-            }
-            if (!this.hasAnyRole(roles)) {
-                window.location.href = 'access-denied.html';
-                return false;
-            }
-            return true;
+            var self = this;
+            this.verifySession().then(function () {
+                if (!self.isLoggedIn()) {
+                    window.location.href = 'login.html';
+                } else if (!self.hasAnyRole(roles)) {
+                    window.location.href = 'access-denied.html';
+                }
+            });
+            return this.isLoggedIn() && this.hasAnyRole(roles);
         },
 
         /**
@@ -252,8 +254,8 @@ var IremeAuth = (function () {
         verifySession: function () {
             var self = this;
             var client = api();
-            if (!client) return;
-            client.getAuthStatus().then(function (status) {
+            if (!client) return Promise.resolve();
+            return client.getAuthStatus().then(function (status) {
                 if (status && status.authenticated && status.user) {
                     var existing = readSession();
                     var fresh = sessionFromUser({
@@ -276,16 +278,27 @@ var IremeAuth = (function () {
                     }
                 } else {
                     clearSession();
-                    if (guardRequired) {
-                        window.location.href = 'login.html';
-                    }
                 }
             }).catch(function () {
             });
         },
 
         updateProfile: function (updates) {
-            return Promise.resolve({ success: false, error: 'Profile editing is currently unavailable. Please contact support for assistance.' });
+            var client = api();
+            if (!client) {
+                return Promise.resolve({ success: false, error: 'Authentication service unavailable.' });
+            }
+            return client.patch('/api/auth/profile', updates).then(function (res) {
+                var existing = readSession();
+                if (existing && res.user && res.user.fullName) {
+                    existing.name = res.user.fullName;
+                    existing.fullName = res.user.fullName;
+                    writeSession(existing);
+                }
+                return { success: true, user: res.user };
+            }).catch(function (err) {
+                return { success: false, error: friendlyError(err) };
+            });
         },
 
         changePassword: function (currentPassword, newPassword) {
