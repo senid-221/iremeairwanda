@@ -175,8 +175,14 @@
     <script src="js/auth.js"></script>
     <script src="js/components.js"></script>
     <script src="js/game-state.js"></script>
+    <script src="js/offline-sync.js"></script>
     <script>
         IremeComponents.initPage('student-dashboard.html', ['js/game-state.js']);
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(function() {});
+        }
+
         if (!IremeAuth.requireRole('student')) { /* verifySession will redirect if needed */ }
         var user = IremeAuth.currentUser();
         if (user) {

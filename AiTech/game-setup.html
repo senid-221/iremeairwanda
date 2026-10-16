@@ -331,8 +331,14 @@
     <script src="js/curriculum-data.js"></script>
     <script src="js/game-dropdown.js"></script>
     <script src="js/game-state.js"></script>
+    <script src="js/offline-sync.js"></script>
     <script>
         IremeComponents.initPage('game-setup.html');
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(function() {});
+        }
+
         IremeAuth.requireAuth('login.html');
 
         var sel = { mode: 'quick', pathway: 'primary', level: 'P1', levelId: null, subject: null, subjectId: null, subjectName: '', topic: 'all', difficulty: 'adaptive' };
