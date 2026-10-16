@@ -507,6 +507,11 @@ router.post('/complete-profile', requireAuth, async (req, res) => {
     if (data.sector) userProfileData.sector = data.sector;
     if (data.cell) userProfileData.cell = data.cell;
     if (data.village) userProfileData.village = data.village;
+    if (data.provinceId) userProfileData.provinceId = data.provinceId;
+    if (data.districtId) userProfileData.districtId = data.districtId;
+    if (data.sectorId) userProfileData.sectorId = data.sectorId;
+    if (data.cellId) userProfileData.cellId = data.cellId;
+    if (data.villageId) userProfileData.villageId = data.villageId;
     if (data.nationalId) userProfileData.nationalId = data.nationalId;
     if (data.nationality) userProfileData.nationality = data.nationality;
 
@@ -529,6 +534,9 @@ router.post('/complete-profile', requireAuth, async (req, res) => {
       if (data.emergencyContactName) studentProfileData.emergencyContactName = data.emergencyContactName;
       if (data.emergencyContactPhone) studentProfileData.emergencyContactPhone = data.emergencyContactPhone;
       if (data.previousSchool) studentProfileData.previousSchool = data.previousSchool;
+      if (data.currentSchoolId) studentProfileData.currentSchoolId = data.currentSchoolId;
+      if (data.currentEducationLevelId) studentProfileData.currentEducationLevelId = data.currentEducationLevelId;
+      if (data.currentGrade) studentProfileData.currentGrade = data.currentGrade;
 
       if (Object.keys(studentProfileData).length > 0) {
         await prisma.studentProfile.upsert({
@@ -561,21 +569,108 @@ router.post('/complete-profile', requireAuth, async (req, res) => {
           update: { classId: enrollmentData.classId, educationLevelId: enrollmentData.educationLevelId }
         });
       }
+
+      if (data.subjects && Array.isArray(data.subjects) && data.subjects.length > 0) {
+        var studentProfile = await prisma.studentProfile.findUnique({ where: { userId: userId } });
+        if (studentProfile) {
+          await prisma.studentSubject.deleteMany({ where: { studentProfileId: studentProfile.id } });
+          
+          var subjectCreates = data.subjects.map(function(subjectItem) {
+            return prisma.studentSubject.create({
+              data: {
+                studentProfileId: studentProfile.id,
+                subjectId: subjectItem.subjectId || subjectItem,
+                educationLevelId: subjectItem.educationLevelId || data.currentEducationLevelId || null,
+                isOptional: subjectItem.isOptional || false
+              }
+            });
+          });
+          
+          if (subjectCreates.length > 0) {
+            await Promise.all(subjectCreates);
+          }
+        }
+      }
     }
 
-    if (data.schoolId && (data.role === 'TEACHER' || data.role === 'teacher')) {
-      var existingMembership = await prisma.schoolMembership.findUnique({
-        where: { schoolId_userId: { schoolId: data.schoolId, userId: userId } }
-      });
-      if (!existingMembership) {
-        await prisma.schoolMembership.create({
-          data: {
-            schoolId: data.schoolId,
-            userId: userId,
-            role: 'teacher',
-            status: 'active'
-          }
+    if (data.role === 'TEACHER' || data.role === 'teacher') {
+      var tutorProfileData = {};
+      if (data.headline) tutorProfileData.headline = data.headline;
+      if (data.bio) tutorProfileData.bio = data.bio;
+      if (data.hourlyRate) tutorProfileData.hourlyRate = parseFloat(data.hourlyRate);
+      if (data.experienceYears) tutorProfileData.experienceYears = parseInt(data.experienceYears);
+      if (data.teachingPhilosophy) tutorProfileData.teachingPhilosophy = data.teachingPhilosophy;
+      if (data.languages) tutorProfileData.languages = data.languages;
+      if (data.lessonFormats) tutorProfileData.lessonFormats = data.lessonFormats;
+      if (data.currentSchoolId) tutorProfileData.currentSchoolId = data.currentSchoolId;
+      if (data.offersPrivateTutoring !== undefined) tutorProfileData.offersPrivateTutoring = data.offersPrivateTutoring;
+      if (data.offersOnlineLessons !== undefined) tutorProfileData.offersOnlineLessons = data.offersOnlineLessons;
+      if (data.offersHomeLessons !== undefined) tutorProfileData.offersHomeLessons = data.offersHomeLessons;
+
+      if (Object.keys(tutorProfileData).length > 0) {
+        await prisma.tutorProfile.upsert({
+          where: { userId: userId },
+          create: Object.assign({ userId: userId }, tutorProfileData),
+          update: tutorProfileData
         });
+      }
+
+      if (data.subjects && Array.isArray(data.subjects) && data.subjects.length > 0) {
+        var tutorProfile = await prisma.tutorProfile.findUnique({ where: { userId: userId } });
+        if (tutorProfile) {
+          await prisma.tutorSubject.deleteMany({ where: { tutorProfileId: tutorProfile.id } });
+          
+          var tutorSubjectCreates = data.subjects.map(function(subjectItem) {
+            return prisma.tutorSubject.create({
+              data: {
+                tutorProfileId: tutorProfile.id,
+                subjectId: subjectItem.subjectId || subjectItem,
+                educationLevelId: subjectItem.educationLevelId || null,
+                proficiencyLevel: subjectItem.proficiencyLevel || 'proficient'
+              }
+            });
+          });
+          
+          if (tutorSubjectCreates.length > 0) {
+            await Promise.all(tutorSubjectCreates);
+          }
+        }
+      }
+
+      if (data.schoolAffiliations && Array.isArray(data.schoolAffiliations) && data.schoolAffiliations.length > 0) {
+        var tutorProfile = await prisma.tutorProfile.findUnique({ where: { userId: userId } });
+        if (tutorProfile) {
+          await prisma.tutorSchoolAffiliation.deleteMany({ where: { tutorProfileId: tutorProfile.id } });
+          
+          var affiliationCreates = data.schoolAffiliations.map(function(affiliation) {
+            return prisma.tutorSchoolAffiliation.create({
+              data: {
+                tutorProfileId: tutorProfile.id,
+                schoolId: affiliation.schoolId,
+                affiliationType: affiliation.affiliationType || 'teaches',
+                isCurrent: affiliation.isCurrent !== false
+              }
+            });
+          });
+          
+          if (affiliationCreates.length > 0) {
+            await Promise.all(affiliationCreates);
+          }
+        }
+      } else if (data.schoolId) {
+        var existingMembership = await prisma.schoolMembership.findUnique({
+          where: { schoolId_userId: { schoolId: data.schoolId, userId: userId } }
+        });
+        if (!existingMembership) {
+          await prisma.schoolMembership.create({
+            data: {
+              schoolId: data.schoolId,
+              userId: userId,
+              role: 'teacher',
+              status: 'active'
+            }
+          });
+        }
       }
     }
 
@@ -584,7 +679,29 @@ router.post('/complete-profile', requireAuth, async (req, res) => {
     var updatedUser = await prisma.user.update({
       where: { id: userId },
       data: updateData,
-      include: { userProfile: true, studentProfile: true }
+      include: { 
+        userProfile: true, 
+        studentProfile: {
+          include: {
+            subjects: {
+              include: { subject: true }
+            },
+            currentSchool: true,
+            currentEducationLevel: true
+          }
+        },
+        tutorProfile: {
+          include: {
+            subjects: {
+              include: { subject: true }
+            },
+            currentSchool: true,
+            schoolAffiliations: {
+              include: { school: true }
+            }
+          }
+        }
+      }
     });
 
     return res.json({ message: 'Profile completed successfully.', user: sanitizeUser(updatedUser) });

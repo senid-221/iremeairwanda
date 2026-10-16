@@ -109,7 +109,7 @@ const IremeComponents = {
                         <li><h6 class="dropdown-header text-truncate" style="max-width:200px;">${session.name}</h6></li>
                         <li><a class="dropdown-item" href="${dashboardUrl}"><i class="fa fa-tachometer-alt me-2"></i><span data-i18n="auth.goDashboard">Dashboard</span></a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="#" onclick="IremeAuth.logout().then(function() { window.location.href = 'login.html'; }); return false;"><i class="fa fa-sign-out-alt me-2"></i><span data-i18n="auth.logout">Log Out</span></a></li>
+                        <li><a class="dropdown-item text-danger" href="#" onclick="IremeAuth.logout().then(function() { window.location.href = 'index.html'; }); return false;"><i class="fa fa-sign-out-alt me-2"></i><span data-i18n="auth.logout">Log Out</span></a></li>
                     </ul>
                 </div>`;
         } else {

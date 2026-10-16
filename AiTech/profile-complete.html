@@ -341,8 +341,12 @@
 
             function loadSchools() {
                 var schoolSelect = document.getElementById('school-select');
-                IremeAPI.get('/api/schools?limit=1000').then(function(res) {
+                schoolSelect.innerHTML = '<option value="">Select your school</option>';
+                IremeAPI.get('/api/schools?limit=10000').then(function(res) {
                     var schools = res.schools || [];
+                    schools.sort(function(a, b) {
+                        return (a.name || '').localeCompare(b.name || '');
+                    });
                     schools.forEach(function(school) {
                         var option = document.createElement('option');
                         option.value = school.id;

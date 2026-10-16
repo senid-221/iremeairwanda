@@ -220,6 +220,89 @@ router.get('/', async (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
+// 2b. GET /api/schools/search — Searchable schools for dropdowns
+// ---------------------------------------------------------------------------
+router.get('/search', async (req, res) => {
+  try {
+    const { q, limit: limitParam, educationLevelId, provinceId, districtId } = req.query;
+    const limit = Math.min(parseIntParam(limitParam, 50), 100);
+
+    const where = {
+      status: 'active',
+      isVerified: true
+    };
+
+    if (q && String(q).trim()) {
+      where.OR = [
+        { name: { contains: q, mode: 'insensitive' } },
+        { nameEn: { contains: q, mode: 'insensitive' } },
+        { code: { contains: q, mode: 'insensitive' } },
+      ];
+    }
+
+    if (educationLevelId) {
+      where.schoolLevels = {
+        some: { educationLevelId: educationLevelId }
+      };
+    }
+
+    if (provinceId || districtId) {
+      where.schoolLocation = {};
+      if (provinceId) where.schoolLocation.provinceId = provinceId;
+      if (districtId) where.schoolLocation.districtId = districtId;
+    }
+
+    const schools = await prisma.school.findMany({
+      where,
+      take: limit,
+      orderBy: { name: 'asc' },
+      select: {
+        id: true,
+        code: true,
+        name: true,
+        nameEn: true,
+        nameRw: true,
+        schoolType: true,
+        ownership: true,
+        schoolLocation: {
+          select: {
+            province: true,
+            district: true,
+            sector: true
+          }
+        },
+        schoolLevels: {
+          select: {
+            educationLevel: {
+              select: { id: true, nameEn: true }
+            }
+          }
+        }
+      }
+    });
+
+    res.json({
+      schools: schools.map(function(s) {
+        return {
+          id: s.id,
+          code: s.code,
+          name: s.name,
+          nameEn: s.nameEn,
+          nameRw: s.nameRw,
+          schoolType: s.schoolType,
+          ownership: s.ownership,
+          location: s.schoolLocation ? (s.schoolLocation.district || '') + (s.schoolLocation.sector ? ', ' + s.schoolLocation.sector : '') : '',
+          educationLevels: s.schoolLevels ? s.schoolLevels.map(function(sl) { return sl.educationLevel; }) : []
+        };
+      })
+    });
+  } catch (err) {
+    console.error('GET /schools/search error:', err);
+    res.status(500).json({ error: 'Failed to search schools' });
+  }
+});
+
+// ---------------------------------------------------------------------------
 // 3. GET /api/schools/pending — List pending registrations (ADMIN only)
 // ---------------------------------------------------------------------------
 router.get('/pending', requireAuth, requireRole('ADMIN', 'SUPER_ADMIN'), async (req, res) => {
