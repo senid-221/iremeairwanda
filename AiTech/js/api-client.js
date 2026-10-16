@@ -417,6 +417,55 @@ var IremeAPI = (function() {
     getSavedTutors: function() {
       return this.get('/api/tutors/saved');
     },
+
+    checkBookingAvailability: function(tutorProfileId, date, startTime, endTime) {
+      return this.post('/api/tutors/bookings/check-availability', {
+        tutorProfileId: tutorProfileId,
+        date: date,
+        startTime: startTime,
+        endTime: endTime
+      });
+    },
+
+    createBooking: function(data) {
+      return this.post('/api/tutors/bookings', data);
+    },
+
+    getBookings: function() {
+      return this.get('/api/tutors/bookings');
+    },
+
+    getBookingNotifications: function() {
+      return this.get('/api/tutors/bookings/notifications');
+    },
+
+    getBooking: function(bookingId) {
+      return this.get('/api/tutors/bookings/' + encodeURIComponent(bookingId));
+    },
+
+    acceptBooking: function(bookingId) {
+      return this.post('/api/tutors/bookings/' + encodeURIComponent(bookingId) + '/accept');
+    },
+
+    declineBooking: function(bookingId, reason) {
+      return this.post('/api/tutors/bookings/' + encodeURIComponent(bookingId) + '/decline', { reason: reason });
+    },
+
+    cancelBooking: function(bookingId, reason) {
+      return this.post('/api/tutors/bookings/' + encodeURIComponent(bookingId) + '/cancel', { reason: reason });
+    },
+
+    completeBooking: function(bookingId) {
+      return this.post('/api/tutors/bookings/' + encodeURIComponent(bookingId) + '/complete');
+    },
+
+    rescheduleBooking: function(bookingId, date, startTime, endTime) {
+      return this.post('/api/tutors/bookings/' + encodeURIComponent(bookingId) + '/reschedule', {
+        date: date,
+        startTime: startTime,
+        endTime: endTime
+      });
+    },
   };
 })();
 

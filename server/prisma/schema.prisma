@@ -3185,7 +3185,7 @@ model Booking {
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
-  tutorProfile          TutorProfile @relation(fields: [tutorProfileId], references: [id])
+  tutorProfile          TutorProfile @relation("TutorBookings", fields: [tutorProfileId], references: [id])
   studentUser           User @relation("StudentBookings", fields: [studentUserId], references: [id])
   parentUser            User? @relation("ParentBookings", fields: [parentUserId], references: [id])
   studentProfile        StudentProfile? @relation(fields: [studentProfileId], references: [id])

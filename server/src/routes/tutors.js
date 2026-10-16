@@ -360,6 +360,7 @@ router.post('/service-areas', requireAuth, function(req, res) {
 });
 
 var RecommendationEngine = require('../services/recommendation');
+var BookingService = require('../services/booking');
 
 router.get('/recommendations', requireAuth, function(req, res) {
   var criteria = {
@@ -554,6 +555,360 @@ router.get('/saved', requireAuth, function(req, res) {
       error: 'Failed to get saved tutors'
     });
   });
+});
+
+router.post('/bookings/check-availability', requireAuth, function(req, res) {
+  var tutorProfileId = req.body.tutorProfileId;
+  var date = req.body.date;
+  var startTime = req.body.startTime;
+  var endTime = req.body.endTime;
+
+  if (!tutorProfileId || !date || !startTime || !endTime) {
+    return res.status(400).json({
+      success: false,
+      error: 'tutorProfileId, date, startTime, and endTime are required'
+    });
+  }
+
+  BookingService.checkAvailability(tutorProfileId, date, startTime, endTime)
+    .then(function(result) {
+      res.json({
+        success: true,
+        available: result.available,
+        reason: result.reason || null
+      });
+    })
+    .catch(function(err) {
+      console.error('Check availability error:', err);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to check availability'
+      });
+    });
+});
+
+router.post('/bookings', requireAuth, function(req, res) {
+  var userId = req.user.id;
+  var data = req.body;
+
+  if (!data.tutorProfileId || !data.scheduledDate || !data.startTime || !data.endTime || !data.lessonFormat) {
+    return res.status(400).json({
+      success: false,
+      error: 'tutorProfileId, scheduledDate, startTime, endTime, and lessonFormat are required'
+    });
+  }
+
+  var bookingData = {
+    tutorProfileId: data.tutorProfileId,
+    scheduledDate: data.scheduledDate,
+    startTime: data.startTime,
+    endTime: data.endTime,
+    lessonFormat: data.lessonFormat,
+    subjectId: data.subjectId || null,
+    educationLevelId: data.educationLevelId || null,
+    topicIds: data.topicIds || [],
+    location: data.location || null,
+    onlineMeetingUrl: data.onlineMeetingUrl || null,
+    hourlyRate: data.hourlyRate ? parseFloat(data.hourlyRate) : null,
+    currency: data.currency || null,
+    learningObjectives: data.learningObjectives || null,
+    specialRequirements: data.specialRequirements || null
+  };
+
+  if (req.user.role === 'STUDENT') {
+    prisma.studentProfile.findUnique({
+      where: { userId: userId }
+    }).then(function(studentProfile) {
+      bookingData.studentUserId = userId;
+      bookingData.studentProfileId = studentProfile ? studentProfile.id : null;
+      return BookingService.createBooking(bookingData);
+    }).then(function(booking) {
+      res.json({
+        success: true,
+        message: 'Booking created successfully',
+        booking: booking
+      });
+    }).catch(function(err) {
+      console.error('Create booking error:', err);
+      res.status(400).json({
+        success: false,
+        error: err.message || 'Failed to create booking'
+      });
+    });
+  } else if (req.user.role === 'PARENT') {
+    bookingData.studentUserId = data.studentUserId;
+    bookingData.parentUserId = userId;
+    BookingService.createBooking(bookingData)
+      .then(function(booking) {
+        res.json({
+          success: true,
+          message: 'Booking created successfully',
+          booking: booking
+        });
+      })
+      .catch(function(err) {
+        console.error('Create booking error:', err);
+        res.status(400).json({
+          success: false,
+          error: err.message || 'Failed to create booking'
+        });
+      });
+  } else {
+    return res.status(403).json({
+      success: false,
+      error: 'Only students and parents can create bookings'
+    });
+  }
+});
+
+router.get('/bookings', requireAuth, function(req, res) {
+  var userId = req.user.id;
+  var role = req.user.role;
+
+  BookingService.getUserBookings(userId, role)
+    .then(function(bookings) {
+      res.json({
+        success: true,
+        bookings: bookings.map(function(booking) {
+          return {
+            id: booking.id,
+            bookingNumber: booking.bookingNumber,
+            status: booking.status,
+            scheduledDate: booking.scheduledDate,
+            startTime: booking.startTime,
+            endTime: booking.endTime,
+            durationMinutes: booking.durationMinutes,
+            lessonFormat: booking.lessonFormat,
+            hourlyRate: booking.hourlyRate,
+            totalAmount: booking.totalAmount,
+            currency: booking.currency,
+            tutorName: booking.tutorProfile.user.fullName,
+            tutorAvatar: booking.tutorProfile.user.avatarUrl,
+            studentName: booking.studentUser.fullName,
+            subjectName: booking.subject ? booking.subject.nameEn : null,
+            learningObjectives: booking.learningObjectives,
+            location: booking.location,
+            onlineMeetingUrl: booking.onlineMeetingUrl,
+            createdAt: booking.createdAt
+          };
+        })
+      });
+    })
+    .catch(function(err) {
+      console.error('Get bookings error:', err);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get bookings'
+      });
+    });
+});
+
+router.get('/bookings/notifications', requireAuth, function(req, res) {
+  var userId = req.user.id;
+
+  prisma.bookingNotification.findMany({
+    where: { userId: userId },
+    include: {
+      booking: {
+        select: {
+          bookingNumber: true,
+          scheduledDate: true
+        }
+      }
+    },
+    orderBy: { createdAt: 'desc' },
+    take: 50
+  }).then(function(notifications) {
+    res.json({
+      success: true,
+      notifications: notifications
+    });
+  }).catch(function(err) {
+    console.error('Get notifications error:', err);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get notifications'
+    });
+  });
+});
+
+router.get('/bookings/:bookingId', requireAuth, function(req, res) {
+  var userId = req.user.id;
+  var bookingId = req.params.bookingId;
+
+  BookingService.getBookingById(bookingId, userId)
+    .then(function(booking) {
+      res.json({
+        success: true,
+        booking: booking
+      });
+    })
+    .catch(function(err) {
+      if (err.message === 'Unauthorized') {
+        return res.status(403).json({
+          success: false,
+          error: 'You do not have access to this booking'
+        });
+      }
+      if (err.message === 'Booking not found') {
+        return res.status(404).json({
+          success: false,
+          error: 'Booking not found'
+        });
+      }
+      console.error('Get booking error:', err);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get booking'
+      });
+    });
+});
+
+router.post('/bookings/:bookingId/accept', requireAuth, function(req, res) {
+  var userId = req.user.id;
+  var bookingId = req.params.bookingId;
+
+  BookingService.acceptBooking(bookingId, userId)
+    .then(function(booking) {
+      res.json({
+        success: true,
+        message: 'Booking accepted',
+        booking: booking
+      });
+    })
+    .catch(function(err) {
+      if (err.message === 'Unauthorized') {
+        return res.status(403).json({
+          success: false,
+          error: 'You are not authorized to accept this booking'
+        });
+      }
+      console.error('Accept booking error:', err);
+      res.status(400).json({
+        success: false,
+        error: err.message || 'Failed to accept booking'
+      });
+    });
+});
+
+router.post('/bookings/:bookingId/decline', requireAuth, function(req, res) {
+  var userId = req.user.id;
+  var bookingId = req.params.bookingId;
+  var reason = req.body.reason || null;
+
+  BookingService.declineBooking(bookingId, userId, reason)
+    .then(function(booking) {
+      res.json({
+        success: true,
+        message: 'Booking declined',
+        booking: booking
+      });
+    })
+    .catch(function(err) {
+      if (err.message === 'Unauthorized') {
+        return res.status(403).json({
+          success: false,
+          error: 'You are not authorized to decline this booking'
+        });
+      }
+      console.error('Decline booking error:', err);
+      res.status(400).json({
+        success: false,
+        error: err.message || 'Failed to decline booking'
+      });
+    });
+});
+
+router.post('/bookings/:bookingId/cancel', requireAuth, function(req, res) {
+  var userId = req.user.id;
+  var bookingId = req.params.bookingId;
+  var reason = req.body.reason || null;
+
+  BookingService.cancelBooking(bookingId, userId, reason)
+    .then(function(booking) {
+      res.json({
+        success: true,
+        message: 'Booking cancelled',
+        booking: booking
+      });
+    })
+    .catch(function(err) {
+      if (err.message === 'Unauthorized') {
+        return res.status(403).json({
+          success: false,
+          error: 'You are not authorized to cancel this booking'
+        });
+      }
+      console.error('Cancel booking error:', err);
+      res.status(400).json({
+        success: false,
+        error: err.message || 'Failed to cancel booking'
+      });
+    });
+});
+
+router.post('/bookings/:bookingId/complete', requireAuth, function(req, res) {
+  var userId = req.user.id;
+  var bookingId = req.params.bookingId;
+
+  BookingService.completeBooking(bookingId, userId)
+    .then(function(booking) {
+      res.json({
+        success: true,
+        message: 'Booking completed',
+        booking: booking
+      });
+    })
+    .catch(function(err) {
+      if (err.message === 'Unauthorized') {
+        return res.status(403).json({
+          success: false,
+          error: 'You are not authorized to complete this booking'
+        });
+      }
+      console.error('Complete booking error:', err);
+      res.status(400).json({
+        success: false,
+        error: err.message || 'Failed to complete booking'
+      });
+    });
+});
+
+router.post('/bookings/:bookingId/reschedule', requireAuth, function(req, res) {
+  var userId = req.user.id;
+  var bookingId = req.params.bookingId;
+  var newDate = req.body.date;
+  var newStartTime = req.body.startTime;
+  var newEndTime = req.body.endTime;
+
+  if (!newDate || !newStartTime || !newEndTime) {
+    return res.status(400).json({
+      success: false,
+      error: 'date, startTime, and endTime are required'
+    });
+  }
+
+  BookingService.rescheduleBooking(bookingId, userId, newDate, newStartTime, newEndTime)
+    .then(function(booking) {
+      res.json({
+        success: true,
+        message: 'Booking rescheduled',
+        booking: booking
+      });
+    })
+    .catch(function(err) {
+      if (err.message === 'Unauthorized') {
+        return res.status(403).json({
+          success: false,
+          error: 'You are not authorized to reschedule this booking'
+        });
+      }
+      console.error('Reschedule booking error:', err);
+      res.status(400).json({
+        success: false,
+        error: err.message || 'Failed to reschedule booking'
+      });
+    });
 });
 
 module.exports = router;
