@@ -365,6 +365,58 @@ var IremeAPI = (function() {
     updateTutorServiceAreas: function(areas) {
       return this.post('/api/tutors/service-areas', { areas: areas });
     },
+
+    getTutorRecommendations: function(criteria) {
+      var params = [];
+      if (criteria.subjectIds && criteria.subjectIds.length > 0) {
+        params.push('subjectIds=' + criteria.subjectIds.join(','));
+      }
+      if (criteria.educationLevelId) {
+        params.push('educationLevelId=' + encodeURIComponent(criteria.educationLevelId));
+      }
+      if (criteria.province) {
+        params.push('province=' + encodeURIComponent(criteria.province));
+      }
+      if (criteria.district) {
+        params.push('district=' + encodeURIComponent(criteria.district));
+      }
+      if (criteria.sector) {
+        params.push('sector=' + encodeURIComponent(criteria.sector));
+      }
+      if (criteria.cell) {
+        params.push('cell=' + encodeURIComponent(criteria.cell));
+      }
+      if (criteria.village) {
+        params.push('village=' + encodeURIComponent(criteria.village));
+      }
+      if (criteria.lessonFormat) {
+        params.push('lessonFormat=' + encodeURIComponent(criteria.lessonFormat));
+      }
+      if (criteria.preferredDays && criteria.preferredDays.length > 0) {
+        params.push('preferredDays=' + criteria.preferredDays.join(','));
+      }
+      if (criteria.maxHourlyRate) {
+        params.push('maxHourlyRate=' + criteria.maxHourlyRate);
+      }
+      var qs = params.length > 0 ? '?' + params.join('&') : '';
+      return this.get('/api/tutors/recommendations' + qs);
+    },
+
+    getTutorPublicProfile: function(tutorId) {
+      return this.get('/api/tutors/public-profile/' + encodeURIComponent(tutorId));
+    },
+
+    saveTutor: function(tutorId) {
+      return this.post('/api/tutors/save', { tutorId: tutorId });
+    },
+
+    unsaveTutor: function(tutorId) {
+      return this.delete('/api/tutors/save/' + encodeURIComponent(tutorId));
+    },
+
+    getSavedTutors: function() {
+      return this.get('/api/tutors/saved');
+    },
   };
 })();
 
