@@ -337,6 +337,34 @@ var IremeAPI = (function() {
     getAssessmentHistory: function() {
       return this.get('/api/assessments/history');
     },
+
+    getTutorProfile: function() {
+      return this.get('/api/tutors/profile');
+    },
+
+    saveTutorProfile: function(data) {
+      return this.post('/api/tutors/profile', data);
+    },
+
+    analyzeTutorCV: function() {
+      return this.post('/api/tutors/analyze-cv');
+    },
+
+    getTutorSkillAssessments: function() {
+      return this.get('/api/tutors/skill-assessments');
+    },
+
+    updateTutorSubjects: function(subjects) {
+      return this.post('/api/tutors/subjects', { subjects: subjects });
+    },
+
+    updateTutorAvailability: function(availability) {
+      return this.post('/api/tutors/availability', { availability: availability });
+    },
+
+    updateTutorServiceAreas: function(areas) {
+      return this.post('/api/tutors/service-areas', { areas: areas });
+    },
   };
 })();
 
