@@ -130,6 +130,11 @@ model UserProfile {
   sector          String?
   cell            String?
   village         String?
+  provinceId      String?
+  districtId      String?
+  sectorId        String?
+  cellId          String?
+  villageId       String?
   postalCode      String?
   emergencyContact String?
   emergencyPhone  String?
@@ -138,9 +143,16 @@ model UserProfile {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provinceRef     Province? @relation("UserProfileProvince", fields: [provinceId], references: [id])
+  districtRef     District? @relation("UserProfileDistrict", fields: [districtId], references: [id])
+  sectorRef       Sector?   @relation("UserProfileSector", fields: [sectorId], references: [id])
+  cellRef         Cell?     @relation("UserProfileCell", fields: [cellId], references: [id])
+  villageRef      Village?  @relation("UserProfileVillage", fields: [villageId], references: [id])
 
   @@index([userId])
+  @@index([provinceId])
+  @@index([districtId])
 }
 
 model OAuthAccount {
@@ -729,6 +741,11 @@ model SchoolLocation {
   sector      String?
   cell        String?
   village     String?
+  provinceId  String?
+  districtId  String?
+  sectorId    String?
+  cellId      String?
+  villageId   String?
   address     String?
   latitude    Decimal?
   longitude   Decimal?
@@ -736,10 +753,17 @@ model SchoolLocation {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  school School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  school      School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  provinceRef Province? @relation("SchoolLocationProvince", fields: [provinceId], references: [id])
+  districtRef District? @relation("SchoolLocationDistrict", fields: [districtId], references: [id])
+  sectorRef   Sector?   @relation("SchoolLocationSector", fields: [sectorId], references: [id])
+  cellRef     Cell?     @relation("SchoolLocationCell", fields: [cellId], references: [id])
+  villageRef  Village?  @relation("SchoolLocationVillage", fields: [villageId], references: [id])
 
   @@index([schoolId])
   @@index([district])
+  @@index([provinceId])
+  @@index([districtId])
 }
 
 model SchoolContact {
@@ -2851,4 +2875,85 @@ model VideoLessonProgress {
   @@unique([userId, videoLessonId])
   @@index([userId])
   @@index([videoLessonId])
+}
+
+// ============================================
+// SECTION 10: RWANDA ADMINISTRATIVE LOCATIONS
+// ============================================
+
+model Province {
+  id           String     @id @default(uuid())
+  code         String     @unique
+  name         String
+  nameEn       String
+  nameRw       String?
+  displayOrder Int        @default(0)
+  isActive     Boolean    @default(true)
+  districts    District[]
+
+  userProfileRefs      UserProfile[]      @relation("UserProfileProvince")
+  schoolLocationRefs   SchoolLocation[]   @relation("SchoolLocationProvince")
+}
+
+model District {
+  id           String   @id @default(uuid())
+  code         String   @unique
+  name         String
+  nameEn       String
+  nameRw       String?
+  provinceId   String
+  province     Province @relation(fields: [provinceId], references: [id])
+  displayOrder Int      @default(0)
+  isActive     Boolean  @default(true)
+  sectors      Sector[]
+
+  userProfileRefs      UserProfile[]      @relation("UserProfileDistrict")
+  schoolLocationRefs   SchoolLocation[]   @relation("SchoolLocationDistrict")
+}
+
+model Sector {
+  id           String   @id @default(uuid())
+  code         String   @unique
+  name         String
+  nameEn       String
+  nameRw       String?
+  districtId   String
+  district     District @relation(fields: [districtId], references: [id])
+  displayOrder Int      @default(0)
+  isActive     Boolean  @default(true)
+  cells        Cell[]
+
+  userProfileRefs      UserProfile[]      @relation("UserProfileSector")
+  schoolLocationRefs   SchoolLocation[]   @relation("SchoolLocationSector")
+}
+
+model Cell {
+  id           String  @id @default(uuid())
+  code         String  @unique
+  name         String
+  nameEn       String
+  nameRw       String?
+  sectorId     String
+  sector       Sector  @relation(fields: [sectorId], references: [id])
+  displayOrder Int     @default(0)
+  isActive     Boolean @default(true)
+  villages     Village[]
+
+  userProfileRefs      UserProfile[]      @relation("UserProfileCell")
+  schoolLocationRefs   SchoolLocation[]   @relation("SchoolLocationCell")
+}
+
+model Village {
+  id           String  @id @default(uuid())
+  code         String  @unique
+  name         String
+  nameEn       String
+  nameRw       String?
+  cellId       String
+  cell         Cell    @relation(fields: [cellId], references: [id])
+  displayOrder Int     @default(0)
+  isActive     Boolean @default(true)
+
+  userProfileRefs      UserProfile[]      @relation("UserProfileVillage")
+  schoolLocationRefs   SchoolLocation[]   @relation("SchoolLocationVillage")
 }

@@ -563,3 +563,103 @@ h6,
 .google-signin-btn svg {
     flex-shrink: 0;
 }
+
+/* ============================================
+   Rwanda Location Selector Component
+   ============================================ */
+
+.location-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.location-dropdown {
+    width: 100%;
+}
+
+.location-dropdown .form-label {
+    margin-bottom: 0.35rem;
+    color: #454545;
+}
+
+.location-dropdown-inner {
+    position: relative;
+}
+
+.location-dropdown-inner .location-search {
+    border-radius: 10px;
+    border: 1px solid #dee2e6;
+    padding: 0.55rem 2.2rem 0.55rem 0.85rem;
+    font-size: 0.9rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #fff;
+    width: 100%;
+}
+
+.location-dropdown-inner .location-search:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.2rem rgba(19, 99, 198, 0.15);
+    outline: none;
+}
+
+.location-dropdown-inner.is-invalid .location-search {
+    border-color: #dc3545;
+}
+
+.location-dropdown-inner .location-spinner {
+    pointer-events: none;
+}
+
+.location-options {
+    border-radius: 10px;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    max-height: 220px;
+    overflow-y: auto;
+    background: #fff;
+    margin-top: 2px;
+    padding: 0;
+}
+
+.location-options .location-option {
+    border: none;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    font-size: 0.88rem;
+    padding: 0.5rem 0.85rem;
+    transition: background-color 0.15s, color 0.15s;
+    color: #333;
+}
+
+.location-options .location-option:last-child {
+    border-bottom: none;
+}
+
+.location-options .location-option:hover {
+    background-color: rgba(19, 99, 198, 0.08);
+    color: var(--primary);
+}
+
+.location-options .location-option.selected {
+    background-color: var(--primary);
+    color: #fff;
+    font-weight: 600;
+}
+
+.location-options .location-option.text-muted {
+    cursor: default;
+    font-style: italic;
+}
+
+/* Mobile adjustments */
+@media (max-width: 576px) {
+    .location-group {
+        gap: 0.75rem;
+    }
+
+    .location-options {
+        max-height: 180px;
+    }
+}
+}

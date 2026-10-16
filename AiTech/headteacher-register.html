@@ -139,40 +139,8 @@
 
                                 <!-- School Location -->
                                 <h5 class="mb-3 mt-4" data-i18n="auth.schoolLocation">School Location</h5>
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Province</label>
-                                        <select class="form-select" id="school-province">
-                                            <option value="">-- Select Province --</option>
-                                            <option value="Kigali City">Kigali City</option>
-                                            <option value="Eastern">Eastern</option>
-                                            <option value="Western">Western</option>
-                                            <option value="Northern">Northern</option>
-                                            <option value="Southern">Southern</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">District</label>
-                                        <select class="form-select" id="school-district" disabled>
-                                            <option value="">-- Select District --</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Sector</label>
-                                        <input type="text" class="form-control" id="school-sector">
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Cell</label>
-                                        <input type="text" class="form-control" id="school-cell">
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Village</label>
-                                    <input type="text" class="form-control" id="school-village">
-                                </div>
-                                <div class="mb-3">
+                                <div id="school-location-selector"></div>
+                                <div class="mb-3 mt-3">
                                     <label class="form-label">Physical Address</label>
                                     <textarea class="form-control" id="school-address" rows="3"></textarea>
                                 </div>
@@ -269,38 +237,15 @@
     <script src="js/config.js"></script>
     <script src="js/api-client.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/rwanda-admin.js"></script>
+    <script src="js/location-selector.js"></script>
     <script>
         IremeComponents.initPage('headteacher-register.html');
 
         if (IremeAuth.isLoggedIn()) { IremeAuth.redirectToDashboard(); }
 
-        // Rwanda province-to-district mapping
-        var provinceDistricts = {
-            'Kigali City': ['Gasabo', 'Kicukiro', 'Nyarugenge'],
-            'Eastern': ['Bugesera', 'Gatsibo', 'Kayonza', 'Kirehe', 'Ngoma', 'Nyagatare', 'Rwamagana'],
-            'Western': ['Karongi', 'Ngororero', 'Nyabihu', 'Nyamasheke', 'Rubavu', 'Rusizi', 'Rutsiro'],
-            'Northern': ['Burera', 'Gakenke', 'Gicumbi', 'Musanze', 'Rulindo'],
-            'Southern': ['Gisagara', 'Huye', 'Kamonyi', 'Muhanga', 'Nyamagabe', 'Nyanza', 'Nyaruguru', 'Ruhango']
-        };
-
-        // District filtering by province
-        document.getElementById('school-province').addEventListener('change', function() {
-            var districtSelect = document.getElementById('school-district');
-            var province = this.value;
-            districtSelect.innerHTML = '<option value="">-- Select District --</option>';
-
-            if (province && provinceDistricts[province]) {
-                districtSelect.disabled = false;
-                provinceDistricts[province].forEach(function(district) {
-                    var opt = document.createElement('option');
-                    opt.value = district;
-                    opt.textContent = district;
-                    districtSelect.appendChild(opt);
-                });
-            } else {
-                districtSelect.disabled = true;
-            }
-        });
+        // Initialize cascading location selector
+        IremeLocation.init('school-location-selector', { required: false });
 
         // Step management
         var accountData = {};
@@ -408,17 +353,23 @@
                 if (document.getElementById('level-tvet').checked) levels.push('TVET');
 
                 // Build school data
+                var locSel = IremeLocation.getSelection('school-location-selector');
                 var schoolData = {
                     name: schoolName,
                     code: document.getElementById('school-code').value.trim() || null,
                     type: document.getElementById('school-type').value || null,
                     category: document.getElementById('school-category').value || null,
                     ownership: document.getElementById('school-ownership').value.trim() || null,
-                    province: document.getElementById('school-province').value || null,
-                    district: document.getElementById('school-district').value || null,
-                    sector: document.getElementById('school-sector').value.trim() || null,
-                    cell: document.getElementById('school-cell').value.trim() || null,
-                    village: document.getElementById('school-village').value.trim() || null,
+                    province: locSel.provinceName || null,
+                    district: locSel.districtName || null,
+                    sector: locSel.sectorName || null,
+                    cell: locSel.cellName || null,
+                    village: locSel.villageName || null,
+                    provinceId: locSel.provinceId || null,
+                    districtId: locSel.districtId || null,
+                    sectorId: locSel.sectorId || null,
+                    cellId: locSel.cellId || null,
+                    villageId: locSel.villageId || null,
                     address: document.getElementById('school-address').value.trim() || null,
                     phone: document.getElementById('school-phone').value.trim() || null,
                     email: document.getElementById('school-email').value.trim() || null,

@@ -87,6 +87,10 @@
                                     </select>
                                 </div>
                                 <div class="col-12">
+                                    <label class="form-label">Location</label>
+                                    <div id="profile-location-selector"></div>
+                                </div>
+                                <div class="col-12">
                                     <div id="profile-message"></div>
                                 </div>
                                 <div class="col-12">
@@ -129,10 +133,15 @@
     <script src="js/api-client.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/components.js"></script>
+    <script src="js/rwanda-admin.js"></script>
+    <script src="js/location-selector.js"></script>
     <script src="js/game-state.js"></script>
     <script>
         IremeComponents.initPage('profile.html', ['js/game-state.js']);
         if (!IremeAuth.requireAuth()) { }
+
+        // Initialize location selector for profile
+        IremeLocation.init('profile-location-selector', { required: false });
 
         var ROLE_LABELS = {
             STUDENT: 'Student', TEACHER: 'Teacher', PARENT: 'Parent',
@@ -170,6 +179,11 @@
                 phone: document.getElementById('profile-input-phone').value,
                 preferredLanguage: document.getElementById('profile-input-language').value,
                 timezone: document.getElementById('profile-input-timezone').value,
+                provinceId: (IremeLocation.getSelection('profile-location-selector') || {}).provinceId || null,
+                districtId: (IremeLocation.getSelection('profile-location-selector') || {}).districtId || null,
+                sectorId: (IremeLocation.getSelection('profile-location-selector') || {}).sectorId || null,
+                cellId: (IremeLocation.getSelection('profile-location-selector') || {}).cellId || null,
+                villageId: (IremeLocation.getSelection('profile-location-selector') || {}).villageId || null,
             }).then(function() {
                 showMessage('success', 'Profile updated successfully.');
                 document.getElementById('profile-name').textContent = document.getElementById('profile-input-name').value;
