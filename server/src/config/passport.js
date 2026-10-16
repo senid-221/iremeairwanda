@@ -1,5 +1,11 @@
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
+const USER_INCLUDES = {
+  oauthAccounts: true,
+  studentProfile: true,
+  parentProfile: true,
+};
+
 function configurePassport(passport, prisma) {
   passport.serializeUser((user, done) => {
     done(null, user.id);
@@ -9,12 +15,7 @@ function configurePassport(passport, prisma) {
     try {
       const user = await prisma.user.findUnique({
         where: { id },
-        include: {
-          googleAccount: true,
-          studentRecord: true,
-          teacherRecord: true,
-          parentRecord: true,
-        },
+        include: USER_INCLUDES,
       });
       done(null, user);
     } catch (error) {
@@ -27,15 +28,22 @@ function configurePassport(passport, prisma) {
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: process.env.GOOGLE_CALLBACK_URL,
     scope: ['profile', 'email'],
-  }, async (accessToken, refreshToken, profile, done) => {
+    passReqToCallback: true,
+  }, async (req, accessToken, refreshToken, profile, done) => {
     try {
       const email = profile.emails[0].value;
+      const emailNormalized = email.trim().toLowerCase();
       const googleId = profile.id;
       const displayName = profile.displayName;
       const photoUrl = profile.photos[0]?.value || null;
 
-      let existingGoogleAccount = await prisma.googleAccount.findUnique({
-        where: { googleId },
+      const existingGoogleAccount = await prisma.oAuthAccount.findUnique({
+        where: {
+          provider_providerAccountId: {
+            provider: 'google',
+            providerAccountId: googleId,
+          },
+        },
         include: { user: true },
       });
 
@@ -43,15 +51,10 @@ function configurePassport(passport, prisma) {
         const user = await prisma.user.update({
           where: { id: existingGoogleAccount.userId },
           data: { lastLoginAt: new Date() },
-          include: {
-            googleAccount: true,
-            studentRecord: true,
-            teacherRecord: true,
-            parentRecord: true,
-          },
+          include: USER_INCLUDES,
         });
 
-        await prisma.googleAccount.update({
+        await prisma.oAuthAccount.update({
           where: { id: existingGoogleAccount.id },
           data: { accessToken, refreshToken },
         });
@@ -59,14 +62,9 @@ function configurePassport(passport, prisma) {
         return done(null, user);
       }
 
-      let existingUser = await prisma.user.findUnique({
-        where: { email },
-        include: {
-          googleAccount: true,
-          studentRecord: true,
-          teacherRecord: true,
-          parentRecord: true,
-        },
+      const existingUser = await prisma.user.findUnique({
+        where: { emailNormalized },
+        include: USER_INCLUDES,
       });
 
       if (existingUser) {
@@ -77,10 +75,11 @@ function configurePassport(passport, prisma) {
           });
         }
 
-        await prisma.googleAccount.create({
+        await prisma.oAuthAccount.create({
           data: {
             userId: existingUser.id,
-            googleId,
+            provider: 'google',
+            providerAccountId: googleId,
             email,
             displayName,
             photoUrl,
@@ -92,29 +91,31 @@ function configurePassport(passport, prisma) {
         const updatedUser = await prisma.user.update({
           where: { id: existingUser.id },
           data: { lastLoginAt: new Date() },
-          include: {
-            googleAccount: true,
-            studentRecord: true,
-            teacherRecord: true,
-            parentRecord: true,
-          },
+          include: USER_INCLUDES,
         });
 
         return done(null, updatedUser);
       }
 
+      // Role is decided by the pendingRole stored in session before the redirect.
+      const role = ['STUDENT', 'TEACHER', 'PARENT'].includes(req.session?.pendingRole)
+        ? req.session.pendingRole
+        : 'STUDENT';
+
       const newUser = await prisma.user.create({
         data: {
           email,
+          emailNormalized,
           fullName: displayName,
-          role: 'STUDENT',
-          status: 'ACTIVE',
+          role,
+          status: role === 'TEACHER' ? 'PENDING' : 'ACTIVE',
           emailVerified: true,
           avatarUrl: photoUrl,
           lastLoginAt: new Date(),
-          googleAccount: {
+          oauthAccounts: {
             create: {
-              googleId,
+              provider: 'google',
+              providerAccountId: googleId,
               email,
               displayName,
               photoUrl,
@@ -122,20 +123,10 @@ function configurePassport(passport, prisma) {
               refreshToken,
             },
           },
-          studentRecord: {
-            create: {
-              totalXp: 0,
-              matchesPlayed: 0,
-              matchesWon: 0,
-            },
-          },
+          studentProfile: role === 'STUDENT' ? { create: {} } : undefined,
+          parentProfile: role === 'PARENT' ? { create: {} } : undefined,
         },
-        include: {
-          googleAccount: true,
-          studentRecord: true,
-          teacherRecord: true,
-          parentRecord: true,
-        },
+        include: USER_INCLUDES,
       });
 
       return done(null, newUser);
@@ -146,4 +137,4 @@ function configurePassport(passport, prisma) {
   }));
 }
 
-module.exports = { configurePassport };
+module.exports = { configurePassport, USER_INCLUDES };

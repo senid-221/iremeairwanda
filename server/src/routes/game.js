@@ -38,7 +38,6 @@ router.post('/match', requireAuth, requireActive, async (req, res) => {
         player1Id: req.user.id,
         player1Score: playerScore || 0,
         player2Score: opponentScore || 0,
-        subject,
         subjectName: subjectName || subject,
         level,
         pathway,
@@ -47,34 +46,24 @@ router.post('/match', requireAuth, requireActive, async (req, res) => {
         mode: mode || 'quick',
         totalRounds: totalRounds || 10,
         result,
+        status: 'completed',
         player1Accuracy,
         completedAt: new Date(),
-        answers: answers && answers.length > 0 ? {
-          create: answers.map(a => ({
+        gameAnswers: answers && answers.length > 0 ? {
+          create: answers.map((a, idx) => ({
             userId: req.user.id,
             questionId: a.questionId || 'unknown',
-            questionText: a.questionText || '',
-            selectedAnswer: a.selectedAnswer,
-            correctAnswer: a.correctAnswer,
-            isCorrect: a.isCorrect,
+            roundNumber: a.roundNumber || idx + 1,
+            selectedAnswer: typeof a.selectedAnswer === 'number' ? a.selectedAnswer : null,
+            answerText: typeof a.selectedAnswer === 'string' ? a.selectedAnswer : null,
+            isCorrect: !!a.isCorrect,
             points: a.points || 0,
             timeUsed: a.timeUsed || 0,
           })),
         } : undefined,
       },
-      include: { answers: true },
+      include: { gameAnswers: true },
     });
-
-    if (req.user.studentRecord) {
-      await prisma.studentRecord.update({
-        where: { userId: req.user.id },
-        data: {
-          matchesPlayed: { increment: 1 },
-          matchesWon: result === 'win' ? { increment: 1 } : undefined,
-          totalXp: { increment: playerScore || 0 },
-        },
-      });
-    }
 
     res.status(201).json({
       message: 'Match saved successfully',
@@ -84,7 +73,7 @@ router.post('/match', requireAuth, requireActive, async (req, res) => {
         playerScore: match.player1Score,
         opponentScore: match.player2Score,
         accuracy: match.player1Accuracy,
-        subject: match.subject,
+        subject: match.subjectName,
         level: match.level,
         completedAt: match.completedAt,
       },
@@ -114,7 +103,7 @@ router.get('/history', requireAuth, async (req, res) => {
         take: limit,
         select: {
           id: true,
-          subject: true,
+          subjectId: true,
           subjectName: true,
           level: true,
           pathway: true,
@@ -179,7 +168,7 @@ router.get('/stats', requireAuth, async (req, res) => {
     ]);
 
     const subjectStats = await prisma.gameMatch.groupBy({
-      by: ['subject'],
+      by: ['subjectName'],
       where: { player1Id: userId },
       _count: { id: true },
       orderBy: { _count: { id: 'desc' } },
@@ -195,10 +184,12 @@ router.get('/stats', requireAuth, async (req, res) => {
       averageAccuracy: avgAccuracy._avg.player1Accuracy
         ? Math.round(avgAccuracy._avg.player1Accuracy)
         : 0,
-      topSubjects: subjectStats.map(s => ({
-        subject: s.subject,
-        matches: s._count.id,
-      })),
+      topSubjects: subjectStats
+        .filter(s => s.subjectName)
+        .map(s => ({
+          subject: s.subjectName,
+          matches: s._count.id,
+        })),
     });
   } catch (error) {
     console.error('Get stats error:', error);

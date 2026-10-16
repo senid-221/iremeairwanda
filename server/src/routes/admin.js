@@ -1,9 +1,14 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcryptjs');
 const { PrismaClient } = require('@prisma/client');
 const { requireAuth, requireRole } = require('../middleware/auth');
 
 const prisma = new PrismaClient();
+
+function normalizeEmail(email) {
+  return String(email).trim().toLowerCase();
+}
 
 router.post('/bootstrap', async (req, res) => {
   const bootstrapSecret = process.env.ADMIN_BOOTSTRAP_SECRET;
@@ -32,10 +37,13 @@ router.post('/bootstrap', async (req, res) => {
   }
 
   try {
+    const passwordHash = password ? await bcrypt.hash(String(password), 12) : null;
     const admin = await prisma.user.create({
       data: {
         email,
+        emailNormalized: normalizeEmail(email),
         fullName,
+        passwordHash,
         role: 'SUPER_ADMIN',
         status: 'ACTIVE',
         emailVerified: true,
@@ -96,6 +104,7 @@ router.post('/users', requireAuth, requireRole('ADMIN', 'SUPER_ADMIN'), async (r
     const user = await prisma.user.create({
       data: {
         email,
+        emailNormalized: normalizeEmail(email),
         fullName,
         role: role,
         status: status || 'PENDING',
@@ -104,11 +113,9 @@ router.post('/users', requireAuth, requireRole('ADMIN', 'SUPER_ADMIN'), async (r
     });
 
     if (role === 'STUDENT') {
-      await prisma.studentRecord.create({ data: { userId: user.id } });
-    } else if (role === 'TEACHER') {
-      await prisma.teacherRecord.create({ data: { userId: user.id } });
+      await prisma.studentProfile.create({ data: { userId: user.id } });
     } else if (role === 'PARENT') {
-      await prisma.parentRecord.create({ data: { userId: user.id } });
+      await prisma.parentProfile.create({ data: { userId: user.id } });
     }
 
     await prisma.auditLog.create({

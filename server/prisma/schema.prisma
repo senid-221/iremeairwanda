@@ -39,6 +39,7 @@ model User {
   email           String        @unique
   emailNormalized String        @unique
   fullName        String
+  passwordHash    String?
   role            Role          @default(STUDENT)
   status          AccountStatus @default(PENDING)
   emailVerified   Boolean       @default(false)
