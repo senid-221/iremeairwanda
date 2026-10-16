@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>IREME — AI Video Lessons</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="img/ireme-icon.png" rel="icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <style>
+        :root{--ip:#1363C6;--is:#15ACE1;--il:#F4F7FE;--id:#14183E;--ig:#F4A926;--im:#6B7A99;--iline:#E5EAF4;--igrn:#12B981;--ired:#e35656}
+        .vl-page{font-family:'Open Sans',sans-serif;color:var(--id)}
+        .vl-tabs{display:flex;gap:6px;margin:18px 0 22px;flex-wrap:wrap}
+        .vl-tab{border:1px solid var(--iline);background:#fff;border-radius:10px;padding:9px 16px;font-size:11px;font-weight:700;color:var(--im);cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:7px}
+        .vl-tab:hover{border-color:var(--is);color:var(--ip)}
+        .vl-tab.active{border-color:var(--ip);background:#e9f0ff;color:var(--ip)}
+        .vl-card{background:#fff;border:1px solid var(--iline);border-radius:19px;padding:26px;box-shadow:0 5px 20px rgba(24,54,106,.05);margin-bottom:18px}
+        .vl-eyebrow{display:inline-flex;align-items:center;gap:7px;color:var(--ip);font-weight:800;letter-spacing:1.7px;font-size:10px;text-transform:uppercase;background:#e9f0ff;padding:6px 14px;border-radius:20px}
+        .vl-title{font-size:22px;margin:12px 0 6px;letter-spacing:-.5px;color:var(--id)}
+        .vl-sub{color:var(--im);font-size:12px;margin-bottom:18px}
+        .vl-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+        .vl-field label{font-size:9px;font-weight:700;color:var(--im);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px}
+        .vl-field .ireme-dropdown{width:100%}
+        .vl-btn-row{display:flex;gap:6px;flex-wrap:wrap}
+        .vl-chip{border:1px solid var(--iline);background:#fafbfe;border-radius:8px;padding:7px 12px;font-size:10px;font-weight:700;cursor:pointer;transition:.2s}
+        .vl-chip:hover{border-color:var(--is)}
+        .vl-chip.active{border-color:var(--ip);background:#e9f0ff;color:var(--ip)}
+        .vl-input{width:100%;height:42px;border:1px solid var(--iline);background:#fff;border-radius:9px;padding:0 12px;font-size:12px;color:var(--id);transition:.2s}
+        .vl-input:focus{border-color:var(--ip);outline:none;box-shadow:0 0 0 2px rgba(19,99,198,.15)}
+        .vl-textarea{width:100%;min-height:80px;border:1px solid var(--iline);background:#fff;border-radius:9px;padding:10px 12px;font-size:12px;color:var(--id);resize:vertical;transition:.2s}
+        .vl-textarea:focus{border-color:var(--ip);outline:none;box-shadow:0 0 0 2px rgba(19,99,198,.15)}
+        .vl-generate{width:100%;border:0;background:linear-gradient(135deg,#1363C6,#15ACE1);color:#fff;min-height:46px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;gap:10px;font-weight:800;font-size:12px;cursor:pointer;transition:.2s;box-shadow:0 10px 25px rgba(19,99,198,.25)}
+        .vl-generate:hover{transform:translateY(-2px);box-shadow:0 13px 30px rgba(19,99,198,.35)}
+        .vl-generate:disabled{opacity:.5;cursor:not-allowed;transform:none}
+        .vl-quota{font-size:10px;color:var(--im);margin-top:10px;text-align:center}
+        .vl-ai-note{background:#fff8e1;border:1px solid #ffe082;border-radius:10px;padding:10px 14px;margin-top:14px;font-size:10px;color:#7a5f00}
+        .vl-progress-bar{height:10px;background:#e9f0ff;border-radius:6px;overflow:hidden;margin:14px 0}
+        .vl-progress-fill{height:100%;background:linear-gradient(90deg,var(--ip),var(--is));transition:width .4s;border-radius:6px}
+        .vl-stage{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--iline)}
+        .vl-stage:last-child{border-bottom:0}
+        .vl-stage-dot{width:22px;height:22px;border-radius:50%;background:#e9f0ff;color:var(--im);display:grid;place-items:center;font-size:9px;font-weight:800;flex:none}
+        .vl-stage-dot.active{background:var(--ip);color:#fff;animation:vlPulse 1.5s infinite}
+        .vl-stage-dot.done{background:var(--igrn);color:#fff}
+        .vl-stage-dot.failed{background:var(--ired);color:#fff}
+        .vl-stage-label{font-size:11px;font-weight:700;color:var(--id)}
+        .vl-stage-sub{font-size:9px;color:var(--im)}
+        @keyframes vlPulse{0%,100%{opacity:1}50%{opacity:.5}}
+        .vl-player-wrap{position:relative;background:#000;border-radius:14px;overflow:hidden;aspect-ratio:16/9}
+        .vl-player-wrap video{width:100%;height:100%;display:block}
+        .vl-badge{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:700;padding:4px 10px;border-radius:20px}
+        .vl-badge-ai{background:#fff3e0;color:#b45309;border:1px solid #fed7aa}
+        .vl-badge-status{background:#e9f0ff;color:var(--ip);border:1px solid #c7d9f5}
+        .vl-badge-completed{background:#e9faf4;color:#0da170;border:1px solid #a7f3d0}
+        .vl-badge-failed{background:#fff0f0;color:#e35656;border:1px solid #fecaca}
+        .vl-scenes{display:grid;gap:8px;margin-top:14px}
+        .vl-scene{display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--iline);border-radius:10px;cursor:pointer;transition:.2s;background:#fff}
+        .vl-scene:hover{border-color:var(--is);background:#f5f9ff}
+        .vl-scene.active{border-color:var(--ip);background:#e9f0ff}
+        .vl-scene-num{width:28px;height:28px;border-radius:7px;background:#e9f0ff;color:var(--ip);display:grid;place-items:center;font-size:9px;font-weight:800}
+        .vl-scene-title{font-size:11px;font-weight:700;color:var(--id);margin:0}
+        .vl-scene-time{font-size:9px;color:var(--im)}
+        .vl-transcript{max-height:360px;overflow-y:auto;padding-right:6px}
+        .vl-transcript-item{padding:8px 12px;border-left:3px solid transparent;cursor:pointer;border-radius:6px;transition:.2s;margin-bottom:4px}
+        .vl-transcript-item:hover{background:#f5f9ff}
+        .vl-transcript-item.active{border-left-color:var(--ip);background:#e9f0ff}
+        .vl-transcript-item .tt-time{font-size:9px;color:var(--ip);font-weight:700}
+        .vl-transcript-item .tt-text{font-size:11px;color:var(--id);margin-top:3px;line-height:1.5}
+        .vl-quiz-q{margin-bottom:18px;padding:14px;background:#fafbfe;border:1px solid var(--iline);border-radius:12px}
+        .vl-quiz-q h5{font-size:13px;margin:0 0 10px;color:var(--id)}
+        .vl-quiz-opt{display:block;padding:9px 12px;border:1px solid var(--iline);border-radius:8px;margin-bottom:6px;cursor:pointer;transition:.2s;font-size:11px}
+        .vl-quiz-opt:hover{border-color:var(--is);background:#f5f9ff}
+        .vl-quiz-opt input{margin-right:8px}
+        .vl-quiz-opt.correct{border-color:var(--igrn);background:#e9faf4}
+        .vl-quiz-opt.incorrect{border-color:var(--ired);background:#fff0f0}
+        .vl-quiz-opt .explanation{margin-top:8px;padding:8px 10px;background:#fff;border-radius:6px;font-size:10px;color:var(--im);border-left:3px solid var(--is)}
+        .vl-lib-item{display:grid;grid-template-columns:60px 1fr auto;gap:12px;align-items:center;padding:12px;border:1px solid var(--iline);border-radius:12px;margin-bottom:10px;cursor:pointer;transition:.2s;background:#fff}
+        .vl-lib-item:hover{border-color:var(--is);box-shadow:0 4px 12px rgba(24,54,106,.06)}
+        .vl-lib-thumb{width:60px;height:40px;border-radius:8px;background:#e9f0ff;display:grid;place-items:center;color:var(--ip);font-size:18px}
+        .vl-lib-title{font-size:12px;font-weight:700;color:var(--id);margin:0}
+        .vl-lib-meta{font-size:9px;color:var(--im);margin-top:3px}
+        .vl-lib-actions{display:flex;gap:6px}
+        .vl-btn{border:1px solid var(--iline);background:#fff;border-radius:8px;padding:6px 12px;font-size:10px;font-weight:700;cursor:pointer;transition:.2s;color:var(--id)}
+        .vl-btn:hover{border-color:var(--ip);color:var(--ip)}
+        .vl-btn-primary{background:var(--ip);color:#fff;border-color:var(--ip)}
+        .vl-btn-primary:hover{background:#0f52a8}
+        .vl-btn-danger{color:var(--ired);border-color:#fecaca}
+        .vl-btn-danger:hover{background:#fff0f0}
+        .vl-empty{text-align:center;padding:40px 20px;color:var(--im);font-size:12px}
+        .vl-empty i{font-size:36px;margin-bottom:10px;opacity:.3}
+        .vl-error{background:#fff0f0;border:1px solid #fecaca;border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:11px;color:var(--ired)}
+        @media(max-width:768px){.vl-row{grid-template-columns:1fr}.vl-lib-item{grid-template-columns:44px 1fr}.vl-lib-thumb{width:44px;height:32px;font-size:14px}}
+    </style>
+</head>
+<body>
+    <div id="vl-app" class="vl-page">
+        <div id="vl-navbar"></div>
+
+        <div class="container py-4">
+            <div class="vl-eyebrow"><i class="fa fa-video"></i> <span data-i18n="video.eyebrow">AI Video Lessons</span></div>
+            <h1 class="vl-title" data-i18n="video.title">Learn with IREME AI Videos</h1>
+            <p class="vl-sub" data-i18n="video.subtitle">Personalized short video lessons generated from your curriculum.</p>
+
+            <div class="vl-tabs" id="vl-tabs">
+                <button class="vl-tab active" data-view="create"><i class="fa fa-plus-circle"></i> <span data-i18n="video.tabCreate">Create</span></button>
+                <button class="vl-tab" data-view="library"><i class="fa fa-bookmark"></i> <span data-i18n="video.tabLibrary">My Library</span> <span class="badge bg-primary" id="vl-lib-count" style="display:none"></span></button>
+            </div>
+
+            <div id="vl-view-create">
+                <div class="vl-card">
+                    <div class="vl-row">
+                        <div class="vl-field">
+                            <label data-i18n="video.level">Education Level</label>
+                            <div id="vl-level-dropdown"></div>
+                        </div>
+                        <div class="vl-field">
+                            <label data-i18n="video.subject">Subject</label>
+                            <div id="vl-subject-dropdown"></div>
+                        </div>
+                    </div>
+                    <div class="vl-field" style="margin-top:14px">
+                        <label data-i18n="video.topic">Topic</label>
+                        <div id="vl-topic-dropdown"></div>
+                        <input type="text" id="vl-custom-topic" class="vl-input" style="margin-top:8px;display:none" placeholder="Type your topic..." data-i18n-placeholder="video.customTopicPlaceholder">
+                        <label style="margin-top:8px;font-size:10px;color:var(--im);display:inline-flex;align-items:center;gap:6px;cursor:pointer">
+                            <input type="checkbox" id="vl-use-custom-topic"> <span data-i18n="video.useCustomTopic">Use a custom topic</span>
+                        </label>
+                    </div>
+                    <div class="vl-row" style="margin-top:14px">
+                        <div class="vl-field">
+                            <label data-i18n="video.language">Language</label>
+                            <div class="vl-btn-row" id="vl-language-row">
+                                <button class="vl-chip active" data-lang="en">English</button>
+                                <button class="vl-chip" data-lang="rw">Kinyarwanda</button>
+                            </div>
+                        </div>
+                        <div class="vl-field">
+                            <label data-i18n="video.duration">Duration</label>
+                            <div class="vl-btn-row" id="vl-duration-row">
+                                <button class="vl-chip" data-min="1">1-2 min</button>
+                                <button class="vl-chip active" data-min="3">3-5 min</button>
+                                <button class="vl-chip" data-min="5">5-8 min</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="vl-generate-btn" class="vl-generate" style="margin-top:18px" disabled>
+                        <i class="fa fa-magic"></i> <span data-i18n="video.generate">Generate Video Lesson</span>
+                    </button>
+                    <div class="vl-quota" id="vl-quota"></div>
+                    <div class="vl-ai-note"><i class="fa fa-info-circle"></i> <span data-i18n="video.aiDisclosure">Lessons are AI-generated from verified curriculum sources. They are not official curriculum material.</span></div>
+                    <div id="vl-create-error"></div>
+                </div>
+            </div>
+
+            <div id="vl-view-progress" style="display:none">
+                <div class="vl-card">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+                        <div>
+                            <h3 class="vl-title" id="vl-progress-title"></h3>
+                            <p class="vl-sub" id="vl-progress-sub"></p>
+                        </div>
+                        <span class="vl-badge vl-badge-status" id="vl-progress-badge"></span>
+                    </div>
+                    <div class="vl-progress-bar"><div class="vl-progress-fill" id="vl-progress-fill" style="width:0%"></div></div>
+                    <div id="vl-progress-stages">
+                        <div class="vl-stage"><div class="vl-stage-dot" data-stage="planning">1</div><div><div class="vl-stage-label" data-i18n="video.stagePlanning">Planning lesson</div><div class="vl-stage-sub" data-i18n="video.stagePlanningSub">Writing the script aligned to your curriculum</div></div></div>
+                        <div class="vl-stage"><div class="vl-stage-dot" data-stage="narration">2</div><div><div class="vl-stage-label" data-i18n="video.stageNarration">Recording narration</div><div class="vl-stage-sub" data-i18n="video.stageNarrationSub">Generating voice-over in your language</div></div></div>
+                        <div class="vl-stage"><div class="vl-stage-dot" data-stage="visuals">3</div><div><div class="vl-stage-label" data-i18n="video.stageVisuals">Creating visuals</div><div class="vl-stage-sub" data-i18n="video.stageVisualsSub">Illustrations and title cards</div></div></div>
+                        <div class="vl-stage"><div class="vl-stage-dot" data-stage="render">4</div><div><div class="vl-stage-label" data-i18n="video.stageRender">Rendering video</div><div class="vl-stage-sub" data-i18n="video.stageRenderSub">Combining scenes, captions, and audio</div></div></div>
+                        <div class="vl-stage"><div class="vl-stage-dot" data-stage="upload">5</div><div><div class="vl-stage-label" data-i18n="video.stageUpload">Publishing</div><div class="vl-stage-sub" data-i18n="video.stageUploadSub">Saving to your library</div></div></div>
+                    </div>
+                    <div style="display:flex;gap:8px;margin-top:16px">
+                        <button id="vl-cancel-btn" class="vl-btn vl-btn-danger"><i class="fa fa-times"></i> <span data-i18n="video.cancel">Cancel</span></button>
+                        <button id="vl-back-create-btn" class="vl-btn"><i class="fa fa-arrow-left"></i> <span data-i18n="video.backToCreate">Back</span></button>
+                    </div>
+                    <div id="vl-progress-error"></div>
+                </div>
+            </div>
+
+            <div id="vl-view-player" style="display:none">
+                <div class="vl-card">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px">
+                        <div>
+                            <h3 class="vl-title" id="vl-player-title"></h3>
+                            <p class="vl-sub" id="vl-player-sub"></p>
+                        </div>
+                        <div style="display:flex;gap:6px;flex-wrap:wrap">
+                            <span class="vl-badge vl-badge-ai"><i class="fa fa-robot"></i> <span data-i18n="video.aiGenerated">AI-Generated</span></span>
+                            <button id="vl-library-toggle" class="vl-btn"><i class="fa fa-bookmark"></i> <span data-i18n="video.saveLibrary">Save</span></button>
+                        </div>
+                    </div>
+                    <div class="vl-player-wrap">
+                        <video id="vl-video" controls preload="metadata" crossorigin="anonymous"></video>
+                    </div>
+                    <div id="vl-player-error"></div>
+                    <div style="margin-top:14px">
+                        <h5 style="font-size:13px;margin:0 0 8px;color:var(--id)" data-i18n="video.scenes">Scenes</h5>
+                        <div class="vl-scenes" id="vl-scenes-list"></div>
+                    </div>
+                    <div class="vl-row" style="margin-top:18px">
+                        <div>
+                            <h5 style="font-size:13px;margin:0 0 8px;color:var(--id)" data-i18n="video.transcript">Transcript</h5>
+                            <div class="vl-transcript" id="vl-transcript"></div>
+                        </div>
+                        <div>
+                            <h5 style="font-size:13px;margin:0 0 8px;color:var(--id)" data-i18n="video.objectives">Learning Objectives</h5>
+                            <ul id="vl-objectives" style="font-size:11px;color:var(--id);padding-left:18px;line-height:1.7"></ul>
+                            <h5 style="font-size:13px;margin:14px 0 8px;color:var(--id)" data-i18n="video.sources">Sources</h5>
+                            <ul id="vl-sources" style="font-size:10px;color:var(--im);padding-left:18px;line-height:1.7"></ul>
+                        </div>
+                    </div>
+                    <div class="vl-card" style="margin-top:18px;background:#fafbfe" id="vl-quiz-section">
+                        <h4 style="font-size:15px;margin:0 0 12px;color:var(--id)"><i class="fa fa-question-circle text-primary"></i> <span data-i18n="video.quiz">Knowledge Check</span></h4>
+                        <div id="vl-quiz"></div>
+                        <button id="vl-quiz-submit" class="vl-generate" style="margin-top:12px;min-height:40px;font-size:11px" disabled>
+                            <i class="fa fa-check"></i> <span data-i18n="video.submitQuiz">Submit Answers</span>
+                        </button>
+                        <div id="vl-quiz-result" style="margin-top:12px"></div>
+                    </div>
+                    <div style="display:flex;gap:8px;margin-top:16px">
+                        <button id="vl-player-back-btn" class="vl-btn"><i class="fa fa-arrow-left"></i> <span data-i18n="video.backToLibrary">Back to Library</span></button>
+                        <a id="vl-ask-ai-btn" class="vl-btn" href="ai-tutor.html" style="text-decoration:none"><i class="fa fa-robot"></i> <span data-i18n="video.askAi">Ask IREME AI</span></a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="vl-view-library" style="display:none">
+                <div id="vl-library-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/api-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/curriculum-data.js"></script>
+    <script src="js/game-dropdown.js"></script>
+    <script>
+        IremeComponents.initPage('video-lessons.html', ['js/game-dropdown.js']);
+        if (!IremeAuth.requireRole('student')) { throw new Error('Access denied'); }
+
+        var state = {
+            levels: [], subjects: [], topics: [],
+            sel: { levelId: null, subjectId: null, topicKey: null, topicName: null, language: 'en', durationMinutes: 3 },
+            dropdowns: {},
+            pollTimer: null,
+            currentJobId: null,
+            currentLessonId: null,
+            currentLesson: null,
+            progressTimer: null,
+            quizSubmitted: false,
+        };
+
+        function mediaUrl(u) {
+            if (!u) return u;
+            if (u.indexOf('/') === 0 && IremeAPI.getBaseUrl()) return IremeAPI.getBaseUrl() + u;
+            return u;
+        }
+
+        function switchView(name) {
+            ['create','progress','player','library'].forEach(function(v){
+                document.getElementById('vl-view-' + v).style.display = v === name ? 'block' : 'none';
+            });
+            document.querySelectorAll('#vl-tabs .vl-tab').forEach(function(b){ b.classList.toggle('active', b.dataset.view === name); });
+            if (state.pollTimer) { clearInterval(state.pollTimer); state.pollTimer = null; }
+            if (name !== 'player' && state.progressTimer) { clearInterval(state.progressTimer); state.progressTimer = null; }
+        }
+
+        function renderQuota(q) {
+            var el = document.getElementById('vl-quota');
+            if (!q) { el.textContent = ''; return; }
+            el.textContent = (q.usedToday || 0) + ' / ' + (q.dailyLimit || 10) + ' lessons generated today';
+        }
+
+        function showError(elId, msg) {
+            var el = document.getElementById(elId);
+            if (!msg) { el.innerHTML = ''; el.style.display = 'none'; return; }
+            el.innerHTML = '<div class="vl-error"><i class="fa fa-exclamation-triangle"></i> ' + msg + '</div>';
+            el.style.display = 'block';
+        }
+
+        function loadCurriculum() {
+            IremeAPI.getCurriculumLevels().then(function(data){
+                state.levels = data.levels || [];
+                state.dropdowns.level.setItems(state.levels.map(function(l){
+                    return { value: l.id, label: l.name, sublabel: l.code + ' • ' + l.levelType, icon: 'fa-graduation-cap' };
+                }));
+                if (state.levels.length) selectLevel(state.levels[0].id);
+            }).catch(function(e){ showError('vl-create-error', e.message); });
+        }
+
+        function selectLevel(levelId) {
+            state.sel.levelId = levelId;
+            state.sel.subjectId = null;
+            state.sel.topicKey = null;
+            state.sel.topicName = null;
+            state.subjects = [];
+            state.topics = [];
+            state.dropdowns.subject.setItems([]);
+            state.dropdowns.topic.setItems([{ value: 'custom', label: 'Type a custom topic', sublabel: 'Enter any topic', icon: 'fa-keyboard' }]);
+            document.getElementById('vl-custom-topic').style.display = 'none';
+            document.getElementById('vl-use-custom-topic').checked = false;
+            if (!levelId) { updateGenerateState(); return; }
+            IremeAPI.getCurriculumSubjects(levelId).then(function(data){
+                state.subjects = data.subjects || [];
+                state.dropdowns.subject.setItems(state.subjects.map(function(s){
+                    return { value: s.id, label: s.name, sublabel: s.code, icon: 'fa-book' };
+                }));
+            }).catch(function(e){ showError('vl-create-error', e.message); });
+            updateGenerateState();
+        }
+
+        function selectSubject(subjectId) {
+            state.sel.subjectId = subjectId;
+            state.sel.topicKey = null;
+            state.sel.topicName = null;
+            state.topics = [];
+            state.dropdowns.topic.setItems([{ value: 'custom', label: 'Type a custom topic', sublabel: 'Enter any topic', icon: 'fa-keyboard' }]);
+            if (!subjectId || !state.sel.levelId) { updateGenerateState(); return; }
+            IremeAPI.getVideoTopics(subjectId, state.sel.levelId).then(function(data){
+                var items = (data.topics || []).map(function(t){
+                    return { value: t.key, label: t.name, sublabel: t.nameEn || '', icon: 'fa-bookmark' };
+                });
+                items.unshift({ value: 'custom', label: 'Type a custom topic', sublabel: 'Enter any topic', icon: 'fa-keyboard' });
+                state.topics = data.topics || [];
+                state.dropdowns.topic.setItems(items);
+            }).catch(function(e){ /* fallback to custom only */ });
+            updateGenerateState();
+        }
+
+        function selectTopic(value, item) {
+            if (value === 'custom') {
+                document.getElementById('vl-custom-topic').style.display = 'block';
+                document.getElementById('vl-use-custom-topic').checked = true;
+                state.sel.topicKey = null;
+                state.sel.topicName = document.getElementById('vl-custom-topic').value.trim();
+            } else {
+                document.getElementById('vl-custom-topic').style.display = 'none';
+                document.getElementById('vl-use-custom-topic').checked = false;
+                state.sel.topicKey = value;
+                state.sel.topicName = item ? item.label : value;
+            }
+            updateGenerateState();
+        }
+
+        function updateGenerateState() {
+            var btn = document.getElementById('vl-generate-btn');
+            var hasTopic = state.sel.topicName && state.sel.topicName.length >= 2;
+            btn.disabled = !(state.sel.levelId && state.sel.subjectId && hasTopic);
+        }
+
+        function generateLesson() {
+            var btn = document.getElementById('vl-generate-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Queuing...';
+            showError('vl-create-error', null);
+            IremeAPI.requestVideoLesson({
+                subjectId: state.sel.subjectId,
+                educationLevelId: state.sel.levelId,
+                topicKey: state.sel.topicKey,
+                topicName: state.sel.topicName,
+                language: state.sel.language,
+                durationMinutes: state.sel.durationMinutes,
+            }).then(function(data){
+                if (data.duplicate) {
+                    state.currentLessonId = data.lessonId;
+                    state.currentJobId = data.jobId;
+                    openProgressView(data.lessonId, data.jobId);
+                } else {
+                    state.currentLessonId = data.lessonId;
+                    state.currentJobId = data.jobId;
+                    renderQuota(data.quota);
+                    openProgressView(data.lessonId, data.jobId);
+                }
+            }).catch(function(e){
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa fa-magic"></i> <span data-i18n="video.generate">Generate Video Lesson</span>';
+                showError('vl-create-error', e.message || 'Could not queue video lesson');
+            });
+        }
+
+        function openProgressView(lessonId, jobId) {
+            state.currentLessonId = lessonId;
+            state.currentJobId = jobId;
+            switchView('progress');
+            document.getElementById('vl-progress-title').textContent = 'Generating your lesson...';
+            document.getElementById('vl-progress-sub').textContent = 'This takes a few minutes. You can close this page and come back later.';
+            document.getElementById('vl-progress-badge').textContent = 'Queued';
+            document.getElementById('vl-progress-fill').style.width = '0%';
+            updateStageDots('queued', 0);
+            showError('vl-progress-error', null);
+            pollJob();
+        }
+
+        function pollJob() {
+            if (state.pollTimer) clearInterval(state.pollTimer);
+            state.pollTimer = setInterval(function(){
+                if (!state.currentJobId) return;
+                IremeAPI.getVideoJob(state.currentJobId).then(function(data){
+                    document.getElementById('vl-progress-fill').style.width = (data.progress || 0) + '%';
+                    document.getElementById('vl-progress-badge').textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
+                    updateStageDots(data.stage, data.progress);
+                    if (data.status === 'completed') {
+                        clearInterval(state.pollTimer);
+                        state.pollTimer = null;
+                        openPlayerView(data.lessonId);
+                    } else if (data.status === 'failed') {
+                        clearInterval(state.pollTimer);
+                        state.pollTimer = null;
+                        document.getElementById('vl-progress-badge').textContent = 'Failed';
+                        showError('vl-progress-error', data.error || 'Generation failed. You can retry from your library.');
+                    } else if (data.status === 'cancelled') {
+                        clearInterval(state.pollTimer);
+                        state.pollTimer = null;
+                        document.getElementById('vl-progress-badge').textContent = 'Cancelled';
+                    }
+                }).catch(function(e){ /* keep polling */ });
+            }, 3000);
+        }
+
+        function updateStageDots(stage, progress) {
+            var stages = ['planning','narration','visuals','render','upload'];
+            var current = stages.indexOf(stage);
+            document.querySelectorAll('#vl-progress-stages .vl-stage-dot').forEach(function(dot, i){
+                dot.classList.remove('active','done','failed');
+                if (stage === 'failed' && i === stages.length - 1) dot.classList.add('failed');
+                else if (i < current) dot.classList.add('done');
+                else if (i === current) dot.classList.add('active');
+            });
+        }
+
+        function cancelJob() {
+            if (!state.currentJobId) return;
+            if (!confirm('Cancel this video generation?')) return;
+            IremeAPI.cancelVideoJob(state.currentJobId).then(function(){
+                if (state.pollTimer) clearInterval(state.pollTimer);
+                document.getElementById('vl-progress-badge').textContent = 'Cancelled';
+                switchView('create');
+            }).catch(function(e){ showError('vl-progress-error', e.message); });
+        }
+
+        function openPlayerView(lessonId) {
+            switchView('player');
+            state.quizSubmitted = false;
+            document.getElementById('vl-player-error').innerHTML = '';
+            document.getElementById('vl-quiz').innerHTML = '';
+            document.getElementById('vl-quiz-result').innerHTML = '';
+            document.getElementById('vl-quiz-submit').disabled = true;
+            IremeAPI.getVideoLesson(lessonId).then(function(lesson){
+                state.currentLesson = lesson;
+                state.currentLessonId = lesson.id;
+                document.getElementById('vl-player-title').textContent = lesson.title || lesson.topicName || 'Video Lesson';
+                document.getElementById('vl-player-sub').textContent = (lesson.topicName || '') + ' • ' + (lesson.language === 'rw' ? 'Kinyarwanda' : 'English') + ' • ' + lesson.durationMinutes + ' min';
+                var video = document.getElementById('vl-video');
+                video.src = mediaUrl(lesson.videoUrl);
+                video.innerHTML = '';
+                if (lesson.captionUrl) {
+                    var track = document.createElement('track');
+                    track.kind = 'captions';
+                    track.src = mediaUrl(lesson.captionUrl);
+                    track.srclang = lesson.language || 'en';
+                    track.label = lesson.language === 'rw' ? 'Kinyarwanda' : 'English';
+                    track.default = true;
+                    video.appendChild(track);
+                }
+                if (lesson.progress && lesson.progress.lastPositionSeconds > 5) {
+                    video.addEventListener('loadedmetadata', function resumeHandler(){
+                        video.currentTime = lesson.progress.lastPositionSeconds;
+                        video.removeEventListener('loadedmetadata', resumeHandler);
+                    });
+                }
+                renderScenes(lesson.scenes || []);
+                renderTranscript(lesson.transcript);
+                renderObjectives(lesson.objectives || []);
+                renderSources(lesson.sourceUrls || []);
+                renderQuiz(lesson.assessment || [], lesson.progress);
+                updateLibraryButton(lesson.progress);
+                startProgressTracking(lesson.id);
+            }).catch(function(e){
+                showError('vl-player-error', e.message);
+            });
+        }
+
+        function renderScenes(scenes) {
+            var el = document.getElementById('vl-scenes-list');
+            el.innerHTML = scenes.map(function(s){
+                return '<div class="vl-scene" data-time="' + s.startSeconds + '">' +
+                    '<div class="vl-scene-num">' + s.sceneNumber + '</div>' +
+                    '<div><div class="vl-scene-title">' + escapeHtml(s.title) + '</div><div class="vl-scene-time">' + formatTime(s.startSeconds) + ' • ' + Math.round(s.durationSeconds) + 's</div></div>' +
+                    '<i class="fa fa-play-circle text-primary"></i></div>';
+            }).join('');
+            el.querySelectorAll('.vl-scene').forEach(function(node){
+                node.addEventListener('click', function(){
+                    var video = document.getElementById('vl-video');
+                    video.currentTime = parseFloat(node.dataset.time);
+                    video.play();
+                    el.querySelectorAll('.vl-scene').forEach(function(n){ n.classList.remove('active'); });
+                    node.classList.add('active');
+                });
+            });
+        }
+
+        function renderTranscript(transcript) {
+            var el = document.getElementById('vl-transcript');
+            if (!transcript || !transcript.scenes || !transcript.scenes.length) { el.innerHTML = '<div class="vl-empty">No transcript available</div>'; return; }
+            el.innerHTML = transcript.scenes.map(function(s){
+                return '<div class="vl-transcript-item" data-time="' + s.startSeconds + '">' +
+                    '<div class="tt-time">' + formatTime(s.startSeconds) + '</div>' +
+                    '<div class="tt-text">' + escapeHtml(s.narration) + '</div></div>';
+            }).join('');
+            el.querySelectorAll('.vl-transcript-item').forEach(function(node){
+                node.addEventListener('click', function(){
+                    var video = document.getElementById('vl-video');
+                    video.currentTime = parseFloat(node.dataset.time);
+                    video.play();
+                    el.querySelectorAll('.vl-transcript-item').forEach(function(n){ n.classList.remove('active'); });
+                    node.classList.add('active');
+                });
+            });
+        }
+
+        function renderObjectives(objectives) {
+            var el = document.getElementById('vl-objectives');
+            el.innerHTML = objectives.map(function(o){ return '<li>' + escapeHtml(o) + '</li>'; }).join('');
+        }
+
+        function renderSources(sources) {
+            var el = document.getElementById('vl-sources');
+            if (!sources.length) { el.innerHTML = '<li>No specific sources cited for this lesson.</li>'; return; }
+            el.innerHTML = sources.map(function(s){
+                return '<li>' + (s.url ? '<a href="' + escapeHtml(s.url) + '" target="_blank" rel="noopener">' + escapeHtml(s.title || s.url) + '</a>' : escapeHtml(s.title || '')) + '</li>';
+            }).join('');
+        }
+
+        function renderQuiz(questions, progress) {
+            var el = document.getElementById('vl-quiz');
+            if (!questions.length) { el.innerHTML = '<div class="vl-empty">No knowledge check for this lesson.</div>'; return; }
+            el.innerHTML = questions.map(function(q, i){
+                var opts = (q.options || []).map(function(opt, j){
+                    return '<label class="vl-quiz-opt" data-q="' + i + '" data-opt="' + j + '">' +
+                        '<input type="radio" name="q' + i + '" value="' + j + '"> ' + escapeHtml(opt) + '</label>';
+                }).join('');
+                return '<div class="vl-quiz-q"><h5>Question ' + (i + 1) + '</h5><p style="font-size:12px;color:var(--id);margin:0 0 10px">' + escapeHtml(q.questionText) + '</p>' + opts + '</div>';
+            }).join('');
+            el.querySelectorAll('.vl-quiz-opt').forEach(function(node){
+                node.addEventListener('click', function(){
+                    if (state.quizSubmitted) return;
+                    var radio = node.querySelector('input');
+                    radio.checked = true;
+                    node.parentElement.querySelectorAll('.vl-quiz-opt').forEach(function(n){ n.style.borderColor = ''; });
+                    node.style.borderColor = 'var(--ip)';
+                    checkQuizReady();
+                });
+            });
+            if (progress && progress.quizCompletedAt) {
+                state.quizSubmitted = true;
+                document.getElementById('vl-quiz-submit').style.display = 'none';
+                el.innerHTML = '<div class="vl-badge vl-badge-completed" style="padding:10px 16px"><i class="fa fa-check"></i> Quiz completed: ' + progress.quizScore + '/' + progress.quizTotal + '</div>';
+            }
+        }
+
+        function checkQuizReady() {
+            var qs = state.currentLesson.assessment || [];
+            var allAnswered = qs.every(function(_, i){ return document.querySelector('input[name="q' + i + '"]:checked'); });
+            document.getElementById('vl-quiz-submit').disabled = !allAnswered;
+        }
+
+        function submitQuiz() {
+            var qs = state.currentLesson.assessment || [];
+            var answers = qs.map(function(_, i){
+                var checked = document.querySelector('input[name="q' + i + '"]:checked');
+                return checked ? parseInt(checked.value, 10) : -1;
+            });
+            IremeAPI.submitVideoQuiz(state.currentLessonId, answers).then(function(data){
+                state.quizSubmitted = true;
+                document.getElementById('vl-quiz-submit').style.display = 'none';
+                qs.forEach(function(q, i){
+                    var opts = document.querySelectorAll('.vl-quiz-opt[data-q="' + i + '"]');
+                    opts.forEach(function(opt){
+                        var j = parseInt(opt.dataset.opt, 10);
+                        opt.style.pointerEvents = 'none';
+                        if (j === data.results[i].correctIndex) opt.classList.add('correct');
+                        else if (answers[i] === j && !data.results[i].correct) opt.classList.add('incorrect');
+                        var existing = opt.querySelector('.explanation');
+                        if (!existing && data.results[i].explanation) {
+                            var exp = document.createElement('div');
+                            exp.className = 'explanation';
+                            exp.innerHTML = '<strong>' + (data.results[i].correct ? 'Correct!' : 'Not quite.') + '</strong> ' + escapeHtml(data.results[i].explanation);
+                            opt.appendChild(exp);
+                        }
+                    });
+                });
+                var res = document.getElementById('vl-quiz-result');
+                res.innerHTML = '<div class="vl-badge vl-badge-completed" style="padding:12px 20px;font-size:12px"><i class="fa fa-trophy"></i> Score: ' + data.score + '/' + data.total + '</div>';
+            }).catch(function(e){ showError('vl-player-error', e.message); });
+        }
+
+        function startProgressTracking(lessonId) {
+            if (state.progressTimer) clearInterval(state.progressTimer);
+            var video = document.getElementById('vl-video');
+            var lastSave = 0;
+            var save = function(){
+                var now = Date.now();
+                if (now - lastSave < 10000) return;
+                lastSave = now;
+                var dur = video.duration || 0;
+                if (dur <= 0) return;
+                var pct = Math.min(100, Math.round((video.currentTime / dur) * 100));
+                IremeAPI.saveVideoProgress(lessonId, {
+                    lastPositionSeconds: video.currentTime,
+                    watchedSeconds: Math.max(0, video.currentTime),
+                    completionPercent: pct,
+                }).catch(function(){});
+            };
+            video.addEventListener('timeupdate', save);
+            video.addEventListener('pause', save);
+            window.addEventListener('beforeunload', save);
+            state.progressTimer = setInterval(save, 10000);
+        }
+
+        function updateLibraryButton(progress) {
+            var btn = document.getElementById('vl-library-toggle');
+            var saved = progress && progress.savedToLibrary;
+            btn.innerHTML = '<i class="fa fa-bookmark"></i> ' + (saved ? 'Saved' : 'Save');
+            btn.onclick = function(){
+                IremeAPI.toggleVideoLibrary(state.currentLessonId).then(function(data){
+                    btn.innerHTML = '<i class="fa fa-bookmark"></i> ' + (data.savedToLibrary ? 'Saved' : 'Save');
+                }).catch(function(e){ showError('vl-player-error', e.message); });
+            };
+        }
+
+        function loadLibrary() {
+            var el = document.getElementById('vl-library-list');
+            el.innerHTML = '<div class="vl-empty"><i class="fa fa-spinner fa-spin"></i> Loading...</div>';
+            IremeAPI.getVideoLessons().then(function(data){
+                renderQuota(data.quota);
+                var lessons = data.lessons || [];
+                document.getElementById('vl-lib-count').textContent = lessons.length;
+                document.getElementById('vl-lib-count').style.display = lessons.length ? 'inline' : 'none';
+                if (!lessons.length) {
+                    el.innerHTML = '<div class="vl-empty"><i class="fa fa-video"></i><p>No video lessons yet.</p><p style="font-size:10px">Create your first lesson from the Create tab.</p></div>';
+                    return;
+                }
+                var continueWatching = lessons.find(function(l){ return l.status === 'completed' && l.progress && l.progress.completionPercent > 5 && l.progress.completionPercent < 95; });
+                var html = '';
+                if (continueWatching) {
+                    html += '<div class="vl-card"><h4 style="font-size:14px;margin:0 0 10px;color:var(--id)"><i class="fa fa-play-circle text-primary"></i> Continue Watching</h4>' +
+                        renderLibraryItem(continueWatching, true) + '</div>';
+                }
+                html += '<div class="vl-card"><h4 style="font-size:14px;margin:0 0 10px;color:var(--id)">All Lessons</h4>';
+                lessons.forEach(function(l){
+                    if (continueWatching && l.id === continueWatching.id) return;
+                    html += renderLibraryItem(l, false);
+                });
+                html += '</div>';
+                el.innerHTML = html;
+                bindLibraryEvents();
+            }).catch(function(e){
+                el.innerHTML = '<div class="vl-empty"><i class="fa fa-exclamation-triangle"></i><p>' + escapeHtml(e.message) + '</p></div>';
+            });
+        }
+
+        function renderLibraryItem(lesson, highlight) {
+            var statusBadge = '';
+            if (lesson.status === 'completed') statusBadge = '<span class="vl-badge vl-badge-completed">Ready</span>';
+            else if (lesson.status === 'failed') statusBadge = '<span class="vl-badge vl-badge-failed">Failed</span>';
+            else if (lesson.status === 'generating') statusBadge = '<span class="vl-badge vl-badge-status">Generating ' + (lesson.jobProgress || 0) + '%</span>';
+            else if (lesson.status === 'cancelled') statusBadge = '<span class="vl-badge">Cancelled</span>';
+            else statusBadge = '<span class="vl-badge vl-badge-status">' + lesson.status + '</span>';
+            var meta = (lesson.topicName || '') + ' • ' + (lesson.language === 'rw' ? 'Kinyarwanda' : 'English') + ' • ' + lesson.durationMinutes + ' min';
+            if (lesson.progress && lesson.progress.completionPercent) meta += ' • ' + lesson.progress.completionPercent + '% watched';
+            return '<div class="vl-lib-item" data-lesson="' + lesson.id + '" data-status="' + lesson.status + '" style="' + (highlight ? 'border-color:var(--ip);background:#f5f9ff' : '') + '">' +
+                '<div class="vl-lib-thumb"><i class="fa fa-' + (lesson.status === 'completed' ? 'play-circle' : lesson.status === 'failed' ? 'exclamation-circle' : 'spinner fa-spin') + '"></i></div>' +
+                '<div><div class="vl-lib-title">' + escapeHtml(lesson.title || lesson.topicName || 'Untitled') + '</div><div class="vl-lib-meta">' + meta + '</div></div>' +
+                '<div class="vl-lib-actions">' + statusBadge + '</div></div>';
+        }
+
+        function bindLibraryEvents() {
+            document.querySelectorAll('.vl-lib-item').forEach(function(node){
+                node.addEventListener('click', function(e){
+                    if (e.target.closest('.vl-btn')) return;
+                    var id = node.dataset.lesson;
+                    var status = node.dataset.status;
+                    if (status === 'completed') openPlayerView(id);
+                    else if (status === 'generating' || status === 'queued' || status === 'processing') {
+                        IremeAPI.getVideoLesson(id).then(function(lesson){
+                            if (lesson.jobId) { state.currentLessonId = id; state.currentJobId = lesson.jobId; openProgressView(id, lesson.jobId); }
+                        });
+                    } else if (status === 'failed') {
+                        IremeAPI.getVideoLesson(id).then(function(lesson){
+                            if (lesson.jobId && confirm('Retry this failed generation?')) {
+                                IremeAPI.retryVideoJob(lesson.jobId).then(function(){ loadLibrary(); });
+                            }
+                        });
+                    }
+                });
+            });
+        }
+
+        function escapeHtml(s) {
+            return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        function formatTime(sec) {
+            var s = Math.max(0, Math.floor(sec || 0));
+            var m = Math.floor(s / 60);
+            return m + ':' + String(s % 60).padStart(2, '0');
+        }
+
+        document.addEventListener('DOMContentLoaded', function(){
+            document.getElementById('vl-navbar').innerHTML = IremeComponents.renderNavbar('video-lessons.html');
+
+            state.dropdowns.level = IremeDropdown.create(document.getElementById('vl-level-dropdown'), {
+                placeholder: 'Select level...', searchPlaceholder: 'Search levels...', maxHeight: '240px',
+                emptyText: 'No levels available', items: [],
+                onChange: function(value){ selectLevel(value); }
+            });
+            state.dropdowns.subject = IremeDropdown.create(document.getElementById('vl-subject-dropdown'), {
+                placeholder: 'Select subject...', searchPlaceholder: 'Search subjects...', maxHeight: '240px',
+                emptyText: 'Select a level first', loadingText: 'Loading subjects...', items: [],
+                onChange: function(value, item){ selectSubject(value); }
+            });
+            state.dropdowns.topic = IremeDropdown.create(document.getElementById('vl-topic-dropdown'), {
+                placeholder: 'Select topic...', searchPlaceholder: 'Search topics...', maxHeight: '220px',
+                emptyText: 'No topics available', items: [{ value: 'custom', label: 'Type a custom topic', sublabel: 'Enter any topic', icon: 'fa-keyboard' }],
+                onChange: function(value, item){ selectTopic(value, item); }
+            });
+
+            document.getElementById('vl-language-row').querySelectorAll('.vl-chip').forEach(function(btn){
+                btn.addEventListener('click', function(){
+                    document.querySelectorAll('#vl-language-row .vl-chip').forEach(function(b){ b.classList.remove('active'); });
+                    btn.classList.add('active');
+                    state.sel.language = btn.dataset.lang;
+                });
+            });
+            document.getElementById('vl-duration-row').querySelectorAll('.vl-chip').forEach(function(btn){
+                btn.addEventListener('click', function(){
+                    document.querySelectorAll('#vl-duration-row .vl-chip').forEach(function(b){ b.classList.remove('active'); });
+                    btn.classList.add('active');
+                    state.sel.durationMinutes = parseInt(btn.dataset.min, 10);
+                });
+            });
+            document.getElementById('vl-use-custom-topic').addEventListener('change', function(){
+                if (this.checked) {
+                    document.getElementById('vl-custom-topic').style.display = 'block';
+                    state.dropdowns.topic.setValue('custom');
+                } else {
+                    document.getElementById('vl-custom-topic').style.display = 'none';
+                    state.sel.topicName = null;
+                    updateGenerateState();
+                }
+            });
+            document.getElementById('vl-custom-topic').addEventListener('input', function(){
+                state.sel.topicName = this.value.trim();
+                updateGenerateState();
+            });
+
+            document.getElementById('vl-generate-btn').addEventListener('click', generateLesson);
+            document.getElementById('vl-cancel-btn').addEventListener('click', cancelJob);
+            document.getElementById('vl-back-create-btn').addEventListener('click', function(){ switchView('create'); });
+            document.getElementById('vl-player-back-btn').addEventListener('click', function(){ switchView('library'); loadLibrary(); });
+            document.getElementById('vl-quiz-submit').addEventListener('click', submitQuiz);
+
+            document.querySelectorAll('#vl-tabs .vl-tab').forEach(function(btn){
+                btn.addEventListener('click', function(){
+                    var v = btn.dataset.view;
+                    switchView(v);
+                    if (v === 'library') loadLibrary();
+                });
+            });
+
+            var urlParams = new URLSearchParams(window.location.search);
+            var lessonId = urlParams.get('lesson');
+            if (lessonId) {
+                openPlayerView(lessonId);
+            } else {
+                loadCurriculum();
+            }
+        });
+    </script>
+</body>
+</html>

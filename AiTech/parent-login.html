@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>IREME - Parent Login</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="img/ireme-icon.png" rel="icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div id="component-spinner"></div>
+    <div id="component-navbar"></div>
+
+    <div class="container-fluid pt-5 bg-primary hero-header">
+        <div class="container pt-5">
+            <div class="row g-5 pt-5">
+                <div class="col-lg-8 align-self-center text-center text-lg-start mb-lg-5">
+                    <h1 class="display-4 text-white mb-3 animated slideInRight" data-i18n="auth.parentPortal">Parent/Guardian Portal</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center justify-content-lg-start mb-0">
+                            <li class="breadcrumb-item"><a class="text-white" href="index.html" data-i18n="breadcrumb.home">Home</a></li>
+                            <li class="breadcrumb-item"><a class="text-white" href="login.html" data-i18n="auth.login">Log In</a></li>
+                            <li class="breadcrumb-item text-white active" data-i18n="auth.role.parent">Parent/Guardian</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-5">
+                    <div class="wow fadeIn" data-wow-delay="0.1s">
+                        <div class="bg-light rounded p-4 p-lg-5">
+                            <div class="text-center mb-4">
+                                <div class="service-icon btn-square rounded-circle mb-3 mx-auto"><i class="fa fa-users fa-lg"></i></div>
+                                <h4 class="mb-1" data-i18n="auth.parentPortal">Parent/Guardian Portal</h4>
+                                <p class="text-muted small" data-i18n="auth.parentDesc">Monitor your child's academic progress and school activities.</p>
+                            </div>
+                            <div id="login-alert" class="alert d-none" role="alert"></div>
+                            <form id="parent-login-form">
+                                <div class="mb-3">
+                                    <label class="form-label" data-i18n="auth.email">Email Address</label>
+                                    <input type="email" class="form-control" id="login-email" required data-i18n="auth.email">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" data-i18n="auth.password">Password</label>
+                                    <input type="password" class="form-control" id="login-password" required data-i18n="auth.password">
+                                </div>
+                                <div class="d-flex justify-content-between mb-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="remember-me">
+                                        <label class="form-check-label small" for="remember-me">Remember me</label>
+                                    </div>
+                                    <a href="forgot-password.html" class="small text-decoration-none" data-i18n="auth.forgotPassword">Forgot Password?</a>
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary rounded-pill py-2" data-i18n="auth.login">Log In</button>
+                                </div>
+                            </form>
+
+                            <div class="my-3">
+                                <div class="position-relative text-center my-4">
+                                    <hr class="border-top">
+                                    <span class="bg-light px-2 position-absolute top-50 start-50 translate-middle text-muted small">OR</span>
+                                </div>
+                                <a href="#" id="google-login-btn" class="btn btn-outline-danger rounded-pill py-2 w-100 d-flex align-items-center justify-content-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="me-2" viewBox="0 0 16 16">
+                                        <path d="M15.545 6.558a9.42 9.42 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0a7.689 7.689 0 0 1 5.352 2.082l-2.284 2.284A4.347 4.347 0 0 0 8 3.166c-2.087 0-3.86 1.408-4.492 3.304a4.792 4.792 0 0 0 0 3.063h.003c.635 1.893 2.405 3.301 4.49 3.301 1.078 0 2.004-.276 2.722-.764h-.003a3.702 3.702 0 0 0 1.599-2.431H8v-3.08h7.545z"/>
+                                    </svg>
+                                    <span data-i18n="auth.continueWithGoogle">Continue with Google</span>
+                                </a>
+                            </div>
+
+                            <hr class="my-4">
+                            <p class="text-center text-muted small mb-0">
+                                <span data-i18n="auth.noAccount">Don't have an account?</span>
+                                <a href="register.html" class="text-decoration-none" data-i18n="auth.registerHere">Register here</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="component-footer"></div>
+    <div id="component-backtotop"></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/api-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        IremeComponents.initPage('parent-login.html');
+        if (IremeAuth.isLoggedIn() && IremeAuth.hasRole('parent')) { window.location.href = 'parent-dashboard.html'; }
+        document.getElementById('parent-login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var email = document.getElementById('login-email').value.trim();
+            var password = document.getElementById('login-password').value;
+            var alertEl = document.getElementById('login-alert');
+            var submitBtn = this.querySelector('button[type="submit"]');
+
+            function setLoading(loading) {
+                if (submitBtn) {
+                    submitBtn.disabled = loading;
+                    if (loading) {
+                        submitBtn.dataset.originalHtml = submitBtn.innerHTML;
+                        submitBtn.textContent = 'Signing in...';
+                    } else if (submitBtn.dataset.originalHtml) {
+                        submitBtn.innerHTML = submitBtn.dataset.originalHtml;
+                    }
+                }
+            }
+
+            alertEl.classList.add('d-none');
+            setLoading(true);
+
+            IremeAuth.login(email, password).then(function(result) {
+                if (result.success) {
+                    if (!IremeAuth.hasRole('parent')) {
+                        IremeAuth.logout();
+                        setLoading(false);
+                        alertEl.className = 'alert alert-danger';
+                        alertEl.textContent = 'This account does not have parent access.';
+                        alertEl.classList.remove('d-none');
+                        return;
+                    }
+                    alertEl.className = 'alert alert-success';
+                    alertEl.textContent = 'Login successful! Redirecting...';
+                    alertEl.classList.remove('d-none');
+                    setTimeout(function() { window.location.href = 'parent-dashboard.html'; }, 800);
+                } else {
+                    setLoading(false);
+                    alertEl.className = 'alert alert-danger';
+                    if (result.error === 'pending') {
+                        window.location.href = 'account-pending.html';
+                    } else if (result.error === 'suspended') {
+                        window.location.href = 'account-suspended.html';
+                    } else {
+                        alertEl.textContent = result.error;
+                        alertEl.classList.remove('d-none');
+                    }
+                }
+            });
+        });
+
+        document.getElementById('google-login-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (typeof IremeAPI === 'undefined') return;
+            window.location.href = IremeAPI.googleLoginUrl('PARENT');
+        });
+    </script>
+</body>
+</html>

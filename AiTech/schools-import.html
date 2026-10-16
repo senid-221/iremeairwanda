@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>IREME - Import School Data</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="IREME Schools Import, Rwanda Schools Data, Import Schools Rwanda" name="keywords">
+    <meta content="Import additional school records into the IREME directory. Upload CSV, Excel, or JSON files to expand the Rwanda schools database." name="description">
+
+    <!-- Favicon -->
+    <link href="img/ireme-icon.png" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div id="component-spinner"></div>
+    <div id="component-navbar"></div>
+
+    <!-- Hero Start -->
+    <div class="container-fluid pt-5 bg-primary hero-header">
+        <div class="container pt-5">
+            <div class="row g-5 pt-5">
+                <div class="col-lg-6 align-self-center text-center text-lg-start mb-lg-5">
+                    <h1 class="display-4 text-white mb-4 animated slideInRight" data-i18n="import.title">Import School Data</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center justify-content-lg-start mb-0">
+                            <li class="breadcrumb-item"><a class="text-white" href="index.html" data-i18n="breadcrumb.home">Home</a></li>
+                            <li class="breadcrumb-item"><a class="text-white" href="schools.html" data-i18n="schools.title">Schools</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page" data-i18n="import.title">Import Data</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 align-self-end text-center text-lg-end">
+                    <img class="img-fluid" src="img/hero-img.png" alt="" style="max-height: 300px;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Hero End -->
+
+    <!-- Current Status Section Start -->
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <h3 class="mb-4 wow fadeIn" data-wow-delay="0.1s" data-i18n="import.currentStatus">Current Import Status</h3>
+            <div class="row g-4 mb-5">
+                <div class="col-md-3 wow fadeIn" data-wow-delay="0.1s">
+                    <div class="service-item rounded text-center p-4">
+                        <i class="fa fa-school fa-2x text-primary mb-3"></i>
+                        <h3 class="fw-bold">1,405</h3>
+                        <p class="text-muted small mb-0" data-i18n="import.totalSchools">Total Schools in Directory</p>
+                    </div>
+                </div>
+                <div class="col-md-3 wow fadeIn" data-wow-delay="0.2s">
+                    <div class="service-item rounded text-center p-4">
+                        <i class="fa fa-database fa-2x text-info mb-3"></i>
+                        <h3 class="fw-bold">OpenStreetMap</h3>
+                        <p class="text-muted small mb-0"><span data-i18n="import.dataSource">Data Source</span> (2026-10-07)</p>
+                    </div>
+                </div>
+                <div class="col-md-3 wow fadeIn" data-wow-delay="0.3s">
+                    <div class="service-item rounded text-center p-4">
+                        <i class="fa fa-calendar-check fa-2x text-success mb-3"></i>
+                        <h3 class="fw-bold">2026-10-07</h3>
+                        <p class="text-muted small mb-0" data-i18n="import.lastImport">Last Import</p>
+                    </div>
+                </div>
+                <div class="col-md-3 wow fadeIn" data-wow-delay="0.4s">
+                    <div class="service-item rounded text-center p-4">
+                        <i class="fa fa-file-code fa-2x text-warning mb-3"></i>
+                        <h3 class="fw-bold">OSM GeoJSON</h3>
+                        <p class="text-muted small mb-0" data-i18n="import.importMethod">Import Method</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Import New Data Section Start -->
+            <h3 class="mb-4 wow fadeIn" data-wow-delay="0.1s" data-i18n="import.importNewData">Import New Data</h3>
+
+            <!-- File Upload Area -->
+            <div class="row g-4 mb-5">
+                <div class="col-12 wow fadeIn" data-wow-delay="0.1s">
+                    <div class="bg-light rounded p-4 border border-dashed text-center" id="upload-area" style="border: 2px dashed #00B98B !important; min-height: 200px; cursor: pointer;">
+                        <i class="fa fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
+                        <h5 class="mb-2" data-i18n="import.dragDropTitle">Drag & Drop your file here</h5>
+                        <p class="text-muted small mb-2">
+                            <span data-i18n="import.supportedFormats">Supported formats: CSV, Excel (.xlsx), JSON</span>
+                        </p>
+                        <p class="text-muted small mb-3">
+                            <span data-i18n="import.fileSizeLimit">File size limit: 10MB</span>
+                        </p>
+                        <button type="button" class="btn btn-primary rounded-pill px-4 py-2" id="browse-btn" data-i18n="import.browseFiles">
+                            <i class="fa fa-folder-open me-2"></i>Browse Files
+                        </button>
+                        <input type="file" id="file-input" class="d-none" accept=".csv,.xlsx,.json">
+                        <div id="file-info" class="mt-3 d-none">
+                            <p class="mb-0 small text-success"><i class="fa fa-check-circle me-1"></i><span id="file-name"></span> (<span id="file-size"></span>)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Import Settings -->
+            <div class="row g-4 mb-5 wow fadeIn" data-wow-delay="0.15s">
+                <div class="col-12">
+                    <h5 class="mb-3" data-i18n="import.importSettings">Import Settings</h5>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="source-name" placeholder="Data source name">
+                        <label for="source-name" data-i18n="import.sourceName">Data Source Name</label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-floating">
+                        <select class="form-select py-3" id="source-type">
+                            <option value="" data-i18n="import.selectType">-- Select Type --</option>
+                            <option value="MINEDUC">MINEDUC</option>
+                            <option value="REB">REB</option>
+                            <option value="NESA">NESA</option>
+                            <option value="other-official" data-i18n="import.otherOfficial">Other Official</option>
+                            <option value="other" data-i18n="import.other">Other</option>
+                        </select>
+                        <label for="source-type" data-i18n="import.sourceType">Data Source Type</label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-floating">
+                        <select class="form-select py-3" id="import-mode">
+                            <option value="add" data-i18n="import.addOnly">Add new only</option>
+                            <option value="update" data-i18n="import.updateOnly">Update existing</option>
+                            <option value="add-update" data-i18n="import.addAndUpdate">Add and update</option>
+                        </select>
+                        <label for="import-mode" data-i18n="import.importMode">Import Mode</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="row g-3 mb-5 wow fadeIn" data-wow-delay="0.2s">
+                <div class="col-auto">
+                    <button type="button" class="btn btn-outline-primary rounded-pill px-4 py-2" id="validate-btn" disabled data-i18n="import.validateFile">
+                        <i class="fa fa-check-circle me-2"></i>Validate File
+                    </button>
+                </div>
+                <div class="col-auto">
+                    <button type="button" class="btn btn-primary rounded-pill px-4 py-2" id="import-btn" disabled data-i18n="import.importData">
+                        <i class="fa fa-upload me-2"></i>Import Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- File Validation Preview Section (initially hidden) -->
+            <div id="validation-section" class="d-none">
+                <h4 class="mb-4 wow fadeIn" data-wow-delay="0.1s" data-i18n="import.validationPreview">File Validation Preview</h4>
+
+                <!-- Validation Summary -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-4">
+                        <div class="service-item rounded text-center p-4">
+                            <i class="fa fa-list-ol fa-2x text-primary mb-3"></i>
+                            <h3 class="fw-bold" id="val-records">0</h3>
+                            <p class="text-muted small mb-0" data-i18n="import.recordsFound">Records Found</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="service-item rounded text-center p-4">
+                            <i class="fa fa-check fa-2x text-success mb-3"></i>
+                            <h3 class="fw-bold" id="val-valid">0</h3>
+                            <p class="text-muted small mb-0" data-i18n="import.valid">Valid</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="service-item rounded text-center p-4">
+                            <i class="fa fa-exclamation-triangle fa-2x text-danger mb-3"></i>
+                            <h3 class="fw-bold" id="val-errors">0</h3>
+                            <p class="text-muted small mb-0" data-i18n="import.errors">With Errors</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview Table -->
+                <div class="bg-light rounded p-4 mb-4">
+                    <h5 class="mb-3" data-i18n="import.previewTable">Data Preview (first 10 rows)</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped" id="preview-table">
+                            <thead>
+                                <tr id="preview-header">
+                                    <!-- Dynamically populated -->
+                                </tr>
+                            </thead>
+                            <tbody id="preview-body">
+                                <!-- Dynamically populated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Column Mapping -->
+                <div class="bg-light rounded p-4 mb-4" id="column-mapping-section">
+                    <h5 class="mb-3" data-i18n="import.columnMapping">Column Mapping</h5>
+                    <p class="text-muted small mb-3" data-i18n="import.columnMappingDesc">Map your file columns to the corresponding school fields:</p>
+                    <div class="row g-3" id="column-mapping-fields">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+
+                <!-- Duplicate Detection -->
+                <div class="bg-light rounded p-4 mb-4">
+                    <h5 class="mb-3" data-i18n="import.duplicates">Duplicate Detection</h5>
+                    <p class="mb-0">
+                        <span class="badge bg-warning text-dark me-2" id="val-duplicates">0</span>
+                        <span data-i18n="import.duplicatesFound">potential duplicates found</span>
+                    </p>
+                </div>
+
+                <!-- Location Validation -->
+                <div class="bg-light rounded p-4 mb-4">
+                    <h5 class="mb-3" data-i18n="import.locationValidation">Location Validation</h5>
+                    <p class="mb-0">
+                        <span class="badge bg-success me-2" id="val-locations">0</span>
+                        <span data-i18n="import.validLocations">records with valid province/district/sector</span>
+                    </p>
+                </div>
+
+                <!-- Error List -->
+                <div class="bg-light rounded p-4 mb-4" id="error-list-section">
+                    <h5 class="mb-3" data-i18n="import.errorList">Validation Errors</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-danger" id="error-table">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="import.row">Row</th>
+                                    <th data-i18n="import.field">Field</th>
+                                    <th data-i18n="import.errorMessage">Error</th>
+                                </tr>
+                            </thead>
+                            <tbody id="error-body">
+                                <!-- Dynamically populated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Import Log Section -->
+            <h3 class="mb-4 mt-5 wow fadeIn" data-wow-delay="0.1s" data-i18n="import.importLog">Import Log</h3>
+            <div class="bg-light rounded p-4 mb-4 wow fadeIn" data-wow-delay="0.15s">
+                <div class="table-responsive">
+                    <table class="table table-striped" id="import-log-table">
+                        <thead>
+                            <tr>
+                                <th data-i18n="import.date">Date</th>
+                                <th data-i18n="import.source">Source</th>
+                                <th data-i18n="import.recordsImported">Records Imported</th>
+                                <th data-i18n="import.status">Status</th>
+                                <th data-i18n="import.importedBy">Imported By</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2026-10-07</td>
+                                <td>OpenStreetMap</td>
+                                <td>1,405</td>
+                                <td><span class="badge bg-success">Success</span></td>
+                                <td>System</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" class="btn btn-outline-primary rounded-pill px-4 py-2" id="download-log-btn" data-i18n="import.downloadLog">
+                    <i class="fa fa-download me-2"></i>Download Import Log
+                </button>
+            </div>
+
+            <!-- Data Quality Section -->
+            <h3 class="mb-4 mt-5 wow fadeIn" data-wow-delay="0.1s" data-i18n="import.dataQuality">Data Quality</h3>
+            <div class="row g-4 mb-4">
+                <div class="col-md-4 wow fadeIn" data-wow-delay="0.1s">
+                    <div class="service-item rounded text-center p-4">
+                        <i class="fa fa-map-marker-alt fa-2x text-primary mb-3"></i>
+                        <h3 class="fw-bold" id="quality-location">0%</h3>
+                        <p class="text-muted small mb-0" data-i18n="import.completeLocation">Schools with Complete Location</p>
+                    </div>
+                </div>
+                <div class="col-md-4 wow fadeIn" data-wow-delay="0.2s">
+                    <div class="service-item rounded text-center p-4">
+                        <i class="fa fa-crosshairs fa-2x text-info mb-3"></i>
+                        <h3 class="fw-bold" id="quality-gps">0%</h3>
+                        <p class="text-muted small mb-0" data-i18n="import.gpsCoverage">Schools with GPS Coordinates</p>
+                    </div>
+                </div>
+                <div class="col-md-4 wow fadeIn" data-wow-delay="0.3s">
+                    <div class="service-item rounded text-center p-4">
+                        <i class="fa fa-tag fa-2x text-success mb-3"></i>
+                        <h3 class="fw-bold" id="quality-named">0%</h3>
+                        <p class="text-muted small mb-0" data-i18n="import.namedSchools">Schools with Names</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Missing Data Report -->
+            <div class="bg-light rounded p-4 mb-4 wow fadeIn" data-wow-delay="0.15s">
+                <h5 class="mb-3" data-i18n="import.missingData">Missing Data Report</h5>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="border rounded p-3">
+                            <p class="text-muted small mb-1" data-i18n="import.missingName">Schools Missing Name</p>
+                            <h4 class="fw-bold text-danger mb-0" id="missing-name">867</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border rounded p-3">
+                            <p class="text-muted small mb-1" data-i18n="import.missingGPS">Schools Missing GPS</p>
+                            <h4 class="fw-bold text-warning mb-0" id="missing-gps">0</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border rounded p-3">
+                            <p class="text-muted small mb-1" data-i18n="import.missingSector">Schools Missing Sector</p>
+                            <h4 class="fw-bold text-success mb-0" id="missing-sector">0</h4>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-outline-primary rounded-pill px-4 py-2 mt-3" id="export-report-btn" data-i18n="import.exportReport">
+                    <i class="fa fa-file-export me-2"></i>Export Quality Report
+                </button>
+            </div>
+
+            <!-- Admin Tools Section -->
+            <h3 class="mb-4 mt-5 wow fadeIn" data-wow-delay="0.1s" data-i18n="import.adminTools">Admin Tools</h3>
+            <div class="row g-3 mb-5 wow fadeIn" data-wow-delay="0.15s">
+                <div class="col-md-6 col-lg-4">
+                    <div class="service-item rounded p-4 h-100">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="service-icon btn-square me-3"><i class="fa fa-compress-arrows-alt fa-lg"></i></div>
+                            <h6 class="mb-0" data-i18n="import.reconcileDuplicates">Reconcile Duplicates</h6>
+                        </div>
+                        <p class="text-muted small mb-3" data-i18n="import.reconcileDesc">Review and merge duplicate school entries</p>
+                        <button type="button" class="btn btn-outline-primary rounded-pill px-4 py-2 btn-sm" id="reconcile-btn" data-i18n="import.reconcileDuplicates">
+                            <i class="fa fa-compress-arrows-alt me-1"></i>Reconcile Duplicates
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="service-item rounded p-4 h-100">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="service-icon btn-square me-3"><i class="fa fa-sync-alt fa-lg"></i></div>
+                            <h6 class="mb-0" data-i18n="import.updateFromSource">Update from Official Source</h6>
+                        </div>
+                        <p class="text-muted small mb-3" data-i18n="import.updateDesc">Pull latest data from MINEDUC, REB, or NESA</p>
+                        <button type="button" class="btn btn-outline-primary rounded-pill px-4 py-2 btn-sm" id="update-source-btn" data-i18n="import.updateFromSource">
+                            <i class="fa fa-sync-alt me-1"></i>Update from Official Source
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="service-item rounded p-4 h-100">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="service-icon btn-square me-3"><i class="fa fa-file-csv fa-lg"></i></div>
+                            <h6 class="mb-0" data-i18n="import.exportCSV">Export All Schools (CSV)</h6>
+                        </div>
+                        <p class="text-muted small mb-3" data-i18n="import.exportCSVDesc">Download complete school directory as CSV</p>
+                        <button type="button" class="btn btn-outline-primary rounded-pill px-4 py-2 btn-sm" id="export-csv-btn" data-i18n="import.exportCSV">
+                            <i class="fa fa-file-csv me-1"></i>Export CSV
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="service-item rounded p-4 h-100">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="service-icon btn-square me-3"><i class="fa fa-file-code fa-lg"></i></div>
+                            <h6 class="mb-0" data-i18n="import.exportJSON">Export All Schools (JSON)</h6>
+                        </div>
+                        <p class="text-muted small mb-3" data-i18n="import.exportJSONDesc">Download complete school directory as JSON</p>
+                        <button type="button" class="btn btn-outline-primary rounded-pill px-4 py-2 btn-sm" id="export-json-btn" data-i18n="import.exportJSON">
+                            <i class="fa fa-file-code me-1"></i>Export JSON
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="service-item rounded p-4 h-100 border-danger">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="service-icon btn-square btn-danger me-3"><i class="fa fa-undo fa-lg"></i></div>
+                            <h6 class="mb-0 text-danger" data-i18n="import.resetToOSM">Reset to OSM Data</h6>
+                        </div>
+                        <p class="text-muted small mb-3" data-i18n="import.resetDesc">Revert directory to original OpenStreetMap snapshot</p>
+                        <button type="button" class="btn btn-outline-danger rounded-pill px-4 py-2 btn-sm" id="reset-osm-btn" data-i18n="import.resetToOSM">
+                            <i class="fa fa-undo me-1"></i>Reset to OSM Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes Section -->
+            <div class="bg-light rounded p-4 wow fadeIn" data-wow-delay="0.1s">
+                <h5 class="mb-3" data-i18n="import.notes">Notes</h5>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="fa fa-info-circle text-primary me-2"></i>
+                        <span class="small" data-i18n="import.validatedAgainst">Imported data is validated against Rwanda's official administrative hierarchy (5 provinces, 30 districts, 416 sectors, 2,149 cells, 14,837 villages).</span>
+                    </li>
+                    <li class="mb-2">
+                        <i class="fa fa-info-circle text-primary me-2"></i>
+                        <span class="small" data-i18n="import.duplicateDetection">Duplicate detection uses school name, location, and official code where available.</span>
+                    </li>
+                    <li class="mb-2">
+                        <i class="fa fa-info-circle text-primary me-2"></i>
+                        <span class="small" data-i18n="import.importsLogged">All imports are logged with timestamps and source references.</span>
+                    </li>
+                    <li class="mb-0">
+                        <i class="fa fa-exclamation-triangle text-warning me-2"></i>
+                        <span class="small text-muted" data-i18n="import.frontendOnly">This is a frontend interface. Actual data import requires backend processing with database access.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- Current Status Section End -->
+
+    <div id="component-footer"></div>
+    <div id="component-backtotop"></div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/api-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+    (function () {
+        'use strict';
+
+        /* ------------------------------------------------------------------ */
+        /*  File Upload Handling                                               */
+        /* ------------------------------------------------------------------ */
+
+        var uploadArea = document.getElementById('upload-area');
+        var fileInput = document.getElementById('file-input');
+        var browseBtn = document.getElementById('browse-btn');
+        var fileInfo = document.getElementById('file-info');
+        var fileName = document.getElementById('file-name');
+        var fileSize = document.getElementById('file-size');
+        var validateBtn = document.getElementById('validate-btn');
+        var importBtn = document.getElementById('import-btn');
+        var validationSection = document.getElementById('validation-section');
+
+        browseBtn.addEventListener('click', function () {
+            fileInput.click();
+        });
+
+        uploadArea.addEventListener('click', function (e) {
+            if (e.target !== browseBtn && !browseBtn.contains(e.target)) {
+                fileInput.click();
+            }
+        });
+
+        uploadArea.addEventListener('dragover', function (e) {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#0078ff';
+            uploadArea.style.background = '#f0f8ff';
+        });
+
+        uploadArea.addEventListener('dragleave', function (e) {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#00B98B';
+            uploadArea.style.background = '#f8f9fa';
+        });
+
+        uploadArea.addEventListener('drop', function (e) {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#00B98B';
+            uploadArea.style.background = '#f8f9fa';
+            if (e.dataTransfer.files.length > 0) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', function () {
+            if (fileInput.files.length > 0) {
+                handleFile(fileInput.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            var maxSize = 10 * 1024 * 1024; // 10MB
+            var validTypes = ['.csv', '.xlsx', '.json'];
+            var ext = '.' + file.name.split('.').pop().toLowerCase();
+
+            if (validTypes.indexOf(ext) === -1) {
+                alert('Invalid file type. Please upload a CSV, Excel (.xlsx), or JSON file.');
+                return;
+            }
+
+            if (file.size > maxSize) {
+                alert('File too large. Maximum size is 10MB.');
+                return;
+            }
+
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            fileInfo.classList.remove('d-none');
+            validateBtn.disabled = false;
+            validationSection.classList.add('d-none');
+            importBtn.disabled = true;
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        /* ------------------------------------------------------------------ */
+        /*  Validation (Demo)                                                  */
+        /* ------------------------------------------------------------------ */
+
+        validateBtn.addEventListener('click', function () {
+            // Simulate validation
+            validateBtn.disabled = true;
+            validateBtn.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i>Validating...';
+
+            setTimeout(function () {
+                validateBtn.innerHTML = '<i class="fa fa-check-circle me-2"></i>Validate File';
+                validateBtn.disabled = false;
+                showValidationPreview();
+            }, 1500);
+        });
+
+        function showValidationPreview() {
+            validationSection.classList.remove('d-none');
+
+            // Demo data
+            document.getElementById('val-records').textContent = '250';
+            document.getElementById('val-valid').textContent = '243';
+            document.getElementById('val-errors').textContent = '7';
+            document.getElementById('val-duplicates').textContent = '12';
+            document.getElementById('val-locations').textContent = '238';
+
+            // Preview table header
+            var header = document.getElementById('preview-header');
+            header.innerHTML = '<th>#</th><th>Name</th><th>Province</th><th>District</th><th>Sector</th><th>Level</th><th>GPS</th>';
+
+            // Preview table body (demo rows)
+            var body = document.getElementById('preview-body');
+            var demoRows = [
+                ['1', 'GS Kigali', 'Kigali City', 'Gasabo', 'Kacyiru', 'School', '-1.9403, 30.0587'],
+                ['2', 'EP Nyarugenge', 'Kigali City', 'Nyarugenge', 'Nyamirambo', 'School', '-1.9567, 30.0412'],
+                ['3', 'ES Butare', 'Southern Province', 'Huye', 'Tumba', 'School', '-2.5967, 29.7394'],
+                ['4', 'GS Musanze', 'Northern Province', 'Musanze', 'Muhoza', 'School', '-1.4987, 29.6345'],
+                ['5', 'EP Rubavu', 'Western Province', 'Rubavu', 'Gisenyi', 'School', '-1.6987, 29.2567']
+            ];
+            var rowsHtml = '';
+            demoRows.forEach(function (row) {
+                rowsHtml += '<tr>';
+                row.forEach(function (cell, idx) {
+                    rowsHtml += '<td>' + cell + '</td>';
+                });
+                rowsHtml += '</tr>';
+            });
+            body.innerHTML = rowsHtml;
+
+            // Column mapping fields
+            var mappingFields = document.getElementById('column-mapping-fields');
+            var fields = ['name', 'province', 'district', 'sector', 'cell', 'village', 'level', 'ownership', 'lat', 'lng'];
+            var mappingHtml = '';
+            fields.forEach(function (field) {
+                mappingHtml += '<div class="col-md-4">' +
+                    '<div class="form-floating">' +
+                        '<select class="form-select py-2" id="map-' + field + '">' +
+                            '<option value="">-- Not mapped --</option>' +
+                            '<option value="col-0">Column A</option>' +
+                            '<option value="col-1">Column B</option>' +
+                            '<option value="col-2">Column C</option>' +
+                            '<option value="col-3">Column D</option>' +
+                            '<option value="col-4">Column E</option>' +
+                        '</select>' +
+                        '<label for="map-' + field + '" class="small">' + field.charAt(0).toUpperCase() + field.slice(1) + '</label>' +
+                    '</div>' +
+                '</div>';
+            });
+            mappingFields.innerHTML = mappingHtml;
+
+            // Error list (demo)
+            var errorBody = document.getElementById('error-body');
+            var demoErrors = [
+                ['3', 'name', 'School name is empty'],
+                ['7', 'province', 'Invalid province: "Kigal"'],
+                ['12', 'gps', 'Invalid GPS coordinates'],
+                ['18', 'district', 'District not found in selected province'],
+                ['25', 'sector', 'Sector not found in selected district'],
+                ['31', 'level', 'Invalid level: "High School"'],
+                ['42', 'lat', 'Latitude out of range']
+            ];
+            var errorsHtml = '';
+            demoErrors.forEach(function (err) {
+                errorsHtml += '<tr><td>' + err[0] + '</td><td>' + err[1] + '</td><td>' + err[2] + '</td></tr>';
+            });
+            errorBody.innerHTML = errorsHtml;
+
+            // Enable import button
+            importBtn.disabled = false;
+
+            // Scroll to validation section
+            validationSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        /* ------------------------------------------------------------------ */
+        /*  Import Button (Demo)                                               */
+        /* ------------------------------------------------------------------ */
+
+        importBtn.addEventListener('click', function () {
+            if (confirm('This is a frontend demo. Actual import requires backend processing. Continue?')) {
+                alert('Import functionality requires backend integration. This is a UI preview only.');
+            }
+        });
+
+        /* ------------------------------------------------------------------ */
+        /*  Admin Tools (Demo)                                                 */
+        /* ------------------------------------------------------------------ */
+
+        document.getElementById('reconcile-btn').addEventListener('click', function () {
+            alert('Duplicate reconciliation requires backend processing. This is a UI preview only.');
+        });
+
+        document.getElementById('update-source-btn').addEventListener('click', function () {
+            alert('Updating from official sources requires backend integration. This is a UI preview only.');
+        });
+
+        document.getElementById('export-csv-btn').addEventListener('click', function () {
+            alert('CSV export requires backend processing. This is a UI preview only.');
+        });
+
+        document.getElementById('export-json-btn').addEventListener('click', function () {
+            alert('JSON export requires backend processing. This is a UI preview only.');
+        });
+
+        document.getElementById('download-log-btn').addEventListener('click', function () {
+            alert('Download import log requires backend processing. This is a UI preview only.');
+        });
+
+        document.getElementById('export-report-btn').addEventListener('click', function () {
+            alert('Export quality report requires backend processing. This is a UI preview only.');
+        });
+
+        document.getElementById('reset-osm-btn').addEventListener('click', function () {
+            if (confirm('Are you sure you want to reset the directory to the original OpenStreetMap data? This will remove all imported data.')) {
+                alert('Reset functionality requires backend processing. This is a UI preview only.');
+            }
+        });
+
+        /* ------------------------------------------------------------------ */
+        /*  Data Quality Metrics (Demo)                                        */
+        /* ------------------------------------------------------------------ */
+
+        function updateDataQuality() {
+            // Demo percentages
+            document.getElementById('quality-location').textContent = '100%';
+            document.getElementById('quality-gps').textContent = '98%';
+            document.getElementById('quality-named').textContent = '38%';
+            document.getElementById('missing-name').textContent = '867';
+            document.getElementById('missing-gps').textContent = '28';
+            document.getElementById('missing-sector').textContent = '0';
+        }
+
+        /* ------------------------------------------------------------------ */
+        /*  Init                                                               */
+        /* ------------------------------------------------------------------ */
+
+        function init() {
+            updateDataQuality();
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+        /* ------------------------------------------------------------------ */
+        /*  Component init (must be last)                                      */
+        /* ------------------------------------------------------------------ */
+
+        IremeComponents.initPage('schools-import.html');
+    })();
+    </script>
+</body>
+</html>

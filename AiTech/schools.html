@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>IREME - Rwanda Schools Directory</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="IREME Schools Directory, Rwanda Schools, Education Rwanda, School Search" name="keywords">
+    <meta content="Browse the IREME Rwanda Schools Directory. Search schools by province, district, level and type. Find verified school profiles across Rwanda." name="description">
+
+    <!-- Favicon -->
+    <link href="img/ireme-icon.png" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+    <div id="component-spinner"></div>
+    <div id="component-navbar"></div>
+
+    <!-- Hero Start -->
+    <div class="container-fluid pt-5 bg-primary hero-header">
+        <div class="container pt-5">
+            <div class="row g-5 pt-5">
+                <div class="col-lg-6 align-self-center text-center text-lg-start mb-lg-5">
+                    <h1 class="display-4 text-white mb-4 animated slideInRight" data-i18n="schools.title">Rwanda Schools Directory</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center justify-content-lg-start mb-0">
+                            <li class="breadcrumb-item"><a class="text-white" href="index.html" data-i18n="breadcrumb.home">Home</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page" data-i18n="schools.title">Schools</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 align-self-end text-center text-lg-end">
+                    <img class="img-fluid" src="img/hero-img.png" alt="" style="max-height: 300px;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Hero End -->
+
+    <!-- Map/List Toggle -->
+    <div class="container-fluid py-2 bg-light border-bottom">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-sm btn-outline-primary active" id="view-list-btn">
+                        <i class="fa fa-list me-1"></i> <span data-i18n="schools.listView">List View</span>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" id="view-map-btn">
+                        <i class="fa fa-map me-1"></i> <span data-i18n="schools.mapView">Map View</span>
+                    </button>
+                </div>
+                <span class="text-muted small" id="map-school-count"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Map Container -->
+    <div id="schools-map-container" class="d-none">
+        <div id="schools-map" style="height: 500px; width: 100%;"></div>
+    </div>
+
+    <!-- Search and Filters Start -->
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <div class="row g-3 mb-4 wow fadeIn" data-wow-delay="0.1s">
+                <div class="col-md-4">
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="school-search" data-i18n="schools.searchPlaceholder" placeholder="Search by school name...">
+                        <label for="school-search" data-i18n="schools.searchPlaceholder">Search by school name...</label>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select py-3" id="filter-province">
+                        <option value="" data-i18n="schools.allProvinces">All Provinces</option>
+                        <option value="Kigali City">Kigali City</option>
+                        <option value="Eastern Province">Eastern Province</option>
+                        <option value="Western Province">Western Province</option>
+                        <option value="Northern Province">Northern Province</option>
+                        <option value="Southern Province">Southern Province</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select py-3" id="filter-district">
+                        <option value="" data-i18n="schools.allDistricts">All Districts</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select py-3" id="filter-sector">
+                        <option value="" data-i18n="schools.allSectors">All Sectors</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select py-3" id="filter-cell">
+                        <option value="" data-i18n="schools.allCells">All Cells</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select py-3" id="filter-village">
+                        <option value="" data-i18n="schools.allVillages">All Villages</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row g-3 mb-4 wow fadeIn" data-wow-delay="0.12s">
+                <div class="col-md-2">
+                    <select class="form-select py-3" id="filter-level">
+                        <option value="" data-i18n="schools.allLevels">All Levels</option>
+                        <option value="school">School</option>
+                        <option value="university">University</option>
+                        <option value="college">College</option>
+                        <option value="kindergarten">Kindergarten</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select py-3" id="filter-ownership">
+                        <option value="" data-i18n="schools.allOwnership">All Ownership</option>
+                        <option value="public" data-i18n="schools.public">Public</option>
+                        <option value="private" data-i18n="schools.private">Private</option>
+                        <option value="government-aided" data-i18n="schools.governmentAided">Government-Aided</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4 wow fadeIn" data-wow-delay="0.15s">
+                <div class="col-md-3 d-flex align-items-center">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="filter-named-only">
+                        <label class="form-check-label text-muted small" for="filter-named-only" data-i18n="schools.namedOnly">Show only named schools</label>
+                    </div>
+                </div>
+                <div class="col-md-5 d-flex align-items-center">
+                    <span class="text-muted small" id="results-summary" data-i18n="schools.showing">Showing 0 of 0 schools</span>
+                </div>
+                <div class="col-md-4 d-flex align-items-center justify-content-end">
+                    <label class="text-muted small me-2 mb-0" for="sort-schools" data-i18n="schools.sortBy">Sort by:</label>
+                    <select class="form-select py-2" id="sort-schools" style="max-width: 200px;">
+                        <option value="name-asc" data-i18n="schools.sortNameAsc">Name (A-Z)</option>
+                        <option value="name-desc" data-i18n="schools.sortNameDesc">Name (Z-A)</option>
+                        <option value="province" data-i18n="schools.sortProvince">Province</option>
+                        <option value="district" data-i18n="schools.sortDistrict">District</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Schools Grid -->
+            <div class="row g-4" id="schools-grid">
+                <!-- Dynamically rendered -->
+            </div>
+
+            <!-- No Results -->
+            <div id="no-schools" class="text-center py-5 d-none">
+                <i class="fa fa-search fa-3x text-muted mb-3"></i>
+                <p class="text-muted" data-i18n="schools.noResults">No schools found matching your filters.</p>
+            </div>
+
+            <!-- Load More -->
+            <div class="text-center mt-4 wow fadeIn" data-wow-delay="0.3s">
+                <button id="load-more-btn" class="btn btn-outline-primary rounded-pill px-5 py-2 d-none" data-i18n="schools.loadMore">
+                    <i class="fa fa-plus me-2"></i>Load More
+                </button>
+                <button id="show-all-btn" class="btn btn-primary rounded-pill px-5 py-2 ms-2 d-none" data-i18n="schools.showAll">
+                    <i class="fa fa-list me-2"></i>Show All
+                </button>
+            </div>
+
+            <!-- Coverage Statistics -->
+            <div class="row g-4 mt-5 wow fadeIn" data-wow-delay="0.2s" id="coverage-stats">
+                <div class="col-12">
+                    <h4 class="mb-4" data-i18n="schools.coverageTitle">Directory Coverage</h4>
+                </div>
+                <div class="col-md-3">
+                    <div class="service-item rounded p-4 text-center h-100">
+                        <i class="fa fa-school fa-2x text-primary mb-3"></i>
+                        <h3 class="mb-1" id="stat-total">0</h3>
+                        <p class="text-muted small mb-0" data-i18n="schools.totalSchools">Total Schools</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="service-item rounded p-4 text-center h-100">
+                        <i class="fa fa-tag fa-2x text-success mb-3"></i>
+                        <h3 class="mb-1" id="stat-named">0</h3>
+                        <p class="text-muted small mb-0" data-i18n="schools.namedSchools">Named Schools</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="service-item rounded p-4 text-center h-100">
+                        <i class="fa fa-map-marker-alt fa-2x text-info mb-3"></i>
+                        <h3 class="mb-1" id="stat-districts">0</h3>
+                        <p class="text-muted small mb-0" data-i18n="schools.districtsCovered">Districts Covered</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="service-item rounded p-4 text-center h-100">
+                        <i class="fa fa-map fa-2x text-warning mb-3"></i>
+                        <h3 class="mb-1" id="stat-sectors">0</h3>
+                        <p class="text-muted small mb-0" data-i18n="schools.sectorsCovered">Sectors Covered</p>
+                    </div>
+                </div>
+                <div class="col-12 mt-4">
+                    <h5 class="mb-3" data-i18n="schools.coverageByProvince">Coverage by Province</h5>
+                    <div class="row g-3" id="province-coverage">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Link to Full Coverage Dashboard -->
+            <div class="text-center mt-4">
+                <a href="schools-coverage.html" class="btn btn-outline-primary rounded-pill px-4 py-2">
+                    <i class="fa fa-chart-bar me-2"></i> View Full Coverage Dashboard
+                </a>
+                <a href="schools-import.html" class="btn btn-outline-secondary rounded-pill px-4 py-2 ms-2">
+                    <i class="fa fa-upload me-2"></i> Import Data
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- Search and Filters End -->
+
+    <!-- Add School CTA Start -->
+    <div class="container-fluid bg-primary py-5">
+        <div class="container py-5">
+            <div class="row align-items-center">
+                <div class="col-lg-8 wow fadeIn" data-wow-delay="0.1s">
+                    <h2 class="text-white mb-2" data-i18n="schools.addSchool">Is your school not listed?</h2>
+                    <p class="text-white mb-0" data-i18n="schools.addSchoolDesc">Add it to OpenStreetMap so it appears in this directory and helps thousands of students find it. Or contact us to request its addition.</p>
+                </div>
+                <div class="col-lg-4 text-lg-end wow fadeIn" data-wow-delay="0.3s">
+                    <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener" class="btn btn-light rounded-pill px-4 py-3 me-2 mb-2">
+                        <i class="fa fa-map-marker-alt me-1"></i> <span data-i18n="schools.addOnOSM">Add on OpenStreetMap</span>
+                    </a>
+                    <a href="contact.html" class="btn btn-outline-light rounded-pill px-4 py-3 mb-2" data-i18n="schools.requestAddition">Request Addition</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add School CTA End -->
+
+    <div id="component-footer"></div>
+    <div id="component-backtotop"></div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+
+    <!-- School Data from OpenStreetMap -->
+    <script src="js/schools-data.js"></script>
+    <script src="js/rwanda-admin.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/api-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+    (function () {
+        'use strict';
+
+        /* ------------------------------------------------------------------ */
+        /*  Constants                                                          */
+        /* ------------------------------------------------------------------ */
+
+        var BATCH_SIZE = 100;
+
+        // Use Rwanda admin data for cascading filters
+        var adminData = (typeof IremeRwandaAdmin !== 'undefined') ? IremeRwandaAdmin : null;
+
+        // Badge colour maps
+        var levelBadgeClass = {
+            'school':       'bg-primary',
+            'university':   'bg-danger',
+            'college':      'bg-info',
+            'kindergarten': 'bg-warning text-dark'
+        };
+
+        var ownershipBadgeClass = {
+            'public':            'bg-success',
+            'private':           'bg-secondary',
+            'government-aided':  'bg-info'
+        };
+
+        var levelLabels = {
+            'school':       'School',
+            'university':   'University',
+            'college':      'College',
+            'kindergarten': 'Kindergarten'
+        };
+
+        var ownershipLabels = {
+            'public':            'Public',
+            'private':           'Private',
+            'government-aided':  'Government-Aided'
+        };
+
+        /* ------------------------------------------------------------------ */
+        /*  State                                                              */
+        /* ------------------------------------------------------------------ */
+
+        var allSchools     = [];   // full list from data file
+        var filteredList   = [];   // after filters applied
+        var displayedCount = 0;    // how many cards currently in DOM
+
+        /* ------------------------------------------------------------------ */
+        /*  Helpers                                                            */
+        /* ------------------------------------------------------------------ */
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            var div = document.createElement('div');
+            div.appendChild(document.createTextNode(str));
+            return div.innerHTML;
+        }
+
+        function schoolDisplayName(s) {
+            if (s.name) return s.name;
+            return 'Unnamed School \u2014 ' + (s.sector || '?') + ', ' + (s.district || '?');
+        }
+
+        function buildCardHtml(s) {
+            var name = escapeHtml(schoolDisplayName(s));
+            var hasName = !!s.name;
+
+            // Level badge
+            var lvl = s.level || 'school';
+            var lvlClass = levelBadgeClass[lvl] || 'bg-secondary';
+            var lvlLabel = escapeHtml(levelLabels[lvl] || lvl);
+
+            // Ownership badge (optional)
+            var ownBadge = '';
+            if (s.ownership && ownershipLabels[s.ownership]) {
+                var ownClass = ownershipBadgeClass[s.ownership] || 'bg-secondary';
+                ownBadge = '<span class="badge ' + ownClass + ' ms-1">' + escapeHtml(ownershipLabels[s.ownership]) + '</span>';
+            }
+
+            // Location line
+            var locParts = [];
+            if (s.province) locParts.push(escapeHtml(s.province));
+            if (s.district) locParts.push(escapeHtml(s.district));
+            if (s.sector)   locParts.push(escapeHtml(s.sector));
+            var locText = locParts.join(' &gt; ');
+
+            // Coordinates
+            var coordsText = '';
+            if (s.lat != null && s.lng != null) {
+                coordsText = '<span class="text-muted" style="font-size:.7rem;">' +
+                    '<i class="fa fa-crosshairs me-1"></i>' +
+                    Number(s.lat).toFixed(4) + ', ' + Number(s.lng).toFixed(4) +
+                    '</span>';
+            }
+
+            // Named / unnamed indicator
+            var namedBadge = hasName
+                ? ''
+                : '<span class="badge bg-light text-muted border small ms-1" data-i18n="schools.unnamedBadge">Unnamed</span>';
+
+            // Profile link
+            var profileUrl = 'school-profile.html?id=' + encodeURIComponent(s.id);
+
+            return '' +
+                '<div class="col-md-6 col-lg-4 wow fadeIn school-card" data-wow-delay="0.1s" data-school-id="' + escapeHtml(s.id) + '">' +
+                    '<div class="service-item rounded p-4 h-100">' +
+                        '<div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-1">' +
+                            '<span class="badge ' + lvlClass + '">' + lvlLabel + '</span>' +
+                            ownBadge +
+                            namedBadge +
+                        '</div>' +
+                        '<h5 class="mb-1">' + name + '</h5>' +
+                        '<p class="text-muted small mb-2">' +
+                            '<i class="fa fa-map-marker-alt me-1"></i> ' + locText +
+                        '</p>' +
+                        (coordsText ? '<p class="mb-3">' + coordsText + '</p>' : '<div class="mb-3"></div>') +
+                        '<a href="' + profileUrl + '" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="schools.viewProfile">View Profile</a>' +
+                    '</div>' +
+                '</div>';
+        }
+
+        /* ------------------------------------------------------------------ */
+        /*  Rendering                                                          */
+        /* ------------------------------------------------------------------ */
+
+        function renderBatch() {
+            var grid = document.getElementById('schools-grid');
+            var end = Math.min(displayedCount + BATCH_SIZE, filteredList.length);
+            var html = '';
+            for (var i = displayedCount; i < end; i++) {
+                html += buildCardHtml(filteredList[i]);
+            }
+            grid.insertAdjacentHTML('beforeend', html);
+            displayedCount = end;
+            updateLoadMoreBtn();
+            // Re-init WOW for newly added elements
+            if (typeof WOW !== 'undefined') {
+                new WOW({ boxClass: 'wow', animateClass: 'animated', offset: 0, mobile: true, live: true }).init();
+            }
+        }
+
+        function resetAndRender() {
+            var grid = document.getElementById('schools-grid');
+            grid.innerHTML = '';
+            displayedCount = 0;
+            renderBatch();
+            updateResultsSummary();
+            toggleNoResults();
+        }
+
+        function updateLoadMoreBtn() {
+            var btn = document.getElementById('load-more-btn');
+            var showAllBtn = document.getElementById('show-all-btn');
+            var remaining = filteredList.length - displayedCount;
+            
+            if (remaining > 0) {
+                btn.classList.remove('d-none');
+                var nextBatch = Math.min(BATCH_SIZE, remaining);
+                btn.innerHTML = '<i class="fa fa-plus me-2"></i>Load More (' + nextBatch + ' of ' + remaining + ')';
+                
+                // Show "Show All" button if there are more than one batch remaining
+                if (remaining > BATCH_SIZE) {
+                    showAllBtn.classList.remove('d-none');
+                    showAllBtn.innerHTML = '<i class="fa fa-list me-2"></i>Show All (' + remaining + ' remaining)';
+                } else {
+                    showAllBtn.classList.add('d-none');
+                }
+            } else {
+                btn.classList.add('d-none');
+                showAllBtn.classList.add('d-none');
+            }
+        }
+
+        function updateResultsSummary() {
+            var total = typeof IremeSchoolsData !== 'undefined' ? IremeSchoolsData.totalFeatures : allSchools.length;
+            document.getElementById('results-summary').textContent =
+                'Showing ' + filteredList.length + ' of ' + total + ' schools';
+        }
+
+        function toggleNoResults() {
+            document.getElementById('no-schools').classList.toggle('d-none', filteredList.length > 0);
+        }
+
+        /* ------------------------------------------------------------------ */
+        /*  Filtering & Sorting                                                */
+        /* ------------------------------------------------------------------ */
+
+        function filterSchools() {
+            var search     = document.getElementById('school-search').value.toLowerCase().trim();
+            var province   = document.getElementById('filter-province').value;
+            var district   = document.getElementById('filter-district').value;
+            var sector     = document.getElementById('filter-sector').value;
+            var level      = document.getElementById('filter-level').value;
+            var ownership  = document.getElementById('filter-ownership').value;
+            var namedOnly  = document.getElementById('filter-named-only').checked;
+
+            filteredList = allSchools.filter(function (s) {
+                if (search) {
+                    var haystack = (s.name || '').toLowerCase();
+                    if (haystack.indexOf(search) === -1) return false;
+                }
+                if (province && s.province !== province) return false;
+                if (district && s.district !== district) return false;
+                if (sector && s.sector !== sector) return false;
+                if (level && s.level !== level) return false;
+                if (ownership && s.ownership !== ownership) return false;
+                if (namedOnly && !s.name) return false;
+                return true;
+            });
+
+            // Sort
+            sortFiltered();
+            resetAndRender();
+
+            // Update map markers if map is active
+            if (map) populateMapMarkers(filteredList);
+        }
+
+        function sortFiltered() {
+            var sortBy = document.getElementById('sort-schools').value;
+            filteredList.sort(function (a, b) {
+                switch (sortBy) {
+                    case 'name-asc':
+                        return schoolDisplayName(a).localeCompare(schoolDisplayName(b));
+                    case 'name-desc':
+                        return schoolDisplayName(b).localeCompare(schoolDisplayName(a));
+                    case 'province':
+                        return (a.province || '').localeCompare(b.province || '') ||
+                               (a.district || '').localeCompare(b.district || '');
+                    case 'district':
+                        return (a.district || '').localeCompare(b.district || '') ||
+                               (a.province || '').localeCompare(b.province || '');
+                    default:
+                        return 0;
+                }
+            });
+        }
+
+        /* ------------------------------------------------------------------ */
+        /*  District dropdown                                                  */
+        /* ------------------------------------------------------------------ */
+
+        function populateDistricts(province) {
+            var sel = document.getElementById('filter-district');
+            sel.innerHTML = '<option value="" data-i18n="schools.allDistricts">All Districts</option>';
+            if (province && adminData) {
+                adminData.getDistricts(province).forEach(function (d) {
+                    var opt = document.createElement('option');
+                    opt.value = d;
+                    opt.textContent = d;
+                    sel.appendChild(opt);
+                });
+            }
+            // Reset downstream
+            populateSectors(province, '');
+        }
+
+        function populateSectors(province, district) {
+            var sel = document.getElementById('filter-sector');
+            sel.innerHTML = '<option value="" data-i18n="schools.allSectors">All Sectors</option>';
+            if (province && district && adminData) {
+                adminData.getSectors(province, district).forEach(function (s) {
+                    var opt = document.createElement('option');
+                    opt.value = s;
+                    opt.textContent = s;
+                    sel.appendChild(opt);
+                });
+            }
+            populateCells(province, district, '');
+        }
+
+        function populateCells(province, district, sector) {
+            var sel = document.getElementById('filter-cell');
+            sel.innerHTML = '<option value="" data-i18n="schools.allCells">All Cells</option>';
+            if (province && district && sector && adminData) {
+                adminData.getCells(province, district, sector).forEach(function (c) {
+                    var opt = document.createElement('option');
+                    opt.value = c;
+                    opt.textContent = c;
+                    sel.appendChild(opt);
+                });
+            }
+            populateVillages(province, district, sector, '');
+        }
+
+        function populateVillages(province, district, sector, cell) {
+            var sel = document.getElementById('filter-village');
+            sel.innerHTML = '<option value="" data-i18n="schools.allVillages">All Villages</option>';
+            if (province && district && sector && cell && adminData) {
+                adminData.getVillages(province, district, sector, cell).forEach(function (v) {
+                    var opt = document.createElement('option');
+                    opt.value = v;
+                    opt.textContent = v;
+                    sel.appendChild(opt);
+                });
+            }
+        }
+
+        /* ------------------------------------------------------------------ */
+        /*  Init                                                               */
+        /* ------------------------------------------------------------------ */
+
+        function init() {
+            // Load data
+            if (typeof IremeSchoolsData !== 'undefined' && IremeSchoolsData.schools) {
+                allSchools = IremeSchoolsData.schools;
+            } else {
+                console.warn('IremeSchoolsData not found. Ensure js/schools-data.js is loaded.');
+                allSchools = [];
+            }
+
+            // Initial filter (show all, sorted by name)
+            filteredList = allSchools.slice();
+            sortFiltered();
+            resetAndRender();
+
+            // Event listeners
+            document.getElementById('filter-province').addEventListener('change', function () {
+                populateDistricts(this.value);
+                document.getElementById('filter-district').value = '';
+                filterSchools();
+            });
+
+            document.getElementById('filter-district').addEventListener('change', function () {
+                var province = document.getElementById('filter-province').value;
+                populateSectors(province, this.value);
+                document.getElementById('filter-sector').value = '';
+                filterSchools();
+            });
+
+            document.getElementById('filter-sector').addEventListener('change', function () {
+                var province = document.getElementById('filter-province').value;
+                var district = document.getElementById('filter-district').value;
+                populateCells(province, district, this.value);
+                document.getElementById('filter-cell').value = '';
+                filterSchools();
+            });
+
+            document.getElementById('filter-cell').addEventListener('change', function () {
+                var province = document.getElementById('filter-province').value;
+                var district = document.getElementById('filter-district').value;
+                var sector = document.getElementById('filter-sector').value;
+                populateVillages(province, district, sector, this.value);
+                document.getElementById('filter-village').value = '';
+            });
+
+            ['school-search', 'filter-level', 'filter-ownership'].forEach(function (id) {
+                var el = document.getElementById(id);
+                el.addEventListener('input', filterSchools);
+                el.addEventListener('change', filterSchools);
+            });
+
+            document.getElementById('filter-named-only').addEventListener('change', filterSchools);
+
+            document.getElementById('sort-schools').addEventListener('change', function () {
+                sortFiltered();
+                resetAndRender();
+            });
+
+            document.getElementById('load-more-btn').addEventListener('click', function () {
+                renderBatch();
+            });
+
+            document.getElementById('show-all-btn').addEventListener('click', function () {
+                // Load all remaining schools at once
+                var grid = document.getElementById('schools-grid');
+                var html = '';
+                for (var i = displayedCount; i < filteredList.length; i++) {
+                    html += buildCardHtml(filteredList[i]);
+                }
+                grid.insertAdjacentHTML('beforeend', html);
+                displayedCount = filteredList.length;
+                updateLoadMoreBtn();
+                if (typeof WOW !== 'undefined') {
+                    new WOW({ boxClass: 'wow', animateClass: 'animated', offset: 0, mobile: true, live: true }).init();
+                }
+            });
+
+            // Populate coverage statistics
+            populateCoverageStats();
+
+            // Map view toggle event listeners
+            document.getElementById('view-list-btn').addEventListener('click', function() {
+                document.getElementById('view-list-btn').classList.add('active');
+                document.getElementById('view-map-btn').classList.remove('active');
+                document.getElementById('schools-map-container').classList.add('d-none');
+                // Show list content
+                document.querySelectorAll('.container-fluid.py-5 .container.py-5 > .row.g-3.mb-4, #schools-grid, #no-schools, #load-more-btn, #show-all-btn, #coverage-stats').forEach(function(el) {
+                    el.classList.remove('d-none');
+                });
+            });
+
+            document.getElementById('view-map-btn').addEventListener('click', function() {
+                document.getElementById('view-map-btn').classList.add('active');
+                document.getElementById('view-list-btn').classList.remove('active');
+                document.getElementById('schools-map-container').classList.remove('d-none');
+                initMap();
+                // Update map markers based on current filter
+                populateMapMarkers(filteredList);
+                setTimeout(function() { map.invalidateSize(); }, 100);
+            });
+        }
+
+        function populateCoverageStats() {
+            if (typeof IremeSchoolsData === 'undefined') return;
+            var schools = IremeSchoolsData.schools;
+            
+            // Total stats
+            document.getElementById('stat-total').textContent = schools.length;
+            document.getElementById('stat-named').textContent = schools.filter(function(s) { return s.name; }).length;
+            
+            // Unique districts and sectors
+            var districts = new Set();
+            var sectors = new Set();
+            schools.forEach(function(s) {
+                if (s.district) districts.add(s.district);
+                if (s.sector) sectors.add(s.sector);
+            });
+            document.getElementById('stat-districts').textContent = districts.size;
+            document.getElementById('stat-sectors').textContent = sectors.size;
+            
+            // By province
+            var byProvince = {};
+            schools.forEach(function(s) {
+                if (s.province) {
+                    if (!byProvince[s.province]) byProvince[s.province] = { total: 0, named: 0 };
+                    byProvince[s.province].total++;
+                    if (s.name) byProvince[s.province].named++;
+                }
+            });
+            
+            var provinceHtml = '';
+            Object.keys(byProvince).sort().forEach(function(p) {
+                var data = byProvince[p];
+                var pct = Math.round((data.named / data.total) * 100);
+                provinceHtml += '<div class="col-md-4 col-lg-2">' +
+                    '<div class="border rounded p-3 text-center">' +
+                        '<h6 class="mb-1 small">' + p + '</h6>' +
+                        '<p class="mb-1 fw-bold text-primary">' + data.total + '</p>' +
+                        '<p class="text-muted small mb-0">' + data.named + ' named (' + pct + '%)</p>' +
+                    '</div>' +
+                '</div>';
+            });
+            document.getElementById('province-coverage').innerHTML = provinceHtml;
+        }
+
+        /* ------------------------------------------------------------------ */
+        /*  Map                                                                */
+        /* ------------------------------------------------------------------ */
+
+        var map = null;
+        var mapMarkers = [];
+
+        function initMap() {
+            if (map) return; // Already initialized
+            map = L.map('schools-map').setView([-1.9403, 29.8739], 7); // Center of Rwanda
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 19
+            }).addTo(map);
+            populateMapMarkers(allSchools);
+        }
+
+        function populateMapMarkers(schools) {
+            // Clear existing markers
+            mapMarkers.forEach(function(m) { map.removeLayer(m); });
+            mapMarkers = [];
+
+            var schoolsWithCoords = schools.filter(function(s) { return s.lat && s.lng; });
+
+            schoolsWithCoords.forEach(function(s) {
+                var name = s.name || 'Unnamed School';
+                var location = s.sector + ', ' + s.district;
+                var popupContent = '<strong>' + name + '</strong><br>' +
+                    '<small>' + location + '</small><br>' +
+                    '<small>' + s.level + '</small><br>' +
+                    '<a href="school-profile.html?id=' + encodeURIComponent(s.id) + '">View Profile</a>';
+
+                var marker = L.marker([s.lat, s.lng])
+                    .addTo(map)
+                    .bindPopup(popupContent);
+                mapMarkers.push(marker);
+            });
+
+            document.getElementById('map-school-count').textContent =
+                schoolsWithCoords.length + ' schools with GPS coordinates shown on map';
+        }
+
+        // Run when DOM ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+        /* ------------------------------------------------------------------ */
+        /*  Component init (must be last)                                      */
+        /* ------------------------------------------------------------------ */
+
+        IremeComponents.initPage('schools.html');
+    })();
+    </script>
+</body>
+</html>

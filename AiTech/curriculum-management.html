@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>IREME - Curriculum Management</title>
+    <meta content="Manage curriculum, subjects, and education levels" name="description">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <!-- Favicon -->
+    <link href="img/ireme-icon.png" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div id="component-spinner"></div>
+    <div id="component-navbar"></div>
+
+    <!-- Hero Start -->
+    <div class="container-fluid pt-5 bg-primary hero-header">
+        <div class="container pt-5">
+            <div class="row g-5 pt-5">
+                <div class="col-lg-6 align-self-center text-center text-lg-start mb-lg-5">
+                    <h1 class="display-4 text-white mb-4 animated slideInRight">Curriculum Management</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center justify-content-lg-start mb-0">
+                            <li class="breadcrumb-item"><a class="text-white" href="index.html">Home</a></li>
+                            <li class="breadcrumb-item"><a class="text-white" href="admin-dashboard.html">Admin</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page">Curriculum</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Hero End -->
+
+    <!-- Curriculum Overview Start -->
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <!-- Status Alert -->
+            <div class="alert alert-warning d-flex align-items-center mb-4" role="alert">
+                <i class="fa fa-exclamation-triangle me-2"></i>
+                <div>
+                    <strong>Frontend Implementation:</strong> This curriculum management interface uses client-side storage. 
+                    For production use with database persistence, backend API integration is required.
+                </div>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-6 col-lg-3">
+                    <div class="service-item rounded p-4 text-center h-100">
+                        <i class="fa fa-graduation-cap fa-2x text-primary mb-3"></i>
+                        <h3 class="mb-1" id="stat-pathways">4</h3>
+                        <p class="text-muted small mb-0">Education Pathways</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="service-item rounded p-4 text-center h-100">
+                        <i class="fa fa-book fa-2x text-success mb-3"></i>
+                        <h3 class="mb-1" id="stat-subjects">0</h3>
+                        <p class="text-muted small mb-0">Total Subjects</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="service-item rounded p-4 text-center h-100">
+                        <i class="fa fa-check-circle fa-2x text-info mb-3"></i>
+                        <h3 class="mb-1" id="stat-verified">0</h3>
+                        <p class="text-muted small mb-0">Verified Subjects</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="service-item rounded p-4 text-center h-100">
+                        <i class="fa fa-clock fa-2x text-warning mb-3"></i>
+                        <h3 class="mb-1" id="stat-pending">0</h3>
+                        <p class="text-muted small mb-0">Pending Verification</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pathway Tabs -->
+            <ul class="nav nav-tabs mb-4" id="pathwayTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="primary-tab" data-bs-toggle="tab" data-bs-target="#primary" type="button">
+                        <i class="fa fa-school me-2"></i>Primary (P1-P6)
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="secondary-tab" data-bs-toggle="tab" data-bs-target="#secondary" type="button">
+                        <i class="fa fa-building me-2"></i>Secondary (S1-S6)
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="ttc-tab" data-bs-toggle="tab" data-bs-target="#ttc" type="button">
+                        <i class="fa fa-chalkboard-teacher me-2"></i>TTC
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tvet-tab" data-bs-toggle="tab" data-bs-target="#tvet" type="button">
+                        <i class="fa fa-tools me-2"></i>TVET
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content" id="pathwayTabsContent">
+                <!-- Primary Tab -->
+                <div class="tab-pane fade show active" id="primary" role="tabpanel">
+                    <div class="row g-4">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4>Primary Education Subjects</h4>
+                                <button class="btn btn-primary btn-sm" onclick="openAddSubjectModal('primary')">
+                                    <i class="fa fa-plus me-2"></i>Add Subject
+                                </button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Code</th>
+                                            <th>Subject Name</th>
+                                            <th>Kinyarwanda</th>
+                                            <th>Levels</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="primary-subjects-table">
+                                        <!-- Populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secondary Tab -->
+                <div class="tab-pane fade" id="secondary" role="tabpanel">
+                    <div class="row g-4">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4>Secondary Education Subjects</h4>
+                                <button class="btn btn-primary btn-sm" onclick="openAddSubjectModal('secondary')">
+                                    <i class="fa fa-plus me-2"></i>Add Subject
+                                </button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Code</th>
+                                            <th>Subject Name</th>
+                                            <th>Kinyarwanda</th>
+                                            <th>Levels</th>
+                                            <th>Combinations</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="secondary-subjects-table">
+                                        <!-- Populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-12 mt-4">
+                            <h5>Subject Combinations (S4-S6)</h5>
+                            <div class="row g-3" id="combinations-container">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TTC Tab -->
+                <div class="tab-pane fade" id="ttc" role="tabpanel">
+                    <div class="alert alert-info">
+                        <i class="fa fa-info-circle me-2"></i>
+                        TTC programmes require verification from official REB Teacher Training curriculum documents.
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Programme Name</th>
+                                    <th>Kinyarwanda</th>
+                                    <th>Years</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ttc-subjects-table">
+                                <!-- Populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TVET Tab -->
+                <div class="tab-pane fade" id="tvet" role="tabpanel">
+                    <div class="alert alert-info">
+                        <i class="fa fa-info-circle me-2"></i>
+                        TVET programmes require verification from official TVET Authority curriculum documents.
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Programme Name</th>
+                                    <th>Kinyarwanda</th>
+                                    <th>RQF Levels</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tvet-subjects-table">
+                                <!-- Populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Import/Export Section -->
+            <div class="row g-4 mt-5">
+                <div class="col-12">
+                    <h4 class="mb-4">Curriculum Data Management</h4>
+                </div>
+                <div class="col-md-6">
+                    <div class="service-item rounded p-4 h-100">
+                        <h5 class="mb-3"><i class="fa fa-upload me-2 text-primary"></i>Import Curriculum</h5>
+                        <p class="text-muted small mb-3">Import curriculum data from CSV, Excel, or JSON files.</p>
+                        <div class="mb-3">
+                            <label class="form-label">Select File</label>
+                            <input type="file" class="form-control" id="import-file" accept=".csv,.xlsx,.json">
+                        </div>
+                        <button class="btn btn-outline-primary w-100" onclick="importCurriculum()">
+                            <i class="fa fa-upload me-2"></i>Import Data
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="service-item rounded p-4 h-100">
+                        <h5 class="mb-3"><i class="fa fa-download me-2 text-success"></i>Export Curriculum</h5>
+                        <p class="text-muted small mb-3">Export curriculum catalogue for backup or review.</p>
+                        <button class="btn btn-outline-success w-100 mb-2" onclick="exportCurriculum('json')">
+                            <i class="fa fa-file-code me-2"></i>Export as JSON
+                        </button>
+                        <button class="btn btn-outline-success w-100" onclick="exportCurriculum('csv')">
+                            <i class="fa fa-file-csv me-2"></i>Export as CSV
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Curriculum Overview End -->
+
+    <!-- Add Subject Modal -->
+    <div class="modal fade" id="addSubjectModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Subject</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-subject-form">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Subject Code</label>
+                                <input type="text" class="form-control" id="subject-code" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Subject Name (English)</label>
+                                <input type="text" class="form-control" id="subject-name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Subject Name (Kinyarwanda)</label>
+                                <input type="text" class="form-control" id="subject-name-rw" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Verification Status</label>
+                                <select class="form-select" id="subject-status" required>
+                                    <option value="verified">Verified</option>
+                                    <option value="pending_verification">Pending Verification</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Applicable Levels</label>
+                                <div id="levels-checkboxes">
+                                    <!-- Populated dynamically based on pathway -->
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Source Document</label>
+                                <input type="text" class="form-control" id="subject-source" placeholder="e.g., REB Primary Curriculum Framework">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveSubject()">Save Subject</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="component-footer"></div>
+    <div id="component-backtotop"></div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+
+    <!-- Curriculum Data -->
+    <script src="js/curriculum-data.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/api-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+    (function() {
+        'use strict';
+
+        var currentPathway = 'primary';
+
+        function init() {
+            renderAllTables();
+            updateStats();
+            renderCombinations();
+        }
+
+        function updateStats() {
+            var totalSubjects = 0;
+            var verified = 0;
+            var pending = 0;
+
+            for (var pathway in IremeCurriculum.subjects) {
+                for (var key in IremeCurriculum.subjects[pathway]) {
+                    totalSubjects++;
+                    if (IremeCurriculum.subjects[pathway][key].status === 'verified') {
+                        verified++;
+                    } else {
+                        pending++;
+                    }
+                }
+            }
+
+            document.getElementById('stat-subjects').textContent = totalSubjects;
+            document.getElementById('stat-verified').textContent = verified;
+            document.getElementById('stat-pending').textContent = pending;
+        }
+
+        function renderAllTables() {
+            renderSubjectsTable('primary');
+            renderSubjectsTable('secondary');
+            renderSubjectsTable('ttc');
+            renderSubjectsTable('tvet');
+        }
+
+        function renderSubjectsTable(pathway) {
+            var tbody = document.getElementById(pathway + '-subjects-table');
+            if (!tbody) return;
+
+            var html = '';
+            var subjects = IremeCurriculum.subjects[pathway];
+
+            for (var key in subjects) {
+                var subject = subjects[key];
+                var levels = subject.levels || subject.years || subject.rqfLevels || [];
+                var statusBadge = subject.status === 'verified' 
+                    ? '<span class="badge bg-success">Verified</span>'
+                    : '<span class="badge bg-warning text-dark">Pending</span>';
+
+                html += '<tr>';
+                html += '<td><code>' + subject.code + '</code></td>';
+                html += '<td>' + subject.name + '</td>';
+                html += '<td>' + (subject.nameRw || '-') + '</td>';
+                
+                if (pathway === 'secondary' && subject.combinations) {
+                    html += '<td>' + levels.join(', ') + '</td>';
+                    html += '<td>' + subject.combinations.join(', ') + '</td>';
+                } else {
+                    html += '<td>' + levels.join(', ') + '</td>';
+                    if (pathway === 'secondary') html += '<td>-</td>';
+                }
+                
+                html += '<td>' + statusBadge + '</td>';
+                html += '<td>';
+                html += '<button class="btn btn-sm btn-outline-primary me-1" onclick="editSubject(\'' + pathway + '\', \'' + key + '\')">';
+                html += '<i class="fa fa-edit"></i></button>';
+                html += '<button class="btn btn-sm btn-outline-danger" onclick="deleteSubject(\'' + pathway + '\', \'' + key + '\')">';
+                html += '<i class="fa fa-trash"></i></button>';
+                html += '</td>';
+                html += '</tr>';
+            }
+
+            tbody.innerHTML = html || '<tr><td colspan="7" class="text-center text-muted">No subjects found</td></tr>';
+        }
+
+        function renderCombinations() {
+            var container = document.getElementById('combinations-container');
+            var html = '';
+
+            for (var code in IremeCurriculum.combinations) {
+                var combo = IremeCurriculum.combinations[code];
+                html += '<div class="col-md-6 col-lg-4">';
+                html += '<div class="border rounded p-3">';
+                html += '<h6 class="mb-2"><code>' + code + '</code> - ' + combo.name + '</h6>';
+                html += '<p class="small text-muted mb-0">Subjects: ' + combo.subjects.join(', ') + '</p>';
+                html += '</div></div>';
+            }
+
+            container.innerHTML = html;
+        }
+
+        window.openAddSubjectModal = function(pathway) {
+            currentPathway = pathway;
+            var modal = new bootstrap.Modal(document.getElementById('addSubjectModal'));
+            
+            // Populate levels checkboxes
+            var levelsContainer = document.getElementById('levels-checkboxes');
+            var levels = IremeCurriculum.getPathwayLevels(pathway);
+            var html = '';
+            
+            levels.forEach(function(level) {
+                html += '<div class="form-check form-check-inline">';
+                html += '<input class="form-check-input" type="checkbox" value="' + level + '" id="level-' + level + '">';
+                html += '<label class="form-check-label" for="level-' + level + '">' + level + '</label>';
+                html += '</div>';
+            });
+            
+            levelsContainer.innerHTML = html;
+            modal.show();
+        };
+
+        window.saveSubject = function() {
+            var code = document.getElementById('subject-code').value;
+            var name = document.getElementById('subject-name').value;
+            var nameRw = document.getElementById('subject-name-rw').value;
+            var status = document.getElementById('subject-status').value;
+            var source = document.getElementById('subject-source').value;
+
+            var levels = [];
+            document.querySelectorAll('#levels-checkboxes input:checked').forEach(function(cb) {
+                levels.push(cb.value);
+            });
+
+            if (!code || !name || levels.length === 0) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            // Add to curriculum data
+            var key = name.toLowerCase().replace(/\s+/g, '');
+            IremeCurriculum.subjects[currentPathway][key] = {
+                code: code,
+                name: name,
+                nameRw: nameRw,
+                levels: levels,
+                status: status,
+                source: source
+            };
+
+            // Re-render table
+            renderSubjectsTable(currentPathway);
+            updateStats();
+
+            // Close modal and reset form
+            bootstrap.Modal.getInstance(document.getElementById('addSubjectModal')).hide();
+            document.getElementById('add-subject-form').reset();
+
+            alert('Subject added successfully! Note: Changes are not persisted without backend integration.');
+        };
+
+        window.editSubject = function(pathway, key) {
+            alert('Edit functionality requires backend integration. Subject: ' + key);
+        };
+
+        window.deleteSubject = function(pathway, key) {
+            if (confirm('Delete subject "' + key + '"? This cannot be undone.')) {
+                delete IremeCurriculum.subjects[pathway][key];
+                renderSubjectsTable(pathway);
+                updateStats();
+                alert('Subject deleted. Note: Changes are not persisted without backend integration.');
+            }
+        };
+
+        window.importCurriculum = function() {
+            alert('Import functionality requires backend integration for file processing and validation.');
+        };
+
+        window.exportCurriculum = function(format) {
+            var data = JSON.stringify(IremeCurriculum, null, 2);
+            var blob = new Blob([data], { type: 'application/json' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'curriculum-data.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        };
+
+        // Tab change handler
+        document.querySelectorAll('#pathwayTabs button').forEach(function(button) {
+            button.addEventListener('shown.bs.tab', function(e) {
+                var target = e.target.getAttribute('data-bs-target');
+                currentPathway = target.replace('#', '');
+            });
+        });
+
+        // Initialize
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+        IremeComponents.initPage('curriculum-management.html');
+    })();
+    </script>
+</body>
+</html>
