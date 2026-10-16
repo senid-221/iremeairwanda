@@ -160,6 +160,16 @@ var IremeAPI = (function() {
       return this.get('/api/curriculum/subjects' + (levelId ? '?levelId=' + encodeURIComponent(levelId) : ''));
     },
 
+    getQuestions: function(params) {
+      var query = [];
+      if (params.subjectId) query.push('subjectId=' + encodeURIComponent(params.subjectId));
+      if (params.level) query.push('level=' + encodeURIComponent(params.level));
+      if (params.difficulty) query.push('difficulty=' + encodeURIComponent(params.difficulty));
+      if (params.limit) query.push('limit=' + params.limit);
+      var qs = query.length > 0 ? '?' + query.join('&') : '';
+      return this.get('/api/assessments/questions' + qs);
+    },
+
     requestVideoLesson: function(body) {
       return this.post('/api/video-lessons', body);
     },

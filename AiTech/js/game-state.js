@@ -182,8 +182,9 @@ var IremeGame = {
         return Object.keys(topics).sort();
     },
 
-    getQuestions: function(subjectKey, level, topic, difficulty) {
-        var bank = this.questionBank[subjectKey];
+    // Helper function to get questions from local bank (fallback)
+    function getLocalQuestions(subjectKey, level, topic, difficulty) {
+        var bank = IremeGame.questionBank[subjectKey];
         if (!bank) return [];
         var filtered = bank.filter(function(q) {
             if (level && q.level !== level) return false;
@@ -192,6 +193,49 @@ var IremeGame = {
             return true;
         });
         return filtered;
+    }
+
+    getQuestions: function(subjectKey, level, topic, difficulty) {
+        // Try to load from API first
+        if (typeof IremeAPI !== 'undefined' && IremeAPI.getQuestions) {
+            return IremeAPI.getQuestions({
+                subjectId: subjectKey,
+                level: level,
+                difficulty: difficulty,
+                limit: 50
+            }).then(function(data) {
+                var questions = data.questions || [];
+                // Filter by topic if specified
+                if (topic && topic !== 'all') {
+                    questions = questions.filter(function(q) {
+                        return q.topic === topic || (q.questionBank && q.questionBank.name === topic);
+                    });
+                }
+                // Transform API questions to game format
+                return questions.map(function(q) {
+                    return {
+                        id: q.id,
+                        topic: q.topic || (q.questionBank ? q.questionBank.name : 'General'),
+                        difficulty: q.difficulty || 'medium',
+                        text_en: q.questionTextEn || q.questionText || '',
+                        text_rw: q.questionTextRw || q.questionText || '',
+                        options_en: (q.questionOptions || []).map(function(o) { return o.optionTextEn || o.optionText; }),
+                        options_rw: (q.questionOptions || []).map(function(o) { return o.optionTextRw || o.optionText; }),
+                        correct: (q.questionOptions || []).findIndex(function(o) { return o.isCorrect; }),
+                        explanation_en: q.explanationEn || q.explanation || '',
+                        explanation_rw: q.explanationRw || '',
+                        subjectCode: q.questionBank ? q.questionBank.subjectId : '',
+                        level: q.questionBank ? q.questionBank.level : ''
+                    };
+                });
+            }).catch(function(err) {
+                console.error('Failed to load questions from API:', err);
+                // Fall back to local question bank
+                return getLocalQuestions(subjectKey, level, topic, difficulty);
+            });
+        }
+        // Fall back to local question bank if API not available
+        return Promise.resolve(getLocalQuestions(subjectKey, level, topic, difficulty));
     },
 
     shuffle: function(arr) {
@@ -298,19 +342,52 @@ var IremeGame = {
     },
 
     startGameplay: function() {
-        var questions = this.getQuestions(this.state.subject, this.state.level, this.state.topic, this.state.difficulty);
-        if (questions.length === 0) {
-            questions = this.getQuestions(this.state.subject);
+        var self = this;
+        var questionsPromise = this.getQuestions(this.state.subject, this.state.level, this.state.topic, this.state.difficulty);
+        
+        // Handle both Promise and array return types
+        if (questionsPromise && typeof questionsPromise.then === 'function') {
+            questionsPromise.then(function(questions) {
+                if (!questions || questions.length === 0) {
+                    return self.getQuestions(self.state.subject).then(function(q) {
+                        return q || [];
+                    });
+                }
+                return questions;
+            }).then(function(questions) {
+                if (!questions || questions.length === 0) {
+                    questions = self.questionBank.mathematics || [];
+                }
+                self.state.questions = self.shuffle(questions);
+                self.state.playerTurn = true;
+                self.state.currentRound = 0;
+                self.setPhase('playing');
+                self.saveState();
+                self.nextRound();
+            }).catch(function(err) {
+                console.error('Failed to load questions:', err);
+                // Fallback to local questions
+                var questions = self.questionBank[self.state.subject] || self.questionBank.mathematics || [];
+                self.state.questions = self.shuffle(questions);
+                self.state.playerTurn = true;
+                self.state.currentRound = 0;
+                self.setPhase('playing');
+                self.saveState();
+                self.nextRound();
+            });
+        } else {
+            // Synchronous fallback (shouldn't happen with new code)
+            var questions = questionsPromise || [];
+            if (questions.length === 0) {
+                questions = this.questionBank.mathematics || [];
+            }
+            this.state.questions = this.shuffle(questions);
+            this.state.playerTurn = true;
+            this.state.currentRound = 0;
+            this.setPhase('playing');
+            this.saveState();
+            this.nextRound();
         }
-        if (questions.length === 0) {
-            questions = this.questionBank.mathematics || [];
-        }
-        this.state.questions = this.shuffle(questions);
-        this.state.playerTurn = true;
-        this.state.currentRound = 0;
-        this.setPhase('playing');
-        this.saveState();
-        this.nextRound();
     },
 
     nextRound: function() {
