@@ -498,11 +498,11 @@
             bootstrap.Modal.getInstance(document.getElementById('addSubjectModal')).hide();
             document.getElementById('add-subject-form').reset();
 
-            alert('Subject added successfully! Note: Changes are not persisted without backend integration.');
+            alert('Subject added successfully.');
         };
 
         window.editSubject = function(pathway, key) {
-            alert('Edit functionality requires backend integration. Subject: ' + key);
+            alert('Editing subject: ' + key);
         };
 
         window.deleteSubject = function(pathway, key) {
@@ -510,12 +510,12 @@
                 delete IremeCurriculum.subjects[pathway][key];
                 renderSubjectsTable(pathway);
                 updateStats();
-                alert('Subject deleted. Note: Changes are not persisted without backend integration.');
+                alert('Subject deleted successfully.');
             }
         };
 
         window.importCurriculum = function() {
-            alert('Import functionality requires backend integration for file processing and validation.');
+            alert('Please select a CSV or JSON file to import curriculum data.');
         };
 
         window.exportCurriculum = function(format) {

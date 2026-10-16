@@ -285,20 +285,19 @@ var IremeAuth = (function () {
         },
 
         updateProfile: function (updates) {
-            // Profile editing requires the profile endpoint (Phase 2).
-            return Promise.resolve({ success: false, error: 'Profile editing is not available yet.' });
+            return Promise.resolve({ success: false, error: 'Profile editing is currently unavailable. Please contact support for assistance.' });
         },
 
         changePassword: function (currentPassword, newPassword) {
-            return Promise.resolve({ success: false, error: 'Password change is not available yet.' });
+            return Promise.resolve({ success: false, error: 'Password change is currently unavailable. Please contact support.' });
         },
 
         requestPasswordReset: function (email) {
-            return Promise.resolve({ success: false, error: 'Password reset by email is not available yet. Please contact support.' });
+            return Promise.resolve({ success: false, error: 'Please contact support to reset your password.' });
         },
 
         resetPassword: function (token, newPassword) {
-            return Promise.resolve({ success: false, error: 'Password reset is not available yet.' });
+            return Promise.resolve({ success: false, error: 'Password reset is currently unavailable. Please contact support.' });
         },
 
         getAllUsers: function (filters) {
@@ -348,7 +347,7 @@ var IremeAuth = (function () {
         },
 
         deleteUser: function (userId) {
-            return Promise.resolve({ success: false, error: 'User deletion is not available yet.' });
+            return Promise.resolve({ success: false, error: 'User deletion is currently unavailable. Please contact a super administrator.' });
         },
 
         getStats: function () {
