@@ -130,7 +130,12 @@
                     alertEl.textContent = 'Login successful! Redirecting...';
                     alertEl.classList.remove('d-none');
                     setTimeout(function() {
-                        window.location.href = IremeAuth.hasRole('super_admin') ? 'super-admin-dashboard.html' : 'admin-dashboard.html';
+                        var session = IremeAuth.getSession();
+                        if (session && !session.profileComplete) {
+                            window.location.href = 'profile-complete.html';
+                        } else {
+                            window.location.href = IremeAuth.hasRole('super_admin') ? 'super-admin-dashboard.html' : 'admin-dashboard.html';
+                        }
                     }, 800);
                 } else {
                     setLoading(false);

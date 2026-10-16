@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const path = require('path');
 const session = require('express-session');
 const passport = require('passport');
 const cors = require('cors');
@@ -113,6 +114,8 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/jobs', jobsRoutes);
 app.use('/api/locations', locationRoutes);
 app.use('/api', healthRoutes);
+
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 if (videoConfig.get().storage.mode === 'local') {
   app.use(videoConfig.get().storage.local.urlPrefix, express.static(videoConfig.get().storage.local.dir, {

@@ -48,6 +48,7 @@ var IremeAuth = (function () {
             role: user.role,
             status: user.status,
             avatarUrl: user.avatarUrl || null,
+            profileComplete: user.profileComplete || false,
             expiresAt: Date.now() + SESSION_DURATION,
         };
     }
@@ -264,6 +265,7 @@ var IremeAuth = (function () {
                         fullName: status.user.fullName,
                         role: status.user.role,
                         status: status.user.status,
+                        profileComplete: status.user.profileComplete || false,
                     });
                     if (existing && existing.email) fresh.email = existing.email;
                     if (existing && existing.avatarUrl) fresh.avatarUrl = existing.avatarUrl;

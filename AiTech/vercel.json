@@ -16,6 +16,10 @@
       "destination": "https://iremeairwanda-1.onrender.com/api/:path*"
     },
     {
+      "source": "/uploads/:path*",
+      "destination": "https://iremeairwanda-1.onrender.com/uploads/:path*"
+    },
+    {
       "source": "/media/:path*",
       "destination": "https://iremeairwanda-1.onrender.com/media/:path*"
     }

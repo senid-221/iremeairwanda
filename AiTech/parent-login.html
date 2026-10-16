@@ -150,7 +150,14 @@
                     alertEl.className = 'alert alert-success';
                     alertEl.textContent = 'Login successful! Redirecting...';
                     alertEl.classList.remove('d-none');
-                    setTimeout(function() { window.location.href = 'parent-dashboard.html'; }, 800);
+                    setTimeout(function() {
+                        var session = IremeAuth.getSession();
+                        if (session && !session.profileComplete) {
+                            window.location.href = 'profile-complete.html';
+                        } else {
+                            window.location.href = 'parent-dashboard.html';
+                        }
+                    }, 800);
                 } else {
                     setLoading(false);
                     alertEl.className = 'alert alert-danger';

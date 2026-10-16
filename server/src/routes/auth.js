@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { PrismaClient } = require('@prisma/client');
 const { requireAuth } = require('../middleware/auth');
+const { uploadCV, uploadFace } = require('../middleware/upload');
 const { SESSION_SECRET } = require('../config/secrets');
 const crypto = require('crypto');
 
@@ -27,6 +28,7 @@ function sanitizeUser(user) {
     emailVerified: user.emailVerified,
     avatarUrl: user.avatarUrl,
     phone: user.phone,
+    profileComplete: user.profileComplete || false,
   };
 }
 
@@ -265,18 +267,20 @@ router.patch('/profile', requireAuth, async (req, res) => {
 
 router.post('/logout', (req, res) => {
   if (!req.user) {
+    res.clearCookie('ireme.sid', { path: '/', httpOnly: true, secure: true, sameSite: 'lax' });
     return res.json({ message: 'Already logged out' });
   }
 
   req.logout((err) => {
     if (err) {
+      console.error('Logout error:', err);
       return res.status(500).json({ error: 'Logout failed' });
     }
     req.session.destroy((sessionErr) => {
       if (sessionErr) {
         console.error('Session destruction error:', sessionErr);
       }
-      res.clearCookie('ireme.sid');
+      res.clearCookie('ireme.sid', { path: '/', httpOnly: true, secure: true, sameSite: 'lax' });
       res.json({ message: 'Logged out successfully' });
     });
   });
@@ -291,6 +295,7 @@ router.get('/status', (req, res) => {
         fullName: req.user.fullName,
         role: req.user.role,
         status: req.user.status,
+        profileComplete: req.user.profileComplete || false,
       },
     });
   } else {
@@ -442,6 +447,150 @@ router.post('/verify-email/confirm', async (req, res) => {
   } catch (err) {
     console.error('Confirm email error:', err);
     return res.status(500).json({ error: 'Failed to verify email. Please try again.' });
+  }
+});
+
+router.post('/upload-cv', requireAuth, (req, res) => {
+  uploadCV(req, res, function (err) {
+    if (err instanceof require('multer').MulterError) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({ error: 'File too large. Maximum size is 5MB.' });
+      }
+      return res.status(400).json({ error: err.message });
+    } else if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded.' });
+    }
+    var cvUrl = '/uploads/cvs/' + req.file.filename;
+    res.json({ message: 'CV uploaded successfully.', cvUrl: cvUrl });
+  });
+});
+
+router.post('/upload-face', requireAuth, (req, res) => {
+  uploadFace(req, res, function (err) {
+    if (err instanceof require('multer').MulterError) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({ error: 'File too large. Maximum size is 2MB.' });
+      }
+      return res.status(400).json({ error: err.message });
+    } else if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded.' });
+    }
+    var faceUrl = '/uploads/faces/' + req.file.filename;
+    res.json({ message: 'Face scan uploaded successfully.', faceUrl: faceUrl });
+  });
+});
+
+router.post('/complete-profile', requireAuth, async (req, res) => {
+  try {
+    var userId = req.user.id;
+    var data = req.body;
+
+    var updateData = {};
+
+    if (data.fullName) updateData.fullName = data.fullName;
+    if (data.phone) updateData.phone = data.phone;
+    if (data.gender) updateData.gender = data.gender;
+    if (data.dateOfBirth) updateData.dateOfBirth = new Date(data.dateOfBirth);
+    if (data.educationTrack) updateData.educationTrack = data.educationTrack;
+    if (data.cvUrl) updateData.cvUrl = data.cvUrl;
+    if (data.faceScanUrl) updateData.faceScanUrl = data.faceScanUrl;
+
+    var userProfileData = {};
+    if (data.province) userProfileData.province = data.province;
+    if (data.district) userProfileData.district = data.district;
+    if (data.sector) userProfileData.sector = data.sector;
+    if (data.cell) userProfileData.cell = data.cell;
+    if (data.village) userProfileData.village = data.village;
+    if (data.nationalId) userProfileData.nationalId = data.nationalId;
+    if (data.nationality) userProfileData.nationality = data.nationality;
+
+    if (Object.keys(userProfileData).length > 0) {
+      await prisma.userProfile.upsert({
+        where: { userId: userId },
+        create: Object.assign({ userId: userId }, userProfileData),
+        update: userProfileData
+      });
+    }
+
+    if (data.role === 'STUDENT' || data.role === 'student') {
+      var studentProfileData = {};
+      if (data.studentId) studentProfileData.studentId = data.studentId;
+      if (data.dateOfBirth) studentProfileData.dateOfBirth = new Date(data.dateOfBirth);
+      if (data.gender) studentProfileData.gender = data.gender;
+      if (data.nationalId) studentProfileData.nationalId = data.nationalId;
+      if (data.nationality) studentProfileData.nationality = data.nationality;
+      if (data.bloodGroup) studentProfileData.bloodGroup = data.bloodGroup;
+      if (data.emergencyContactName) studentProfileData.emergencyContactName = data.emergencyContactName;
+      if (data.emergencyContactPhone) studentProfileData.emergencyContactPhone = data.emergencyContactPhone;
+      if (data.previousSchool) studentProfileData.previousSchool = data.previousSchool;
+
+      if (Object.keys(studentProfileData).length > 0) {
+        await prisma.studentProfile.upsert({
+          where: { userId: userId },
+          create: Object.assign({ userId: userId }, studentProfileData),
+          update: studentProfileData
+        });
+      }
+
+      if (data.schoolId && data.educationLevelId) {
+        var enrollmentData = {
+          studentProfileId: (await prisma.studentProfile.findUnique({ where: { userId: userId } })).id,
+          schoolId: data.schoolId,
+          educationLevelId: data.educationLevelId,
+          academicYearId: data.academicYearId || (await prisma.academicYear.findFirst({ where: { isCurrent: true } })).id,
+          status: 'active'
+        };
+        if (data.classId) enrollmentData.classId = data.classId;
+        if (data.curriculumProgrammeId) enrollmentData.curriculumProgrammeId = data.curriculumProgrammeId;
+        if (data.curriculumOptionId) enrollmentData.curriculumOptionId = data.curriculumOptionId;
+
+        await prisma.studentEnrollment.upsert({
+          where: {
+            studentProfileId_schoolId: {
+              studentProfileId: enrollmentData.studentProfileId,
+              schoolId: data.schoolId
+            }
+          },
+          create: enrollmentData,
+          update: { classId: enrollmentData.classId, educationLevelId: enrollmentData.educationLevelId }
+        });
+      }
+    }
+
+    if (data.schoolId && (data.role === 'TEACHER' || data.role === 'teacher')) {
+      var existingMembership = await prisma.schoolMembership.findUnique({
+        where: { schoolId_userId: { schoolId: data.schoolId, userId: userId } }
+      });
+      if (!existingMembership) {
+        await prisma.schoolMembership.create({
+          data: {
+            schoolId: data.schoolId,
+            userId: userId,
+            role: 'teacher',
+            status: 'active'
+          }
+        });
+      }
+    }
+
+    updateData.profileComplete = true;
+
+    var updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: updateData,
+      include: { userProfile: true, studentProfile: true }
+    });
+
+    return res.json({ message: 'Profile completed successfully.', user: sanitizeUser(updatedUser) });
+  } catch (err) {
+    console.error('Complete profile error:', err);
+    return res.status(500).json({ error: 'Failed to complete profile. Please try again.' });
   }
 });
 

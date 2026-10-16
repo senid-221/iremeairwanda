@@ -53,6 +53,11 @@ model User {
   updatedAt       DateTime      @updatedAt
   lastLoginAt     DateTime?
   deletedAt       DateTime?
+  
+  profileComplete Boolean @default(false)
+  cvUrl           String?
+  faceScanUrl     String?
+  educationTrack  String?
 
   userProfile       UserProfile?
   oauthAccounts     OAuthAccount[]
@@ -105,6 +110,13 @@ model User {
   videoLessons      VideoLesson[]
   videoGenerationJobs VideoGenerationJob[]
   videoLessonProgress VideoLessonProgress[]
+
+  tutorProfile      TutorProfile?
+  studentBookings   Booking[] @relation("StudentBookings")
+  parentBookings    Booking[] @relation("ParentBookings")
+  tutorReviewsGiven TutorReview[] @relation("TutorReviewsGiven")
+  bookingNotifications BookingNotification[]
+  savedTutors       TutorSave[]
 
   @@index([email])
   @@index([emailNormalized])
@@ -357,6 +369,8 @@ model EducationLevel {
   studentEnrollments StudentEnrollment[]
   resourceCurriculumLinks ResourceCurriculumLink[]
   questionCurriculumLinks QuestionCurriculumLink[]
+  tutorSubjects       TutorSubject[]
+  bookings            Booking[]
 
   @@index([code])
   @@index([levelType])
@@ -499,6 +513,8 @@ model Subject {
   schoolSubjects SchoolSubject[]
   teacherAssignments TeacherAssignment[]
   resourceCurriculumLinks ResourceCurriculumLink[]
+  tutorSubjects   TutorSubject[]
+  bookings        Booking[]
 
   @@index([code])
   @@index([subjectType])
@@ -1064,6 +1080,7 @@ model StudentProfile {
   studentProgress StudentProgress[]
   studentSkillMastery StudentSkillMastery[]
   revisionPlans RevisionPlan[]
+  bookings Booking[]
 
   @@index([userId])
   @@index([studentId])
@@ -2893,6 +2910,7 @@ model Province {
 
   userProfileRefs      UserProfile[]      @relation("UserProfileProvince")
   schoolLocationRefs   SchoolLocation[]   @relation("SchoolLocationProvince")
+  tutorServiceAreaRefs TutorServiceArea[] @relation("TutorServiceProvince")
 }
 
 model District {
@@ -2909,6 +2927,7 @@ model District {
 
   userProfileRefs      UserProfile[]      @relation("UserProfileDistrict")
   schoolLocationRefs   SchoolLocation[]   @relation("SchoolLocationDistrict")
+  tutorServiceAreaRefs TutorServiceArea[] @relation("TutorServiceDistrict")
 }
 
 model Sector {
@@ -2925,6 +2944,7 @@ model Sector {
 
   userProfileRefs      UserProfile[]      @relation("UserProfileSector")
   schoolLocationRefs   SchoolLocation[]   @relation("SchoolLocationSector")
+  tutorServiceAreaRefs TutorServiceArea[] @relation("TutorServiceSector")
 }
 
 model Cell {
@@ -2941,6 +2961,7 @@ model Cell {
 
   userProfileRefs      UserProfile[]      @relation("UserProfileCell")
   schoolLocationRefs   SchoolLocation[]   @relation("SchoolLocationCell")
+  tutorServiceAreaRefs TutorServiceArea[] @relation("TutorServiceCell")
 }
 
 model Village {
@@ -2956,4 +2977,310 @@ model Village {
 
   userProfileRefs      UserProfile[]      @relation("UserProfileVillage")
   schoolLocationRefs   SchoolLocation[]   @relation("SchoolLocationVillage")
+  tutorServiceAreaRefs TutorServiceArea[] @relation("TutorServiceVillage")
+}
+
+// ============================================
+// SECTION: TEACHER BOOKING & AI SKILLS MATCHING
+// ============================================
+
+model TutorProfile {
+  id                    String   @id @default(uuid())
+  userId                String   @unique
+  headline              String?
+  bio                   String?
+  hourlyRate            Float?
+  currency              String   @default("RWF")
+  experienceYears       Int?
+  teachingPhilosophy    String?
+  languages             String[]
+  lessonFormats         String[] // ONLINE, IN_PERSON_AT_TUTOR, IN_PERSON_AT_STUDENT
+  isAvailable           Boolean  @default(true)
+  profileVisibility     String   @default("public") // public, private, unlisted
+  cvUrl                 String?
+  cvAnalyzedAt          DateTime?
+  cvAnalysisVersion     String?
+  totalBookings         Int      @default(0)
+  completedLessons      Int      @default(0)
+  cancellationRate      Float    @default(0)
+  responseRate          Float    @default(0)
+  avgResponseTimeMins   Int?
+  rating                Float    @default(0)
+  reviewCount           Int      @default(0)
+  verificationStatus    String   @default("unverified") // unverified, pending, verified, rejected
+  verifiedAt            DateTime?
+  verifiedBy            String?
+  profileApproved       Boolean  @default(false)
+  approvedAt            DateTime?
+  approvedBy            String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  user                  User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subjects              TutorSubject[]
+  serviceAreas          TutorServiceArea[]
+  availability          TutorAvailability[]
+  skillAssessments      TutorSkillAssessment[]
+  verifications         TutorVerification[]
+  bookingsAsTutor       Booking[] @relation("TutorBookings")
+  reviews               TutorReview[]
+  savedBy               TutorSave[]
+
+  @@index([userId])
+  @@index([verificationStatus])
+  @@index([isAvailable])
+  @@index([rating])
+}
+
+model TutorSubject {
+  id                    String   @id @default(uuid())
+  tutorProfileId        String
+  subjectId             String
+  educationLevelId      String?
+  proficiencyLevel      String   @default("proficient") // beginner, developing, proficient, advanced
+  aiScore               Float?
+  aiConfidence          Float?
+  aiEvidence            Json?
+  aiAssessedAt          DateTime?
+  manuallyVerified      Boolean  @default(false)
+  verifiedBy            String?
+  verifiedAt            DateTime?
+  hourlyRateOverride    Float?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  tutorProfile          TutorProfile @relation(fields: [tutorProfileId], references: [id], onDelete: Cascade)
+  subject               Subject @relation(fields: [subjectId], references: [id])
+  educationLevel        EducationLevel? @relation(fields: [educationLevelId], references: [id])
+
+  @@unique([tutorProfileId, subjectId, educationLevelId])
+  @@index([tutorProfileId])
+  @@index([subjectId])
+  @@index([educationLevelId])
+}
+
+model TutorServiceArea {
+  id                    String   @id @default(uuid())
+  tutorProfileId        String
+  province              String?
+  district              String?
+  sector                String?
+  cell                  String?
+  village               String?
+  provinceId            String?
+  districtId            String?
+  sectorId              String?
+  cellId                String?
+  villageId             String?
+  servesOnline          Boolean  @default(false)
+  createdAt             DateTime @default(now())
+
+  tutorProfile          TutorProfile @relation(fields: [tutorProfileId], references: [id], onDelete: Cascade)
+  provinceRef           Province? @relation("TutorServiceProvince", fields: [provinceId], references: [id])
+  districtRef           District? @relation("TutorServiceDistrict", fields: [districtId], references: [id])
+  sectorRef             Sector? @relation("TutorServiceSector", fields: [sectorId], references: [id])
+  cellRef               Cell? @relation("TutorServiceCell", fields: [cellId], references: [id])
+  villageRef            Village? @relation("TutorServiceVillage", fields: [villageId], references: [id])
+
+  @@index([tutorProfileId])
+  @@index([provinceId])
+  @@index([districtId])
+}
+
+model TutorAvailability {
+  id                    String   @id @default(uuid())
+  tutorProfileId        String
+  dayOfWeek             Int // 0=Sunday, 6=Saturday
+  startTime             String // HH:mm format
+  endTime               String // HH:mm format
+  isRecurring           Boolean  @default(true)
+  specificDate          DateTime? // For one-off availability
+  isBooked              Boolean  @default(false)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  tutorProfile          TutorProfile @relation(fields: [tutorProfileId], references: [id], onDelete: Cascade)
+
+  @@index([tutorProfileId])
+  @@index([dayOfWeek])
+}
+
+model TutorSkillAssessment {
+  id                    String   @id @default(uuid())
+  tutorProfileId        String
+  skillName             String
+  skillCategory         String // subject, pedagogy, communication, technology
+  score                 Float // 0-100
+  level                 String // beginner, developing, proficient, advanced
+  confidence            Float // 0-1
+  evidence              Json?
+  rubricVersion         String
+  modelVersion          String
+  assessedAt            DateTime @default(now())
+  expiresAt             DateTime?
+  overriddenBy          String?
+  overrideReason        String?
+  overriddenAt          DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  tutorProfile          TutorProfile @relation(fields: [tutorProfileId], references: [id], onDelete: Cascade)
+
+  @@index([tutorProfileId])
+  @@index([skillCategory])
+  @@index([score])
+}
+
+model TutorVerification {
+  id                    String   @id @default(uuid())
+  tutorProfileId        String
+  verificationType      String // identity, qualification, cv_review, background_check
+  status                String // pending, approved, rejected
+  submittedAt           DateTime @default(now())
+  reviewedAt            DateTime?
+  reviewedBy            String?
+  reviewNotes           String?
+  documentUrls          String[]
+  rejectionReason       String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  tutorProfile          TutorProfile @relation(fields: [tutorProfileId], references: [id], onDelete: Cascade)
+
+  @@index([tutorProfileId])
+  @@index([status])
+  @@index([verificationType])
+}
+
+model Booking {
+  id                    String   @id @default(uuid())
+  bookingNumber         String   @unique
+  tutorProfileId        String
+  studentUserId         String
+  parentUserId          String?
+  studentProfileId      String?
+  subjectId             String
+  educationLevelId      String?
+  topicIds              String[]
+  lessonFormat          String // ONLINE, IN_PERSON_AT_TUTOR, IN_PERSON_AT_STUDENT
+  status                String   @default("pending") // pending, accepted, declined, cancelled, completed, rescheduled
+  scheduledDate         DateTime
+  startTime             String // HH:mm
+  endTime               String // HH:mm
+  durationMinutes       Int
+  location              String?
+  onlineMeetingUrl      String?
+  hourlyRate            Float
+  totalAmount           Float
+  currency              String   @default("RWF")
+  learningObjectives    String?
+  specialRequirements   String?
+  cancellationReason    String?
+  cancelledAt           DateTime?
+  cancelledBy           String?
+  rescheduledFromId     String?
+  completedAt           DateTime?
+  tutorConfirmedAt      DateTime?
+  studentNotifiedAt     DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  tutorProfile          TutorProfile @relation(fields: [tutorProfileId], references: [id])
+  studentUser           User @relation("StudentBookings", fields: [studentUserId], references: [id])
+  parentUser            User? @relation("ParentBookings", fields: [parentUserId], references: [id])
+  studentProfile        StudentProfile? @relation(fields: [studentProfileId], references: [id])
+  subject               Subject @relation(fields: [subjectId], references: [id])
+  educationLevel        EducationLevel? @relation(fields: [educationLevelId], references: [id])
+  reviews               TutorReview[]
+  notifications         BookingNotification[]
+
+  @@index([tutorProfileId])
+  @@index([studentUserId])
+  @@index([parentUserId])
+  @@index([status])
+  @@index([scheduledDate])
+  @@index([bookingNumber])
+}
+
+model BookingNotification {
+  id                    String   @id @default(uuid())
+  bookingId             String
+  userId                String
+  type                  String // booking_request, booking_accepted, booking_declined, booking_cancelled, booking_reminder, booking_completed
+  title                 String
+  message               String
+  data                  Json?
+  isRead                Boolean  @default(false)
+  readAt                DateTime?
+  createdAt             DateTime @default(now())
+
+  booking               Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  user                  User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId])
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+model TutorReview {
+  id                    String   @id @default(uuid())
+  bookingId             String   @unique
+  tutorProfileId        String
+  reviewerUserId        String
+  rating                Int // 1-5
+  comment               String?
+  punctuality           Int? // 1-5
+  professionalism       Int? // 1-5
+  knowledge             Int? // 1-5
+  communication         Int? // 1-5
+  wouldRecommend        Boolean  @default(true)
+  isVerified            Boolean  @default(false)
+  verifiedAt            DateTime?
+  responseFromTutor     String?
+  tutorRespondedAt      DateTime?
+  isAdminFlagged        Boolean  @default(false)
+  flagReason            String?
+  flaggedAt             DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  booking               Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  tutorProfile          TutorProfile @relation(fields: [tutorProfileId], references: [id], onDelete: Cascade)
+  reviewerUser          User @relation("TutorReviewsGiven", fields: [reviewerUserId], references: [id])
+
+  @@index([tutorProfileId])
+  @@index([reviewerUserId])
+  @@index([rating])
+  @@index([bookingId])
+}
+
+model TutorSave {
+  id                    String   @id @default(uuid())
+  tutorProfileId        String
+  userId                String
+  createdAt             DateTime @default(now())
+
+  tutorProfile          TutorProfile @relation(fields: [tutorProfileId], references: [id], onDelete: Cascade)
+  user                  User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([tutorProfileId, userId])
+  @@index([tutorProfileId])
+  @@index([userId])
+}
+
+model BookingSearchLog {
+  id                    String   @id @default(uuid())
+  userId                String?
+  subjectId             String?
+  educationLevelId      String?
+  locationProvince      String?
+  locationDistrict      String?
+  lessonFormat          String?
+  filtersUsed           Json?
+  resultsCount          Int?
+  createdAt             DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
 }
