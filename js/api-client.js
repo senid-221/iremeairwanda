@@ -257,6 +257,86 @@ var IremeAPI = (function() {
     createProgramme: function(data) {
       return this.post('/api/curriculum/programmes', data);
     },
+
+    getConversations: function() {
+      return this.get('/api/ai-tutor/conversations');
+    },
+
+    getConversation: function(id) {
+      return this.get('/api/ai-tutor/conversations/' + encodeURIComponent(id));
+    },
+
+    startConversation: function(data) {
+      return this.post('/api/ai-tutor/conversations', data);
+    },
+
+    sendMessage: function(conversationId, content) {
+      return this.post('/api/ai-tutor/conversations/' + encodeURIComponent(conversationId) + '/messages', { content: content });
+    },
+
+    archiveConversation: function(id) {
+      return this.delete('/api/ai-tutor/conversations/' + encodeURIComponent(id));
+    },
+
+    getProgressOverview: function() {
+      return this.get('/api/progress/overview');
+    },
+
+    getProgressSubjects: function() {
+      return this.get('/api/progress/subjects');
+    },
+
+    getProgressActivity: function(params) {
+      var qs = '';
+      if (params) {
+        var parts = [];
+        if (params.limit) parts.push('limit=' + params.limit);
+        if (params.offset) parts.push('offset=' + params.offset);
+        if (params.subjectId) parts.push('subjectId=' + encodeURIComponent(params.subjectId));
+        if (parts.length) qs = '?' + parts.join('&');
+      }
+      return this.get('/api/progress/activity' + qs);
+    },
+
+    getProgressMastery: function(subjectId) {
+      return this.get('/api/progress/mastery' + (subjectId ? '?subjectId=' + encodeURIComponent(subjectId) : ''));
+    },
+
+    getLearningGaps: function() {
+      return this.get('/api/progress/gaps');
+    },
+
+    getRecommendations: function() {
+      return this.get('/api/progress/recommendations');
+    },
+
+    getAssessments: function(params) {
+      var qs = '';
+      if (params) {
+        var parts = [];
+        if (params.subjectId) parts.push('subjectId=' + encodeURIComponent(params.subjectId));
+        if (params.educationLevelId) parts.push('educationLevelId=' + encodeURIComponent(params.educationLevelId));
+        if (params.type) parts.push('type=' + encodeURIComponent(params.type));
+        if (parts.length) qs = '?' + parts.join('&');
+      }
+      return this.get('/api/assessments' + qs);
+    },
+
+    getAssessment: function(id) {
+      return this.get('/api/assessments/' + encodeURIComponent(id));
+    },
+
+    startAssessment: function(id) {
+      return this.post('/api/assessments/' + encodeURIComponent(id) + '/start');
+    },
+
+    submitAssessment: function(id, attemptId, answers) {
+      return this.post('/api/assessments/' + encodeURIComponent(id) + '/submit', { attemptId: attemptId, answers: answers });
+    },
+
+    getAssessmentHistory: function() {
+      return this.get('/api/assessments/history');
+    },
   };
 })();
 

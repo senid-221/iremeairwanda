@@ -19,6 +19,10 @@ const dashboardRoutes = require('./routes/dashboard');
 const videoConfig = require('./config/video');
 const videoWorker = require('./services/video/worker');
 const schoolRoutes = require('./routes/schools');
+const assessmentRoutes = require('./routes/assessments');
+const progressRoutes = require('./routes/progress');
+const aiTutorRoutes = require('./routes/ai-tutor');
+const teacherRoutes = require('./routes/teacher');
 const { configurePassport } = require('./config/passport');
 const { SESSION_SECRET } = require('./config/secrets');
 
@@ -98,6 +102,10 @@ app.use('/api/game', gameRoutes);
 app.use('/api/curriculum', curriculumRoutes);
 app.use('/api/video-lessons', videoLessonRoutes);
 app.use('/api/schools', schoolRoutes);
+app.use('/api/assessments', assessmentRoutes);
+app.use('/api/progress', progressRoutes);
+app.use('/api/ai-tutor', aiTutorRoutes);
+app.use('/api/teacher', teacherRoutes);
 app.use('/api', healthRoutes);
 
 if (videoConfig.get().storage.mode === 'local') {

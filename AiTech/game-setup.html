@@ -333,11 +333,13 @@
     <script src="js/game-state.js"></script>
     <script>
         IremeComponents.initPage('game-setup.html');
+        IremeAuth.requireAuth('login.html');
 
-        var sel = { mode: 'quick', pathway: 'primary', level: 'P1', subject: null, subjectName: '', topic: 'all', difficulty: 'adaptive' };
+        var sel = { mode: 'quick', pathway: 'primary', level: 'P1', levelId: null, subject: null, subjectId: null, subjectName: '', topic: 'all', difficulty: 'adaptive' };
         var subjectDropdown = null;
         var topicDropdown = null;
         var levelDropdown = null;
+        var apiLevelsCache = [];
 
         var subjectIcons = {
             mathematics:'fa-calculator',english:'fa-book',kinyarwanda:'fa-language',science:'fa-flask',
@@ -364,75 +366,134 @@
         }
 
         function renderLevels() {
-            var levels = [];
-            if (typeof IremeCurriculum !== 'undefined') {
-                for (var pw in IremeCurriculum.pathways) {
-                    var pwLevels = IremeCurriculum.getPathwayLevels(pw);
-                    pwLevels.forEach(function(l) { levels.push({ level: l, pathway: pw }); });
-                }
-            }
-            if (levels.length === 0) {
-                levels = ['P1','P2','P3','P4','P5','P6','S1','S2','S3','S4','S5','S6'].map(function(l) {
-                    return { level: l, pathway: l.startsWith('P') ? 'primary' : 'secondary' };
+            if (!levelDropdown) return;
+            IremeDropdown.setLoading(levelDropdown, true);
+
+            IremeAPI.getCurriculumLevels().then(function(data) {
+                var levels = Array.isArray(data) ? data : (data.levels || []);
+                apiLevelsCache = levels;
+
+                var pathwayIcons = { primary: 'fa-school', secondary: 'fa-graduation-cap', tvet: 'fa-tools', ttc: 'fa-book-reader' };
+                var items = levels.map(function(l) {
+                    var pathway = (l.pathway || l.levelType || 'primary').toLowerCase();
+                    return {
+                        value: l.id,
+                        label: l.name || l.code || l.id,
+                        sublabel: pathway.charAt(0).toUpperCase() + pathway.slice(1),
+                        icon: pathwayIcons[pathway] || 'fa-layer-group'
+                    };
                 });
-            }
-            var pathwayIcons = { primary: 'fa-school', secondary: 'fa-graduation-cap', tvet: 'fa-tools', ttc: 'fa-book-reader' };
-            var items = levels.map(function(l) {
-                return {
-                    value: l.level + '|' + l.pathway,
-                    label: l.level,
-                    sublabel: l.pathway.charAt(0).toUpperCase() + l.pathway.slice(1),
-                    icon: pathwayIcons[l.pathway] || 'fa-layer-group'
-                };
-            });
-            if (levelDropdown) {
+
                 IremeDropdown.setItems(levelDropdown, items);
-                var defaultItem = items.find(function(it) { return it.value === (sel.level + '|' + sel.pathway); });
-                if (defaultItem) IremeDropdown.setValue(levelDropdown, defaultItem.value);
-            }
+                IremeDropdown.setLoading(levelDropdown, false);
+
+                if (items.length > 0) {
+                    IremeDropdown.setValue(levelDropdown, items[0].value);
+                }
+            }).catch(function(err) {
+                IremeDropdown.setLoading(levelDropdown, false);
+                showError('Could not load education levels. Please refresh the page.');
+            });
         }
 
-        function selectLevel(value) {
-            if (!value) {
+        function selectLevel(levelId) {
+            if (!levelId) {
                 sel.level = null;
+                sel.levelId = null;
                 sel.pathway = null;
             } else {
-                var parts = value.split('|');
-                sel.level = parts[0];
-                sel.pathway = parts[1];
+                sel.levelId = levelId;
+                var cached = apiLevelsCache.find(function(l) { return l.id === levelId; });
+                if (cached) {
+                    sel.level = cached.name || cached.code || cached.id;
+                    sel.pathway = (cached.pathway || cached.levelType || 'primary').toLowerCase();
+                } else {
+                    sel.level = levelId;
+                    sel.pathway = 'primary';
+                }
             }
+            sel.subject = null;
+            sel.subjectId = null;
+            sel.subjectName = '';
             loadSubjects();
             updateSummary();
         }
 
         function loadSubjects() {
             if (!subjectDropdown) return;
+            if (!sel.levelId) {
+                IremeDropdown.setItems(subjectDropdown, []);
+                return;
+            }
             IremeDropdown.setLoading(subjectDropdown, true);
-            setTimeout(function() {
-                var items = [];
-                if (typeof IremeCurriculum !== 'undefined') {
-                    var subjects = IremeCurriculum.getSubjectsForLevel(sel.pathway, sel.level);
-                    items = subjects.map(function(s) {
-                        return { value: s.key, label: s.name, sublabel: s.code + ' · ' + sel.level, icon: subjectIcons[s.key] || 'fa-book', searchText: s.nameRw || '' };
-                    });
-                }
+
+            IremeAPI.getCurriculumSubjects(sel.levelId).then(function(data) {
+                var subjects = Array.isArray(data) ? data : (data.subjects || []);
+                var items = subjects.map(function(s) {
+                    var key = (s.subjectId || s.id || s.key || '').toString();
+                    var name = s.name || s.subjectName || s.code || key;
+                    var code = s.code || s.subjectCode || '';
+                    return {
+                        value: key,
+                        label: name,
+                        sublabel: code ? code + ' · ' + sel.level : sel.level,
+                        icon: subjectIcons[s.key] || subjectIcons[name.toLowerCase().replace(/\s+/g, '')] || 'fa-book',
+                        searchText: s.nameRw || s.nameInKinyarwanda || ''
+                    };
+                });
                 IremeDropdown.setItems(subjectDropdown, items);
                 IremeDropdown.setLoading(subjectDropdown, false);
                 if (items.length > 0 && !sel.subject) {
                     IremeDropdown.setValue(subjectDropdown, items[0].value);
                 }
-            }, 300);
+                if (items.length === 0) {
+                    IremeDropdown.setItems(subjectDropdown, []);
+                }
+            }).catch(function(err) {
+                IremeDropdown.setLoading(subjectDropdown, false);
+                showError('Could not load subjects for this level. Please try again.');
+            });
         }
 
         function loadTopics() {
             if (!topicDropdown) return;
-            var topics = IremeGame.getTopicsForSubject(sel.subject);
-            var items = [{ value: 'all', label: 'All Topics', sublabel: 'Random mix', icon: 'fa-th' }];
-            topics.forEach(function(t) {
-                items.push({ value: t, label: t, sublabel: sel.subjectName || '', icon: 'fa-bookmark' });
-            });
-            IremeDropdown.setItems(topicDropdown, items);
+
+            // Start with "All Topics" as default
+            var defaultItems = [{ value: 'all', label: 'All Topics', sublabel: 'Random mix from question bank', icon: 'fa-th' }];
+            IremeDropdown.setItems(topicDropdown, defaultItems);
             IremeDropdown.setValue(topicDropdown, 'all');
+
+            if (!sel.subjectId || !sel.levelId) return;
+
+            IremeDropdown.setLoading(topicDropdown, true);
+
+            IremeAPI.getVideoTopics(sel.subjectId, sel.levelId).then(function(data) {
+                var topics = Array.isArray(data) ? data : (data.topics || []);
+                var items = [{ value: 'all', label: 'All Topics', sublabel: 'Random mix from question bank', icon: 'fa-th' }];
+                topics.forEach(function(t) {
+                    var topicId = t.id || t.topicId || t.name;
+                    var topicName = t.name || t.title || topicId;
+                    items.push({
+                        value: String(topicId),
+                        label: topicName,
+                        sublabel: sel.subjectName || '',
+                        icon: 'fa-bookmark'
+                    });
+                });
+                IremeDropdown.setItems(topicDropdown, items);
+                IremeDropdown.setLoading(topicDropdown, false);
+                IremeDropdown.setValue(topicDropdown, 'all');
+            }).catch(function(err) {
+                // API failed — fall back to local question bank topics
+                IremeDropdown.setLoading(topicDropdown, false);
+                var localTopics = IremeGame.getTopicsForSubject(sel.subject);
+                var items = [{ value: 'all', label: 'All Topics', sublabel: 'Random mix', icon: 'fa-th' }];
+                localTopics.forEach(function(t) {
+                    items.push({ value: t, label: t, sublabel: sel.subjectName || '', icon: 'fa-bookmark' });
+                });
+                IremeDropdown.setItems(topicDropdown, items);
+                IremeDropdown.setValue(topicDropdown, 'all');
+            });
         }
 
         function renderDifficulty() {
@@ -479,6 +540,24 @@
             var result = IremeGame.startMatchmaking(sel.pathway, sel.level, sel.subject, sel.subjectName, sel.topic, sel.difficulty, language, duration, sel.mode);
             if (result.error) { showError(result.messages.join('. ')); return; }
 
+            // Save match to backend
+            var matchPayload = {
+                educationLevelId: sel.levelId,
+                subjectId: sel.subjectId,
+                mode: sel.mode,
+                difficulty: sel.difficulty,
+                language: language,
+                totalRounds: duration,
+                topic: sel.topic === 'all' ? null : sel.topic,
+            };
+            IremeAPI.saveMatch(matchPayload).then(function(saved) {
+                if (saved && saved.matchId) {
+                    IremeGame.state.matchId = saved.matchId;
+                }
+            }).catch(function(err) {
+                // Non-fatal: game can still proceed with local state
+            });
+
             var overlay = document.getElementById('gs-overlay');
             var searchPhase = document.getElementById('gs-search-phase');
             var vsPhase = document.getElementById('gs-vs-phase');
@@ -486,7 +565,7 @@
             vsPhase.classList.remove('active');
             overlay.classList.add('active');
 
-            var user = (typeof IremeAuth !== 'undefined' && IremeAuth.getCurrentUser) ? IremeAuth.getCurrentUser() : null;
+            var user = (typeof IremeAuth !== 'undefined' && IremeAuth.currentUser) ? IremeAuth.currentUser() : null;
             var initials = user ? user.fullName.split(' ').map(function(n){return n[0]}).join('').slice(0,2).toUpperCase() : 'PL';
             document.getElementById('gs-av').textContent = initials;
 
@@ -544,13 +623,13 @@
                 searchPlaceholder: 'Search levels...',
                 maxHeight: '240px',
                 emptyText: 'No levels available',
+                loadingText: 'Loading levels...',
                 items: [],
                 onChange: function(value, item) {
                     selectLevel(value);
                 }
             });
 
-            renderLevels();
             renderDifficulty();
 
             subjectDropdown = IremeDropdown.create(document.getElementById('gs-subject-dropdown'), {
@@ -562,6 +641,7 @@
                 items: [],
                 onChange: function(value, item) {
                     sel.subject = value;
+                    sel.subjectId = value;
                     sel.subjectName = item.label;
                     loadTopics();
                     updateSummary();
@@ -573,6 +653,7 @@
                 searchPlaceholder: 'Search topics...',
                 maxHeight: '200px',
                 emptyText: 'No topics found',
+                loadingText: 'Loading topics...',
                 items: [{ value: 'all', label: 'All Topics', sublabel: 'Random mix', icon: 'fa-th' }],
                 onChange: function(value) {
                     sel.topic = value;
@@ -580,13 +661,46 @@
                 }
             });
 
-            loadSubjects();
+            // Load levels from API (this will cascade to subjects once a level is selected)
+            renderLevels();
 
             document.getElementById('gs-language').addEventListener('change', updateSummary);
             document.getElementById('gs-duration').addEventListener('change', updateSummary);
 
             updateSummary();
-            if (typeof IremeGameUI !== 'undefined') setTimeout(function() { IremeGameUI.renderHistory(); }, 300);
+
+            // Load match history from API, fall back to local
+            if (typeof IremeAPI !== 'undefined') {
+                IremeAPI.getMatchHistory(1, 10).then(function(data) {
+                    var matches = data.matches || data.history || [];
+                    if (matches.length > 0) {
+                        IremeGame.state.matchHistory = matches.map(function(m) {
+                            return {
+                                matchId: m.id || m.matchId,
+                                date: m.createdAt ? new Date(m.createdAt).toLocaleDateString() : (m.date || ''),
+                                subject: m.subjectId || m.subject || '',
+                                subjectName: m.subject ? m.subject.name || m.subject : '',
+                                level: m.educationLevel ? m.educationLevel.name || '' : (m.level || ''),
+                                pathway: m.educationLevel ? m.educationLevel.pathway || '' : (m.pathway || ''),
+                                topic: m.topic || 'all',
+                                difficulty: m.difficulty || 'adaptive',
+                                mode: m.mode || 'quick',
+                                opponent: m.opponent ? m.opponent.name || 'Opponent' : 'AI',
+                                playerScore: m.playerScore || 0,
+                                opponentScore: m.opponentScore || 0,
+                                result: m.playerScore > m.opponentScore ? 'win' : m.playerScore === m.opponentScore ? 'draw' : 'loss',
+                                accuracy: m.accuracy || 0,
+                            };
+                        });
+                        IremeGame.saveHistory();
+                    }
+                    if (typeof IremeGameUI !== 'undefined') IremeGameUI.renderHistory();
+                }).catch(function() {
+                    if (typeof IremeGameUI !== 'undefined') IremeGameUI.renderHistory();
+                });
+            } else {
+                if (typeof IremeGameUI !== 'undefined') setTimeout(function() { IremeGameUI.renderHistory(); }, 300);
+            }
         });
     </script>
 </body>
