@@ -347,6 +347,11 @@ var BookingService = {
           cancellationReason: reason || null,
           cancelledAt: new Date(),
           cancelledBy: userId
+        },
+        include: {
+          tutorProfile: {
+            select: { userId: true }
+          }
         }
       });
     }).then(function(booking) {
