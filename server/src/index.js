@@ -13,6 +13,10 @@ const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
 const gameRoutes = require('./routes/game');
 const healthRoutes = require('./routes/health');
+const curriculumRoutes = require('./routes/curriculum');
+const videoLessonRoutes = require('./routes/video-lessons');
+const videoConfig = require('./config/video');
+const videoWorker = require('./services/video/worker');
 const { configurePassport } = require('./config/passport');
 
 const app = express();
@@ -84,7 +88,20 @@ configurePassport(passport, prisma);
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/game', gameRoutes);
+app.use('/api/curriculum', curriculumRoutes);
+app.use('/api/video-lessons', videoLessonRoutes);
 app.use('/api', healthRoutes);
+
+if (videoConfig.get().storage.mode === 'local') {
+  app.use(videoConfig.get().storage.local.urlPrefix, express.static(videoConfig.get().storage.local.dir, {
+    setHeaders: function (res, filePath) {
+      if (filePath.endsWith('.mp4')) {
+        res.setHeader('Accept-Ranges', 'bytes');
+      }
+    },
+  }));
+  console.log(`Local video storage served at ${videoConfig.get().storage.local.urlPrefix}`);
+}
 
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
@@ -105,6 +122,8 @@ const startServer = async () => {
 
     await pool.query('SELECT 1');
     console.log('Session store pool connected');
+
+    videoWorker.start();
 
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`IREME Backend running on port ${PORT}`);

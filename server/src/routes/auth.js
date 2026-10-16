@@ -127,6 +127,9 @@ router.post('/login', async (req, res, next) => {
 });
 
 router.get('/google', (req, res, next) => {
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+    return res.status(501).json({ error: 'Google login is not configured' });
+  }
   const role = req.query.role || 'STUDENT';
   const allowedRoles = ['STUDENT', 'TEACHER', 'PARENT'];
   if (!allowedRoles.includes(role)) {

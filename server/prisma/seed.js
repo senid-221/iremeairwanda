@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
@@ -195,14 +196,23 @@ async function main() {
     }
   }
 
-  // Create education levels
+  // Create education levels (granular, matching the game and lesson selectors)
   console.log('Creating education levels...');
   const educationLevels = [
-    { code: 'P1-P6', name: 'Primary', nameEn: 'Primary (P1-P6)', nameRw: 'Primari (P1-P6)', levelType: 'primary', gradeRange: 'P1-P6', displayOrder: 1 },
-    { code: 'S1-S3', name: 'Lower Secondary', nameEn: 'Lower Secondary (S1-S3)', nameRw: 'Secondaire Inferieur (S1-S3)', levelType: 'secondary', gradeRange: 'S1-S3', displayOrder: 2 },
-    { code: 'S4-S6', name: 'Upper Secondary', nameEn: 'Upper Secondary (S4-S6)', nameRw: 'Secondaire Superieur (S4-S6)', levelType: 'secondary', gradeRange: 'S4-S6', displayOrder: 3 },
-    { code: 'TTC', name: 'TTC', nameEn: 'Teacher Training College', nameRw: 'Ishuri ry\'Abarezi', levelType: 'tvett', displayOrder: 4 },
-    { code: 'TVET', name: 'TVET', nameEn: 'Technical and Vocational Education', nameRw: 'Imyuga n\'Ubumeni', levelType: 'tvett', displayOrder: 5 },
+    { code: 'P1', name: 'Primary 1', nameEn: 'Primary 1', nameRw: 'Umwaka wa 1 Ubanza', levelType: 'primary', gradeRange: 'P1', displayOrder: 1 },
+    { code: 'P2', name: 'Primary 2', nameEn: 'Primary 2', nameRw: 'Umwaka wa 2 Ubanza', levelType: 'primary', gradeRange: 'P2', displayOrder: 2 },
+    { code: 'P3', name: 'Primary 3', nameEn: 'Primary 3', nameRw: 'Umwaka wa 3 Ubanza', levelType: 'primary', gradeRange: 'P3', displayOrder: 3 },
+    { code: 'P4', name: 'Primary 4', nameEn: 'Primary 4', nameRw: 'Umwaka wa 4 Ubanza', levelType: 'primary', gradeRange: 'P4', displayOrder: 4 },
+    { code: 'P5', name: 'Primary 5', nameEn: 'Primary 5', nameRw: 'Umwaka wa 5 Ubanza', levelType: 'primary', gradeRange: 'P5', displayOrder: 5 },
+    { code: 'P6', name: 'Primary 6', nameEn: 'Primary 6', nameRw: 'Umwaka wa 6 Ubanza', levelType: 'primary', gradeRange: 'P6', displayOrder: 6 },
+    { code: 'S1', name: 'Lower Secondary 1', nameEn: 'Senior 1', nameRw: 'Umwaka wa 1 wungirije', levelType: 'secondary', gradeRange: 'S1 (Ordinary)', displayOrder: 7 },
+    { code: 'S2', name: 'Lower Secondary 2', nameEn: 'Senior 2', nameRw: 'Umwaka wa 2 wungirije', levelType: 'secondary', gradeRange: 'S2 (Ordinary)', displayOrder: 8 },
+    { code: 'S3', name: 'Lower Secondary 3', nameEn: 'Senior 3', nameRw: 'Umwaka wa 3 wungirije', levelType: 'secondary', gradeRange: 'S3 (Ordinary)', displayOrder: 9 },
+    { code: 'S4', name: 'Upper Secondary 1', nameEn: 'Senior 4', nameRw: 'Umwaka wa 4 wungirije', levelType: 'secondary', gradeRange: 'S4 (Advanced)', displayOrder: 10 },
+    { code: 'S5', name: 'Upper Secondary 2', nameEn: 'Senior 5', nameRw: 'Umwaka wa 5 wungirije', levelType: 'secondary', gradeRange: 'S5 (Advanced)', displayOrder: 11 },
+    { code: 'S6', name: 'Upper Secondary 3', nameEn: 'Senior 6', nameRw: 'Umwaka wa 6 wungirije', levelType: 'secondary', gradeRange: 'S6 (Advanced)', displayOrder: 12 },
+    { code: 'TTC', name: 'Teacher Training College', nameEn: 'Teacher Training College', nameRw: "Ishuri ry'Abarezi", levelType: 'ttc', gradeRange: 'Year 1-3', displayOrder: 13 },
+    { code: 'TVET', name: 'Technical and Vocational Education', nameEn: 'Technical and Vocational Education', nameRw: "Imyuga n'Ubumeni", levelType: 'tvet', gradeRange: 'RQF Level 1-5', displayOrder: 14 },
   ];
 
   for (const level of educationLevels) {
@@ -210,6 +220,125 @@ async function main() {
       where: { code: level.code },
       update: level,
       create: level,
+    });
+  }
+
+  // Deactivate legacy grouped level rows from earlier seeds, if present
+  for (const legacyCode of ['P1-P6', 'S1-S3', 'S4-S6']) {
+    await prisma.educationLevel.updateMany({ where: { code: legacyCode }, data: { isActive: false } });
+  }
+
+  // Create subjects from the REB-sourced curriculum catalogue (AiTech/js/curriculum-data.js)
+  // verificationStatus/sourceName are carried over from the catalogue's review status.
+  console.log('Creating subjects...');
+  const REVIEWED_AT = new Date('2026-10-15');
+  const REB_PRIMARY = 'REB Primary Curriculum Framework';
+  const REB_ORDINARY = 'REB Ordinary Level Curriculum';
+  const REB_ADVANCED = 'REB Advanced Level Curriculum';
+
+  const subjects = [
+    { code: 'MAT', name: 'Mathematics', nameEn: 'Mathematics', nameRw: 'Imibare', subjectType: 'mathematics', sourceName: REB_PRIMARY, levels: ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6'], coreLevels: ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6'] },
+    { code: 'ENG', name: 'English', nameEn: 'English', nameRw: 'Icyongereza', subjectType: 'language', sourceName: REB_PRIMARY, levels: ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6'], coreLevels: ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6'] },
+    { code: 'KIN', name: 'Kinyarwanda', nameEn: 'Kinyarwanda', nameRw: 'Ikinyarwanda', subjectType: 'language', sourceName: REB_PRIMARY, levels: ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'S1', 'S2', 'S3'], coreLevels: ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'S1', 'S2', 'S3'] },
+    { code: 'FRE', name: 'French', nameEn: 'French', nameRw: 'Igifaransa', subjectType: 'language', sourceName: REB_PRIMARY, levels: ['P5', 'P6', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6'], coreLevels: ['S1', 'S2', 'S3', 'S4', 'S5', 'S6'] },
+    { code: 'SCI', name: 'Science', nameEn: 'Science', nameRw: 'Ubumenyi', subjectType: 'science', sourceName: REB_PRIMARY, levels: ['P4', 'P5', 'P6'], coreLevels: [] },
+    { code: 'ISC', name: 'Integrated Science', nameEn: 'Integrated Science', nameRw: 'Ubumenyi Rusange', subjectType: 'science', sourceName: REB_ORDINARY, levels: ['S1', 'S2', 'S3'], coreLevels: [] },
+    { code: 'SST', name: 'Social Studies', nameEn: 'Social Studies', nameRw: "Imibereho Y'abantu", subjectType: 'social', sourceName: REB_PRIMARY, levels: ['P4', 'P5', 'P6', 'S1', 'S2', 'S3'], coreLevels: [] },
+    { code: 'PHY', name: 'Physics', nameEn: 'Physics', nameRw: 'Fiziki', subjectType: 'science', sourceName: REB_ADVANCED, levels: ['S4', 'S5', 'S6'], coreLevels: [] },
+    { code: 'CHE', name: 'Chemistry', nameEn: 'Chemistry', nameRw: 'Shimi', subjectType: 'science', sourceName: REB_ADVANCED, levels: ['S4', 'S5', 'S6'], coreLevels: [] },
+    { code: 'BIO', name: 'Biology', nameEn: 'Biology', nameRw: 'Biyoloji', subjectType: 'science', sourceName: REB_ADVANCED, levels: ['S4', 'S5', 'S6'], coreLevels: [] },
+    { code: 'GEO', name: 'Geography', nameEn: 'Geography', nameRw: 'Geografi', subjectType: 'social', sourceName: REB_ADVANCED, levels: ['S4', 'S5', 'S6'], coreLevels: [] },
+    { code: 'HIS', name: 'History', nameEn: 'History', nameRw: 'Amateka', subjectType: 'social', sourceName: REB_ADVANCED, levels: ['S4', 'S5', 'S6'], coreLevels: [] },
+    { code: 'ECO', name: 'Economics', nameEn: 'Economics', nameRw: 'Ubukungu', subjectType: 'commerce', sourceName: REB_ADVANCED, levels: ['S4', 'S5', 'S6'], coreLevels: [] },
+    { code: 'ENT', name: 'Entrepreneurship', nameEn: 'Entrepreneurship', nameRw: 'Ubucuruzi', subjectType: 'commerce', sourceName: REB_ADVANCED, levels: ['S4', 'S5', 'S6'], coreLevels: [] },
+    { code: 'COM', name: 'Computer Science', nameEn: 'Computer Science', nameRw: 'Ikoranabuhanga', subjectType: 'vocational', sourceName: REB_ADVANCED, levels: ['S4', 'S5', 'S6'], coreLevels: [] },
+    { code: 'RED', name: 'Religious Education', nameEn: 'Religious Education', nameRw: 'Uburezi Bukomoka Ku Myemerere', subjectType: 'social', sourceName: REB_PRIMARY, levels: ['P1', 'P2', 'P3', 'P4', 'P5', 'P6'], coreLevels: [] },
+    { code: 'PED', name: 'Physical Education', nameEn: 'Physical Education', nameRw: 'Imyitozo Ngororamubiri', subjectType: 'arts', sourceName: REB_PRIMARY, levels: ['P1', 'P2', 'P3', 'P4', 'P5', 'P6'], coreLevels: [] },
+    { code: 'ART', name: 'Creative Arts', nameEn: 'Creative Arts', nameRw: 'Ubuhanzi', subjectType: 'arts', sourceName: REB_PRIMARY, levels: ['P1', 'P2', 'P3', 'P4', 'P5', 'P6'], coreLevels: [] },
+  ];
+
+  const levelByCode = {};
+  for (const level of educationLevels) {
+    levelByCode[level.code] = await prisma.educationLevel.findUnique({ where: { code: level.code } });
+  }
+
+  for (const subject of subjects) {
+    const saved = await prisma.subject.upsert({
+      where: { code: subject.code },
+      update: {
+        name: subject.name,
+        nameEn: subject.nameEn,
+        nameRw: subject.nameRw,
+        subjectType: subject.subjectType,
+        sourceName: subject.sourceName,
+        verificationStatus: 'verified',
+        lastReviewedAt: REVIEWED_AT,
+        isActive: true,
+      },
+      create: {
+        code: subject.code,
+        name: subject.name,
+        nameEn: subject.nameEn,
+        nameRw: subject.nameRw,
+        subjectType: subject.subjectType,
+        sourceName: subject.sourceName,
+        verificationStatus: 'verified',
+        lastReviewedAt: REVIEWED_AT,
+      },
+    });
+
+    let displayOrder = 0;
+    for (const levelCode of subject.levels) {
+      displayOrder++;
+      const level = levelByCode[levelCode];
+      if (!level) continue;
+      const existing = await prisma.levelSubject.findFirst({
+        where: { educationLevelId: level.id, subjectId: saved.id, academicYearId: null },
+      });
+      const isCore = subject.coreLevels.includes(levelCode);
+      if (existing) {
+        await prisma.levelSubject.update({ where: { id: existing.id }, data: { isCore, displayOrder } });
+      } else {
+        await prisma.levelSubject.create({
+          data: { educationLevelId: level.id, subjectId: saved.id, isCore, displayOrder },
+        });
+      }
+    }
+  }
+
+  // TTC and TVET programmes are pending verification against official documents
+  console.log('Creating TTC/TVET programmes (pending verification)...');
+  const programmes = [
+    { educationLevelCode: 'TTC', code: 'ECE', name: 'Early Childhood Education', nameEn: 'Early Childhood Education', nameRw: "Uburezi Bw'Imfura", programmeType: 'ttc', verificationStatus: 'pending' },
+    { educationLevelCode: 'TTC', code: 'PRT', name: 'Primary Teacher Training', nameEn: 'Primary Teacher Training', nameRw: "Amahugurwa Y'Abigisha B'amashuri Abanza", programmeType: 'ttc', verificationStatus: 'pending' },
+    { educationLevelCode: 'TVET', code: 'CON', name: 'Construction', nameEn: 'Construction', nameRw: 'Ubwubatsi', programmeType: 'tvet', verificationStatus: 'pending' },
+    { educationLevelCode: 'TVET', code: 'ELE', name: 'Electrical Engineering', nameEn: 'Electrical Engineering', nameRw: 'Amashanyarazi', programmeType: 'tvet', verificationStatus: 'pending' },
+    { educationLevelCode: 'TVET', code: 'AGR', name: 'Agriculture', nameEn: 'Agriculture', nameRw: 'Ubuhinzi', programmeType: 'tvet', verificationStatus: 'pending' },
+  ];
+
+  for (const programme of programmes) {
+    const level = levelByCode[programme.educationLevelCode];
+    if (!level) continue;
+    await prisma.curriculumProgramme.upsert({
+      where: { code: programme.code },
+      update: {
+        name: programme.name,
+        nameEn: programme.nameEn,
+        nameRw: programme.nameRw,
+        programmeType: programme.programmeType,
+        verificationStatus: programme.verificationStatus,
+        description: 'Pending verification against official curriculum documents.',
+      },
+      create: {
+        educationLevelId: level.id,
+        code: programme.code,
+        name: programme.name,
+        nameEn: programme.nameEn,
+        nameRw: programme.nameRw,
+        programmeType: programme.programmeType,
+        verificationStatus: programme.verificationStatus,
+        description: 'Pending verification against official curriculum documents.',
+      },
     });
   }
 
