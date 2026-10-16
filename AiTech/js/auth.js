@@ -306,11 +306,27 @@ var IremeAuth = (function () {
         },
 
         requestPasswordReset: function (email) {
-            return Promise.resolve({ success: false, error: 'Please contact support to reset your password.' });
+            var client = api();
+            if (!client) {
+                return Promise.resolve({ success: false, error: 'Authentication service unavailable.' });
+            }
+            return client.post('/api/auth/forgot-password', { email: email }).then(function (res) {
+                return { success: true, message: res.message || 'If that email is registered, a password reset link has been sent.' };
+            }).catch(function (err) {
+                return { success: false, error: friendlyError(err) };
+            });
         },
 
         resetPassword: function (token, newPassword) {
-            return Promise.resolve({ success: false, error: 'Password reset is currently unavailable. Please contact support.' });
+            var client = api();
+            if (!client) {
+                return Promise.resolve({ success: false, error: 'Authentication service unavailable.' });
+            }
+            return client.post('/api/auth/reset-password', { token: token, newPassword: newPassword }).then(function (res) {
+                return { success: true, message: res.message || 'Password has been reset successfully.' };
+            }).catch(function (err) {
+                return { success: false, error: friendlyError(err) };
+            });
         },
 
         getAllUsers: function (filters) {

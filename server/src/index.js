@@ -23,6 +23,8 @@ const assessmentRoutes = require('./routes/assessments');
 const progressRoutes = require('./routes/progress');
 const aiTutorRoutes = require('./routes/ai-tutor');
 const teacherRoutes = require('./routes/teacher');
+const notificationRoutes = require('./routes/notifications');
+const jobsRoutes = require('./routes/jobs');
 const { configurePassport } = require('./config/passport');
 const { SESSION_SECRET } = require('./config/secrets');
 
@@ -106,6 +108,8 @@ app.use('/api/assessments', assessmentRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/ai-tutor', aiTutorRoutes);
 app.use('/api/teacher', teacherRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/jobs', jobsRoutes);
 app.use('/api', healthRoutes);
 
 if (videoConfig.get().storage.mode === 'local') {
