@@ -180,7 +180,15 @@ var IremeLocation = (function () {
       clearDropdown(inst.dropdowns[levelOrder[i]]);
     }
     if (idx + 1 < levelOrder.length) {
-      loadOptions(inst, levelOrder[idx + 1]);
+      var nextLevel = levelOrder[idx + 1];
+      loadOptions(inst, nextLevel);
+      var nextDd = inst.dropdowns[nextLevel];
+      var nextInput = nextDd.querySelector('.location-search');
+      if (nextInput && nextDd._allItems && nextDd._allItems.length > 0) {
+        setTimeout(function() {
+          nextInput.focus();
+        }, 100);
+      }
     }
     if (inst.options.onChange) {
       inst.options.onChange(getSelection(inst.containerId));
