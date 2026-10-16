@@ -51,32 +51,32 @@
 
             <!-- Stat Cards -->
             <div class="row g-4 mb-5">
-                <div class="col-md-3 wow fadeIn" data-wow-delay="0.1s">
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.1s">
                     <div class="service-item rounded text-center p-4">
                         <i class="fa fa-child fa-2x text-primary mb-3"></i>
                         <h3 class="fw-bold" id="dash-parent-children">0</h3>
-                        <p class="mb-0" data-i18n="parent.childrenLinked">Children Linked</p>
+                        <p class="mb-0">Children Linked</p>
                     </div>
                 </div>
-                <div class="col-md-3 wow fadeIn" data-wow-delay="0.2s">
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.2s">
                     <div class="service-item rounded text-center p-4">
                         <i class="fa fa-bell fa-2x text-primary mb-3"></i>
                         <h3 class="fw-bold" id="dash-parent-notifications">0</h3>
-                        <p class="mb-0" data-i18n="parent.notifications">Notifications</p>
+                        <p class="mb-0">Notifications</p>
                     </div>
                 </div>
-                <div class="col-md-3 wow fadeIn" data-wow-delay="0.3s">
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.3s">
                     <div class="service-item rounded text-center p-4">
-                        <i class="fa fa-calendar-check fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold" id="dash-parent-attendance">—</h3>
-                        <p class="mb-0" data-i18n="parent.attendance">Attendance</p>
+                        <i class="fa fa-graduation-cap fa-2x text-primary mb-3"></i>
+                        <h3 class="fw-bold" id="dash-parent-subjects">0</h3>
+                        <p class="mb-0">Subjects</p>
                     </div>
                 </div>
-                <div class="col-md-3 wow fadeIn" data-wow-delay="0.4s">
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.4s">
                     <div class="service-item rounded text-center p-4">
-                        <i class="fa fa-envelope fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold" id="dash-parent-messages">0</h3>
-                        <p class="mb-0" data-i18n="parent.messages">Messages</p>
+                        <i class="fa fa-school fa-2x text-primary mb-3"></i>
+                        <h3 class="fw-bold" id="dash-parent-schools">0</h3>
+                        <p class="mb-0">Schools</p>
                     </div>
                 </div>
             </div>
@@ -85,7 +85,7 @@
                 <!-- My Children -->
                 <div class="col-lg-8 wow fadeIn" data-wow-delay="0.1s">
                     <div class="bg-light rounded p-4">
-                        <h4 class="mb-4" data-i18n="parent.myChildren">My Children</h4>
+                        <h4 class="mb-4">My Children</h4>
                         <div class="row g-3" id="dash-parent-children-list">
                             <div class="col-12 text-center text-muted py-3">Loading children...</div>
                         </div>
@@ -95,57 +95,64 @@
                 <!-- Quick Actions -->
                 <div class="col-lg-4 wow fadeIn" data-wow-delay="0.3s">
                     <div class="bg-light rounded p-4">
-                        <h4 class="mb-4" data-i18n="dashboard.overview">Quick Actions</h4>
+                        <h4 class="mb-4">Quick Actions</h4>
                         <div class="d-grid gap-3">
-                            <a href="parent-dashboard.html#children" class="btn btn-primary rounded-pill py-3" data-i18n="parent.viewReports">View Reports</a>
-                            <a href="contact.html" class="btn btn-outline-primary rounded-pill py-3" data-i18n="parent.contactTeacher">Contact Teacher</a>
-                            <a href="school-dashboard.html" class="btn btn-outline-primary rounded-pill py-3" data-i18n="parent.schoolAnnouncements">School Announcements</a>
-                            <a href="subscription.html" class="btn btn-outline-primary rounded-pill py-3" data-i18n="parent.accountSettings">Account Settings</a>
+                            <a href="resources.html" class="btn btn-primary rounded-pill py-3"><i class="fa fa-book me-2"></i>Browse Resources</a>
+                            <a href="contact.html" class="btn btn-outline-primary rounded-pill py-3"><i class="fa fa-envelope me-2"></i>Contact School</a>
+                            <a href="ai-tutor.html" class="btn btn-outline-primary rounded-pill py-3"><i class="fa fa-robot me-2"></i>Ask Ireme AI</a>
+                        </div>
+                        <hr class="my-4">
+                        <h5 class="mb-3">Overview</h5>
+                        <div class="service-item rounded p-3 mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="fw-bold">Notifications</small>
+                                <span class="badge bg-primary rounded-pill" id="dash-parent-notif-badge">0</span>
+                            </div>
+                        </div>
+                        <div class="service-item rounded p-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="fw-bold">Children Active</small>
+                                <span class="badge bg-success rounded-pill" id="dash-parent-active-badge">0</span>
+                            </div>
+                        </div>
+                        <hr class="my-4">
+                        <h5 class="mb-3">Settings</h5>
+                        <div class="d-grid gap-2">
+                            <a href="subscription.html" class="btn btn-sm btn-outline-primary rounded-pill"><i class="fa fa-credit-card me-1"></i>Subscription</a>
+                            <a href="profile.html" class="btn btn-sm btn-outline-primary rounded-pill"><i class="fa fa-user me-1"></i>My Profile</a>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Recent Announcements -->
+            <!-- Learning Resources -->
             <div class="row mt-4">
                 <div class="col-12 wow fadeIn" data-wow-delay="0.1s">
                     <div class="bg-light rounded p-4">
-                        <h4 class="mb-4" data-i18n="parent.recentAnnouncements">Recent Announcements</h4>
+                        <h4 class="mb-4">Support Your Child's Learning</h4>
                         <div class="row g-3">
                             <div class="col-md-4">
-                                <div class="service-item rounded p-3">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="service-icon btn-square me-3"><i class="fa fa-bullhorn fa-lg"></i></div>
-                                        <div>
-                                            <h6 class="mb-1" data-i18n="parent.announcement1Title">Parent-Teacher Meeting</h6>
-                                            <small class="text-muted">2026-10-14</small>
-                                        </div>
-                                    </div>
-                                    <p class="small mb-0" data-i18n="parent.announcement1Body">Annual parent-teacher meeting scheduled for October 20th at 9:00 AM.</p>
+                                <div class="service-item rounded p-3 text-center h-100">
+                                    <i class="fa fa-video fa-2x text-primary mb-3"></i>
+                                    <h6>Video Lessons</h6>
+                                    <p class="small text-muted mb-2">AI-generated video lessons aligned to the curriculum</p>
+                                    <a href="video-lessons.html" class="btn btn-sm btn-outline-primary rounded-pill">Explore</a>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="service-item rounded p-3">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="service-icon btn-square me-3"><i class="fa fa-book fa-lg"></i></div>
-                                        <div>
-                                            <h6 class="mb-1" data-i18n="parent.announcement2Title">Mid-Term Exams</h6>
-                                            <small class="text-muted">2026-10-12</small>
-                                        </div>
-                                    </div>
-                                    <p class="small mb-0" data-i18n="parent.announcement2Body">Mid-term examinations will begin on October 25th. Please ensure your child is prepared.</p>
+                                <div class="service-item rounded p-3 text-center h-100">
+                                    <i class="fa fa-gamepad fa-2x text-primary mb-3"></i>
+                                    <h6>Learning Games</h6>
+                                    <p class="small text-muted mb-2">Educational games that make learning fun</p>
+                                    <a href="game-setup.html" class="btn btn-sm btn-outline-primary rounded-pill">Play Now</a>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="service-item rounded p-3">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="service-icon btn-square me-3"><i class="fa fa-futbol fa-lg"></i></div>
-                                        <div>
-                                            <h6 class="mb-1" data-i18n="parent.announcement3Title">Sports Day</h6>
-                                            <small class="text-muted">2026-10-10</small>
-                                        </div>
-                                    </div>
-                                    <p class="small mb-0" data-i18n="parent.announcement3Body">Inter-school sports day on November 2nd. Parents are welcome to attend.</p>
+                                <div class="service-item rounded p-3 text-center h-100">
+                                    <i class="fa fa-robot fa-2x text-primary mb-3"></i>
+                                    <h6>AI Tutor</h6>
+                                    <p class="small text-muted mb-2">Get help with homework and exam prep</p>
+                                    <a href="ai-tutor.html" class="btn btn-sm btn-outline-primary rounded-pill">Ask AI</a>
                                 </div>
                             </div>
                         </div>
@@ -180,8 +187,20 @@
 
         IremeAPI.getDashboard('parent').then(function(data) {
             var children = data.children || [];
+            var notifCount = data.unreadNotificationCount || 0;
             document.getElementById('dash-parent-children').textContent = children.length;
-            document.getElementById('dash-parent-notifications').textContent = data.unreadNotificationCount || 0;
+            document.getElementById('dash-parent-notifications').textContent = notifCount;
+            document.getElementById('dash-parent-notif-badge').textContent = notifCount;
+            document.getElementById('dash-parent-active-badge').textContent = children.length;
+
+            var schools = {};
+            var subjectCount = 0;
+            children.forEach(function(c) {
+                if (c.school) schools[c.school.id || c.school.name] = true;
+                if (c.enrollments) subjectCount += c.enrollments.length;
+            });
+            document.getElementById('dash-parent-schools').textContent = Object.keys(schools).length;
+            document.getElementById('dash-parent-subjects').textContent = subjectCount;
 
             var childrenList = document.getElementById('dash-parent-children-list');
             if (children.length === 0) {

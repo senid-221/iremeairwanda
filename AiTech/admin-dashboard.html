@@ -40,28 +40,28 @@
     <div class="container-fluid py-5">
         <div class="container">
             <div class="row g-4 mb-5">
-                <div class="col-md-3 wow fadeIn" data-wow-delay="0.1s">
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.1s">
                     <div class="service-item rounded text-center p-4">
                         <i class="fa fa-users fa-2x text-primary mb-3"></i>
                         <h3 class="fw-bold" id="dash-admin-users">0</h3>
                         <p class="mb-0">Total Users</p>
                     </div>
                 </div>
-                <div class="col-md-3 wow fadeIn" data-wow-delay="0.2s">
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.2s">
                     <div class="service-item rounded text-center p-4">
                         <i class="fa fa-school fa-2x text-primary mb-3"></i>
                         <h3 class="fw-bold" id="dash-admin-schools">0</h3>
                         <p class="mb-0">Schools</p>
                     </div>
                 </div>
-                <div class="col-md-3 wow fadeIn" data-wow-delay="0.3s">
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.3s">
                     <div class="service-item rounded text-center p-4">
                         <i class="fa fa-clock fa-2x text-primary mb-3"></i>
                         <h3 class="fw-bold" id="dash-admin-pending">0</h3>
-                        <p class="mb-0">Pending Schools</p>
+                        <p class="mb-0">Pending Approval</p>
                     </div>
                 </div>
-                <div class="col-md-3 wow fadeIn" data-wow-delay="0.4s">
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.4s">
                     <div class="service-item rounded text-center p-4">
                         <i class="fa fa-gamepad fa-2x text-primary mb-3"></i>
                         <h3 class="fw-bold" id="dash-admin-matches">0</h3>
@@ -76,36 +76,14 @@
                         <h4 class="mb-4">Administration</h4>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <div class="service-item rounded p-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="service-icon btn-square me-3"><i class="fa fa-users-cog fa-lg"></i></div>
-                                        <div><h6 class="mb-1" data-i18n="dashboard.userManagement">User Management</h6><small class="text-muted">Manage users and roles</small></div>
+                                <a href="super-admin-dashboard.html" class="text-decoration-none">
+                                    <div class="service-item rounded p-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="service-icon btn-square me-3"><i class="fa fa-users-cog fa-lg"></i></div>
+                                            <div><h6 class="mb-1">User Management</h6><small class="text-muted">Manage users, roles, and approvals</small></div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="service-item rounded p-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="service-icon btn-square me-3"><i class="fa fa-database fa-lg"></i></div>
-                                        <div><h6 class="mb-1" data-i18n="dashboard.questionBank">Question Bank</h6><small class="text-muted">Review and approve questions</small></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="service-item rounded p-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="service-icon btn-square me-3"><i class="fa fa-cog fa-lg"></i></div>
-                                        <div><h6 class="mb-1" data-i18n="dashboard.gameConfig">Game Configuration</h6><small class="text-muted">Configure game settings</small></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="service-item rounded p-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="service-icon btn-square me-3"><i class="fa fa-credit-card fa-lg"></i></div>
-                                        <div><h6 class="mb-1" data-i18n="dashboard.subscriptions">Subscriptions</h6><small class="text-muted">Manage plans and payments</small></div>
-                                    </div>
-                                </div>
+                                </a>
                             </div>
                             <div class="col-md-6">
                                 <a href="curriculum-management.html" class="text-decoration-none">
@@ -118,12 +96,44 @@
                                 </a>
                             </div>
                             <div class="col-md-6">
-                                <div class="service-item rounded p-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="service-icon btn-square me-3"><i class="fa fa-shield-alt fa-lg"></i></div>
-                                        <div><h6 class="mb-1" data-i18n="dashboard.auditLog">Audit Log</h6><small class="text-muted">Review system activity</small></div>
+                                <a href="game-setup.html" class="text-decoration-none">
+                                    <div class="service-item rounded p-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="service-icon btn-square me-3"><i class="fa fa-database fa-lg"></i></div>
+                                            <div><h6 class="mb-1">Question Bank</h6><small class="text-muted">Review and manage game questions</small></div>
+                                        </div>
                                     </div>
-                                </div>
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="subscription.html" class="text-decoration-none">
+                                    <div class="service-item rounded p-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="service-icon btn-square me-3"><i class="fa fa-credit-card fa-lg"></i></div>
+                                            <div><h6 class="mb-1">Subscriptions</h6><small class="text-muted">Manage plans and payments</small></div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="schools-directory.html" class="text-decoration-none">
+                                    <div class="service-item rounded p-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="service-icon btn-square me-3"><i class="fa fa-school fa-lg"></i></div>
+                                            <div><h6 class="mb-1">Schools Directory</h6><small class="text-muted">View and manage schools</small></div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="video-lessons.html" class="text-decoration-none">
+                                    <div class="service-item rounded p-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="service-icon btn-square me-3"><i class="fa fa-video fa-lg"></i></div>
+                                            <div><h6 class="mb-1">Video Lessons</h6><small class="text-muted">AI video generation settings</small></div>
+                                        </div>
+                                    </div>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -131,22 +141,31 @@
 
                 <div class="col-lg-4 wow fadeIn" data-wow-delay="0.3s">
                     <div class="bg-light rounded p-4">
-                        <h4 class="mb-4">System Status</h4>
+                        <h4 class="mb-4">Quick Actions</h4>
+                        <div class="d-grid gap-3">
+                            <a href="super-admin-dashboard.html" class="btn btn-primary rounded-pill py-3"><i class="fa fa-user-shield me-2"></i>User Management</a>
+                            <a href="curriculum-management.html" class="btn btn-outline-primary rounded-pill py-3"><i class="fa fa-book me-2"></i>Curriculum</a>
+                            <a href="schools-directory.html" class="btn btn-outline-primary rounded-pill py-3"><i class="fa fa-school me-2"></i>Schools</a>
+                            <a href="ai-tutor.html" class="btn btn-outline-primary rounded-pill py-3"><i class="fa fa-robot me-2"></i>Ask Ireme AI</a>
+                        </div>
+                        <hr class="my-4">
+                        <h5 class="mb-3">System Status</h5>
                         <div class="mb-3">
-                            <div class="d-flex justify-content-between mb-1"><small>API Status</small><small class="text-success">Online</small></div>
-                            <div class="progress" style="height: 6px;"><div class="progress-bar bg-success" style="width: 100%"></div></div>
+                            <div class="d-flex justify-content-between mb-1"><small>API</small><small class="text-success fw-bold">Online</small></div>
+                            <div class="progress" style="height:6px"><div class="progress-bar bg-success" style="width:100%"></div></div>
                         </div>
                         <div class="mb-3">
-                            <div class="d-flex justify-content-between mb-1"><small>AI Service</small><small class="text-success">Online</small></div>
-                            <div class="progress" style="height: 6px;"><div class="progress-bar bg-success" style="width: 100%"></div></div>
+                            <div class="d-flex justify-content-between mb-1"><small>Database</small><small class="text-success fw-bold">Healthy</small></div>
+                            <div class="progress" style="height:6px"><div class="progress-bar bg-success" style="width:100%"></div></div>
                         </div>
                         <div class="mb-3">
-                            <div class="d-flex justify-content-between mb-1"><small>Database</small><small class="text-success">Healthy</small></div>
-                            <div class="progress" style="height: 6px;"><div class="progress-bar bg-success" style="width: 100%"></div></div>
+                            <div class="d-flex justify-content-between mb-1"><small>AI Service</small><small class="text-success fw-bold">Online</small></div>
+                            <div class="progress" style="height:6px"><div class="progress-bar bg-success" style="width:100%"></div></div>
                         </div>
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between mb-1"><small>Game Server</small><small class="text-success">Online</small></div>
-                            <div class="progress" style="height: 6px;"><div class="progress-bar bg-success" style="width: 100%"></div></div>
+                        <hr class="my-4">
+                        <h5 class="mb-3">Settings</h5>
+                        <div class="d-grid gap-2">
+                            <a href="profile.html" class="btn btn-sm btn-outline-primary rounded-pill"><i class="fa fa-user me-1"></i>My Profile</a>
                         </div>
                     </div>
                 </div>

@@ -40,32 +40,32 @@
     <div class="container-fluid py-5">
         <div class="container">
             <div class="row g-4 mb-5">
-                <div class="col-md-3 wow fadeIn" data-wow-delay="0.1s">
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.1s">
                     <div class="service-item rounded text-center p-4">
                         <i class="fa fa-users fa-2x text-primary mb-3"></i>
                         <h3 class="fw-bold" id="dash-teacher-students">0</h3>
-                        <p class="mb-0" data-i18n="dashboard.myStudents">My Students</p>
+                        <p class="mb-0">My Students</p>
                     </div>
                 </div>
-                <div class="col-md-3 wow fadeIn" data-wow-delay="0.2s">
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.2s">
                     <div class="service-item rounded text-center p-4">
                         <i class="fa fa-book fa-2x text-primary mb-3"></i>
                         <h3 class="fw-bold" id="dash-teacher-classes">0</h3>
-                        <p class="mb-0" data-i18n="dashboard.lessons">Classes</p>
+                        <p class="mb-0">Classes</p>
                     </div>
                 </div>
-                <div class="col-md-3 wow fadeIn" data-wow-delay="0.3s">
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.3s">
                     <div class="service-item rounded text-center p-4">
                         <i class="fa fa-clipboard-check fa-2x text-primary mb-3"></i>
                         <h3 class="fw-bold" id="dash-teacher-assignments">0</h3>
-                        <p class="mb-0" data-i18n="dashboard.assessments">Assignments</p>
+                        <p class="mb-0">Assignments</p>
                     </div>
                 </div>
-                <div class="col-md-3 wow fadeIn" data-wow-delay="0.4s">
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.4s">
                     <div class="service-item rounded text-center p-4">
                         <i class="fa fa-school fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold" id="dash-teacher-school-name" style="font-size:0.9rem">—</h3>
-                        <p class="mb-0" data-i18n="dashboard.school">School</p>
+                        <h3 class="fw-bold" id="dash-teacher-school-name" style="font-size:0.9rem">&mdash;</h3>
+                        <p class="mb-0">School</p>
                     </div>
                 </div>
             </div>
@@ -73,7 +73,7 @@
             <div class="row g-4">
                 <div class="col-lg-8 wow fadeIn" data-wow-delay="0.1s">
                     <div class="bg-light rounded p-4">
-                        <h4 class="mb-4" data-i18n="dashboard.myClasses">My Classes</h4>
+                        <h4 class="mb-4">My Classes</h4>
                         <div class="row g-3" id="dash-teacher-classes-list">
                             <div class="col-12 text-center text-muted py-3">Loading classes...</div>
                         </div>
@@ -84,10 +84,34 @@
                     <div class="bg-light rounded p-4">
                         <h4 class="mb-4">Quick Actions</h4>
                         <div class="d-grid gap-3">
-                            <button class="btn btn-primary rounded-pill py-3" data-i18n="dashboard.createLesson">Create Lesson</button>
-                            <button class="btn btn-outline-primary rounded-pill py-3" data-i18n="dashboard.createQuiz">Create Quiz</button>
-                            <button class="btn btn-outline-primary rounded-pill py-3" data-i18n="dashboard.viewReports">View Reports</button>
-                            <a href="ai-tutor.html" class="btn btn-outline-primary rounded-pill py-3" data-i18n="dashboard.aiAssistant">Ask Ireme AI</a>
+                            <a href="video-lessons.html" class="btn btn-primary rounded-pill py-3"><i class="fa fa-video me-2"></i>Video Lessons</a>
+                            <a href="resources.html" class="btn btn-outline-primary rounded-pill py-3"><i class="fa fa-book me-2"></i>Browse Resources</a>
+                            <a href="ai-tutor.html" class="btn btn-outline-primary rounded-pill py-3"><i class="fa fa-robot me-2"></i>Ask Ireme AI</a>
+                        </div>
+                        <hr class="my-4">
+                        <h5 class="mb-3">Class Summary</h5>
+                        <div class="service-item rounded p-3 mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="fw-bold">Total Students</small>
+                                <small class="text-primary fw-bold" id="dash-teacher-student-summary">0</small>
+                            </div>
+                        </div>
+                        <div class="service-item rounded p-3 mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="fw-bold">Active Classes</small>
+                                <small class="text-success fw-bold" id="dash-teacher-class-summary">0</small>
+                            </div>
+                        </div>
+                        <div class="service-item rounded p-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="fw-bold">Assignments</small>
+                                <small class="text-warning fw-bold" id="dash-teacher-assign-summary">0</small>
+                            </div>
+                        </div>
+                        <hr class="my-4">
+                        <h5 class="mb-3">Settings</h5>
+                        <div class="d-grid gap-2">
+                            <a href="profile.html" class="btn btn-sm btn-outline-primary rounded-pill"><i class="fa fa-user me-1"></i>My Profile</a>
                         </div>
                     </div>
                 </div>
@@ -146,8 +170,11 @@
             document.getElementById('dash-teacher-students').textContent = students.length;
             document.getElementById('dash-teacher-classes').textContent = classes.length;
             document.getElementById('dash-teacher-assignments').textContent = assignments.length;
+            document.getElementById('dash-teacher-student-summary').textContent = students.length;
+            document.getElementById('dash-teacher-class-summary').textContent = classes.length;
+            document.getElementById('dash-teacher-assign-summary').textContent = assignments.length;
             if (school) {
-                document.getElementById('dash-teacher-school-name').textContent = school.nameEn || school.name || '—';
+                document.getElementById('dash-teacher-school-name').textContent = school.nameEn || school.name || '\u2014';
             }
 
             var classesList = document.getElementById('dash-teacher-classes-list');

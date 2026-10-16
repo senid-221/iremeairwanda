@@ -42,28 +42,28 @@
             </div>
 
             <div class="row g-4 mb-4">
-                <div class="col-md-3 col-sm-6 wow fadeIn" data-wow-delay="0.1s">
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.1s">
                     <div class="service-item rounded p-4 text-center">
                         <div class="service-icon btn-square rounded-circle mb-3 mx-auto"><i class="fa fa-users fa-lg"></i></div>
                         <h3 class="fw-bold mb-1" id="sa-total-users">0</h3>
                         <p class="text-muted mb-0">Total Users</p>
                     </div>
                 </div>
-                <div class="col-md-3 col-sm-6 wow fadeIn" data-wow-delay="0.2s">
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.2s">
                     <div class="service-item rounded p-4 text-center">
                         <div class="service-icon btn-square rounded-circle mb-3 mx-auto"><i class="fa fa-user-shield fa-lg"></i></div>
                         <h3 class="fw-bold mb-1" id="sa-admin-count">0</h3>
                         <p class="text-muted mb-0">Administrators</p>
                     </div>
                 </div>
-                <div class="col-md-3 col-sm-6 wow fadeIn" data-wow-delay="0.3s">
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.3s">
                     <div class="service-item rounded p-4 text-center">
                         <div class="service-icon btn-square rounded-circle mb-3 mx-auto"><i class="fa fa-clock fa-lg"></i></div>
                         <h3 class="fw-bold mb-1" id="sa-pending-count">0</h3>
                         <p class="text-muted mb-0">Pending Approval</p>
                     </div>
                 </div>
-                <div class="col-md-3 col-sm-6 wow fadeIn" data-wow-delay="0.4s">
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.4s">
                     <div class="service-item rounded p-4 text-center">
                         <div class="service-icon btn-square rounded-circle mb-3 mx-auto"><i class="fa fa-exclamation-triangle fa-lg"></i></div>
                         <h3 class="fw-bold mb-1" id="sa-suspended-count">0</h3>
@@ -75,11 +75,11 @@
             <div class="row g-4">
                 <div class="col-lg-8">
                     <div class="bg-light rounded p-4 wow fadeIn" data-wow-delay="0.1s">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
                             <h4 class="mb-0">User Management</h4>
                             <div class="d-flex gap-2">
-                                <input type="text" class="form-control form-control-sm" placeholder="Search users..." id="sa-search" style="width:200px;">
-                                <select class="form-select form-select-sm" id="sa-role-filter" style="width:150px;">
+                                <input type="text" class="form-control form-control-sm" placeholder="Search users..." id="sa-search" style="width:200px">
+                                <select class="form-select form-select-sm" id="sa-role-filter" style="width:150px">
                                     <option value="">All Roles</option>
                                 </select>
                             </div>
@@ -102,31 +102,32 @@
                 </div>
                 <div class="col-lg-4">
                     <div class="bg-light rounded p-4 mb-4 wow fadeIn" data-wow-delay="0.2s">
-                        <h4 class="mb-4">System Health</h4>
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between small mb-1"><span>Database</span><span class="text-success">Online</span></div>
-                            <div class="progress" style="height:6px;"><div class="progress-bar bg-success" style="width:100%"></div></div>
-                        </div>
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between small mb-1"><span>Auth Service</span><span class="text-success">Online</span></div>
-                            <div class="progress" style="height:6px;"><div class="progress-bar bg-success" style="width:100%"></div></div>
-                        </div>
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between small mb-1"><span>AI Service</span><span class="text-success">Online</span></div>
-                            <div class="progress" style="height:6px;"><div class="progress-bar bg-success" style="width:95%"></div></div>
-                        </div>
-                        <div>
-                            <div class="d-flex justify-content-between small mb-1"><span>Storage</span><span class="text-warning">78%</span></div>
-                            <div class="progress" style="height:6px;"><div class="progress-bar bg-warning" style="width:78%"></div></div>
+                        <h4 class="mb-4">Quick Actions</h4>
+                        <div class="d-grid gap-3">
+                            <a href="curriculum-management.html" class="btn btn-primary rounded-pill py-3"><i class="fa fa-book me-2"></i>Curriculum</a>
+                            <a href="schools-directory.html" class="btn btn-outline-primary rounded-pill py-3"><i class="fa fa-school me-2"></i>Schools</a>
+                            <a href="admin-dashboard.html" class="btn btn-outline-primary rounded-pill py-3"><i class="fa fa-tachometer-alt me-2"></i>Admin Dashboard</a>
+                            <a href="ai-tutor.html" class="btn btn-outline-primary rounded-pill py-3"><i class="fa fa-robot me-2"></i>Ask Ireme AI</a>
                         </div>
                     </div>
                     <div class="bg-light rounded p-4 wow fadeIn" data-wow-delay="0.3s">
-                        <h4 class="mb-4">Quick Actions</h4>
-                        <div class="d-grid gap-3">
-                            <button class="btn btn-danger rounded-pill py-3">Security Audit Log</button>
-                            <button class="btn btn-outline-primary rounded-pill py-3">Role Permissions</button>
-                            <button class="btn btn-outline-primary rounded-pill py-3">System Settings</button>
-                            <a href="admin-dashboard.html" class="btn btn-outline-primary rounded-pill py-3">Admin Dashboard</a>
+                        <h4 class="mb-4">System Health</h4>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between small mb-1"><span>Database</span><span class="text-success fw-bold">Online</span></div>
+                            <div class="progress" style="height:6px"><div class="progress-bar bg-success" style="width:100%"></div></div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between small mb-1"><span>Auth Service</span><span class="text-success fw-bold">Online</span></div>
+                            <div class="progress" style="height:6px"><div class="progress-bar bg-success" style="width:100%"></div></div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between small mb-1"><span>AI Service</span><span class="text-success fw-bold">Online</span></div>
+                            <div class="progress" style="height:6px"><div class="progress-bar bg-success" style="width:95%"></div></div>
+                        </div>
+                        <hr class="my-3">
+                        <h5 class="mb-3">Settings</h5>
+                        <div class="d-grid gap-2">
+                            <a href="profile.html" class="btn btn-sm btn-outline-primary rounded-pill"><i class="fa fa-user me-1"></i>My Profile</a>
                         </div>
                     </div>
                 </div>
@@ -168,10 +169,10 @@
 
             IremeAPI.getDashboard('super_admin').then(function(data) {
                 var stats = data.stats || {};
-                var health = data.systemHealth || {};
                 document.getElementById('sa-total-users').textContent = stats.totalUsers || 0;
                 document.getElementById('sa-admin-count').textContent = (stats.userRoles ? (stats.userRoles.ADMIN || 0) + (stats.userRoles.SUPER_ADMIN || 0) : 0);
                 document.getElementById('sa-pending-count').textContent = stats.pendingVerifications || 0;
+                document.getElementById('sa-suspended-count').textContent = (stats.userRoles ? stats.userRoles.SUSPENDED || 0 : 0);
             }).catch(function() {});
 
             renderUsersTable();

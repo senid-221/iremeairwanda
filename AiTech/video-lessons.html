@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>IREME — AI Video Lessons</title>
+    <title>IREME - AI Video Lessons</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <link href="img/ireme-icon.png" rel="icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,227 +14,304 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
     <style>
-        :root{--ip:#1363C6;--is:#15ACE1;--il:#F4F7FE;--id:#14183E;--ig:#F4A926;--im:#6B7A99;--iline:#E5EAF4;--igrn:#12B981;--ired:#e35656}
-        .vl-page{font-family:'Open Sans',sans-serif;color:var(--id)}
-        .vl-tabs{display:flex;gap:6px;margin:18px 0 22px;flex-wrap:wrap}
-        .vl-tab{border:1px solid var(--iline);background:#fff;border-radius:10px;padding:9px 16px;font-size:11px;font-weight:700;color:var(--im);cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:7px}
-        .vl-tab:hover{border-color:var(--is);color:var(--ip)}
-        .vl-tab.active{border-color:var(--ip);background:#e9f0ff;color:var(--ip)}
-        .vl-card{background:#fff;border:1px solid var(--iline);border-radius:19px;padding:26px;box-shadow:0 5px 20px rgba(24,54,106,.05);margin-bottom:18px}
-        .vl-eyebrow{display:inline-flex;align-items:center;gap:7px;color:var(--ip);font-weight:800;letter-spacing:1.7px;font-size:10px;text-transform:uppercase;background:#e9f0ff;padding:6px 14px;border-radius:20px}
-        .vl-title{font-size:22px;margin:12px 0 6px;letter-spacing:-.5px;color:var(--id)}
-        .vl-sub{color:var(--im);font-size:12px;margin-bottom:18px}
-        .vl-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-        .vl-field label{font-size:9px;font-weight:700;color:var(--im);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px}
-        .vl-field .ireme-dropdown{width:100%}
-        .vl-btn-row{display:flex;gap:6px;flex-wrap:wrap}
-        .vl-chip{border:1px solid var(--iline);background:#fafbfe;border-radius:8px;padding:7px 12px;font-size:10px;font-weight:700;cursor:pointer;transition:.2s}
-        .vl-chip:hover{border-color:var(--is)}
-        .vl-chip.active{border-color:var(--ip);background:#e9f0ff;color:var(--ip)}
-        .vl-input{width:100%;height:42px;border:1px solid var(--iline);background:#fff;border-radius:9px;padding:0 12px;font-size:12px;color:var(--id);transition:.2s}
-        .vl-input:focus{border-color:var(--ip);outline:none;box-shadow:0 0 0 2px rgba(19,99,198,.15)}
-        .vl-textarea{width:100%;min-height:80px;border:1px solid var(--iline);background:#fff;border-radius:9px;padding:10px 12px;font-size:12px;color:var(--id);resize:vertical;transition:.2s}
-        .vl-textarea:focus{border-color:var(--ip);outline:none;box-shadow:0 0 0 2px rgba(19,99,198,.15)}
-        .vl-generate{width:100%;border:0;background:linear-gradient(135deg,#1363C6,#15ACE1);color:#fff;min-height:46px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;gap:10px;font-weight:800;font-size:12px;cursor:pointer;transition:.2s;box-shadow:0 10px 25px rgba(19,99,198,.25)}
-        .vl-generate:hover{transform:translateY(-2px);box-shadow:0 13px 30px rgba(19,99,198,.35)}
-        .vl-generate:disabled{opacity:.5;cursor:not-allowed;transform:none}
-        .vl-quota{font-size:10px;color:var(--im);margin-top:10px;text-align:center}
-        .vl-ai-note{background:#fff8e1;border:1px solid #ffe082;border-radius:10px;padding:10px 14px;margin-top:14px;font-size:10px;color:#7a5f00}
-        .vl-progress-bar{height:10px;background:#e9f0ff;border-radius:6px;overflow:hidden;margin:14px 0}
-        .vl-progress-fill{height:100%;background:linear-gradient(90deg,var(--ip),var(--is));transition:width .4s;border-radius:6px}
-        .vl-stage{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--iline)}
-        .vl-stage:last-child{border-bottom:0}
-        .vl-stage-dot{width:22px;height:22px;border-radius:50%;background:#e9f0ff;color:var(--im);display:grid;place-items:center;font-size:9px;font-weight:800;flex:none}
-        .vl-stage-dot.active{background:var(--ip);color:#fff;animation:vlPulse 1.5s infinite}
-        .vl-stage-dot.done{background:var(--igrn);color:#fff}
-        .vl-stage-dot.failed{background:var(--ired);color:#fff}
-        .vl-stage-label{font-size:11px;font-weight:700;color:var(--id)}
-        .vl-stage-sub{font-size:9px;color:var(--im)}
-        @keyframes vlPulse{0%,100%{opacity:1}50%{opacity:.5}}
         .vl-player-wrap{position:relative;background:#000;border-radius:14px;overflow:hidden;aspect-ratio:16/9}
         .vl-player-wrap video{width:100%;height:100%;display:block}
-        .vl-badge{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:700;padding:4px 10px;border-radius:20px}
-        .vl-badge-ai{background:#fff3e0;color:#b45309;border:1px solid #fed7aa}
-        .vl-badge-status{background:#e9f0ff;color:var(--ip);border:1px solid #c7d9f5}
-        .vl-badge-completed{background:#e9faf4;color:#0da170;border:1px solid #a7f3d0}
-        .vl-badge-failed{background:#fff0f0;color:#e35656;border:1px solid #fecaca}
-        .vl-scenes{display:grid;gap:8px;margin-top:14px}
-        .vl-scene{display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--iline);border-radius:10px;cursor:pointer;transition:.2s;background:#fff}
-        .vl-scene:hover{border-color:var(--is);background:#f5f9ff}
-        .vl-scene.active{border-color:var(--ip);background:#e9f0ff}
-        .vl-scene-num{width:28px;height:28px;border-radius:7px;background:#e9f0ff;color:var(--ip);display:grid;place-items:center;font-size:9px;font-weight:800}
-        .vl-scene-title{font-size:11px;font-weight:700;color:var(--id);margin:0}
-        .vl-scene-time{font-size:9px;color:var(--im)}
+        .vl-progress-fill-custom{height:100%;background:linear-gradient(90deg,var(--primary),var(--secondary));transition:width .4s;border-radius:6px}
+        .vl-stage{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--iline,#E5EAF4)}
+        .vl-stage:last-child{border-bottom:0}
+        .vl-stage-dot{width:26px;height:26px;border-radius:50%;background:var(--light);color:var(--im,#6B7A99);display:grid;place-items:center;font-size:10px;font-weight:700;flex:none;transition:.2s}
+        .vl-stage-dot.active{background:var(--primary);color:#fff;animation:vlPulse 1.5s infinite}
+        .vl-stage-dot.done{background:#12B981;color:#fff}
+        .vl-stage-dot.failed{background:#e35656;color:#fff}
+        @keyframes vlPulse{0%,100%{opacity:1}50%{opacity:.5}}
+        .vl-scenes{display:grid;gap:8px}
+        .vl-scene{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center;padding:10px 14px;border:1px solid var(--iline,#E5EAF4);border-radius:10px;cursor:pointer;transition:.2s;background:#fff}
+        .vl-scene:hover{border-color:var(--secondary);background:#f5f9ff}
+        .vl-scene.active{border-color:var(--primary);background:#e9f0ff}
+        .vl-scene-num{width:30px;height:30px;border-radius:8px;background:var(--light);color:var(--primary);display:grid;place-items:center;font-size:10px;font-weight:700}
         .vl-transcript{max-height:360px;overflow-y:auto;padding-right:6px}
         .vl-transcript-item{padding:8px 12px;border-left:3px solid transparent;cursor:pointer;border-radius:6px;transition:.2s;margin-bottom:4px}
         .vl-transcript-item:hover{background:#f5f9ff}
-        .vl-transcript-item.active{border-left-color:var(--ip);background:#e9f0ff}
-        .vl-transcript-item .tt-time{font-size:9px;color:var(--ip);font-weight:700}
-        .vl-transcript-item .tt-text{font-size:11px;color:var(--id);margin-top:3px;line-height:1.5}
-        .vl-quiz-q{margin-bottom:18px;padding:14px;background:#fafbfe;border:1px solid var(--iline);border-radius:12px}
-        .vl-quiz-q h5{font-size:13px;margin:0 0 10px;color:var(--id)}
-        .vl-quiz-opt{display:block;padding:9px 12px;border:1px solid var(--iline);border-radius:8px;margin-bottom:6px;cursor:pointer;transition:.2s;font-size:11px}
-        .vl-quiz-opt:hover{border-color:var(--is);background:#f5f9ff}
+        .vl-transcript-item.active{border-left-color:var(--primary);background:#e9f0ff}
+        .vl-transcript-item .tt-time{font-size:10px;color:var(--primary);font-weight:700}
+        .vl-transcript-item .tt-text{font-size:12px;color:var(--dark);margin-top:3px;line-height:1.5}
+        .vl-quiz-opt{display:block;padding:10px 14px;border:1px solid var(--iline,#E5EAF4);border-radius:10px;margin-bottom:6px;cursor:pointer;transition:.2s;font-size:12px;background:#fff}
+        .vl-quiz-opt:hover{border-color:var(--secondary);background:#f5f9ff}
         .vl-quiz-opt input{margin-right:8px}
-        .vl-quiz-opt.correct{border-color:var(--igrn);background:#e9faf4}
-        .vl-quiz-opt.incorrect{border-color:var(--ired);background:#fff0f0}
-        .vl-quiz-opt .explanation{margin-top:8px;padding:8px 10px;background:#fff;border-radius:6px;font-size:10px;color:var(--im);border-left:3px solid var(--is)}
-        .vl-lib-item{display:grid;grid-template-columns:60px 1fr auto;gap:12px;align-items:center;padding:12px;border:1px solid var(--iline);border-radius:12px;margin-bottom:10px;cursor:pointer;transition:.2s;background:#fff}
-        .vl-lib-item:hover{border-color:var(--is);box-shadow:0 4px 12px rgba(24,54,106,.06)}
-        .vl-lib-thumb{width:60px;height:40px;border-radius:8px;background:#e9f0ff;display:grid;place-items:center;color:var(--ip);font-size:18px}
-        .vl-lib-title{font-size:12px;font-weight:700;color:var(--id);margin:0}
-        .vl-lib-meta{font-size:9px;color:var(--im);margin-top:3px}
-        .vl-lib-actions{display:flex;gap:6px}
-        .vl-btn{border:1px solid var(--iline);background:#fff;border-radius:8px;padding:6px 12px;font-size:10px;font-weight:700;cursor:pointer;transition:.2s;color:var(--id)}
-        .vl-btn:hover{border-color:var(--ip);color:var(--ip)}
-        .vl-btn-primary{background:var(--ip);color:#fff;border-color:var(--ip)}
-        .vl-btn-primary:hover{background:#0f52a8}
-        .vl-btn-danger{color:var(--ired);border-color:#fecaca}
-        .vl-btn-danger:hover{background:#fff0f0}
-        .vl-empty{text-align:center;padding:40px 20px;color:var(--im);font-size:12px}
-        .vl-empty i{font-size:36px;margin-bottom:10px;opacity:.3}
-        .vl-error{background:#fff0f0;border:1px solid #fecaca;border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:11px;color:var(--ired)}
-        @media(max-width:768px){.vl-row{grid-template-columns:1fr}.vl-lib-item{grid-template-columns:44px 1fr}.vl-lib-thumb{width:44px;height:32px;font-size:14px}}
+        .vl-quiz-opt.correct{border-color:#12B981;background:#e9faf4}
+        .vl-quiz-opt.incorrect{border-color:#e35656;background:#fff0f0}
+        .vl-quiz-opt .explanation{margin-top:8px;padding:8px 12px;background:#fff;border-radius:8px;font-size:11px;color:var(--im,#6B7A99);border-left:3px solid var(--secondary)}
+        .vl-lib-item{display:grid;grid-template-columns:60px 1fr auto;gap:14px;align-items:center;padding:14px;border:1px solid var(--iline,#E5EAF4);border-radius:12px;margin-bottom:10px;cursor:pointer;transition:.2s;background:#fff}
+        .vl-lib-item:hover{border-color:var(--secondary);box-shadow:0 4px 12px rgba(24,54,106,.06)}
+        .vl-lib-thumb{width:60px;height:42px;border-radius:10px;background:var(--light);display:grid;place-items:center;color:var(--primary);font-size:20px}
+        .vl-lib-title{font-size:13px;font-weight:700;color:var(--dark);margin:0}
+        .vl-lib-meta{font-size:10px;color:var(--im,#6B7A99);margin-top:4px}
+        .vl-empty{text-align:center;padding:40px 20px;color:var(--im,#6B7A99);font-size:13px}
+        .vl-empty i{font-size:40px;margin-bottom:12px;opacity:.3}
+        .vl-error{background:#fff0f0;border:1px solid #fecaca;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:12px;color:#e35656}
+        .vl-ai-note{background:#fff8e1;border:1px solid #ffe082;border-radius:10px;padding:12px 16px;margin-top:16px;font-size:11px;color:#7a5f00}
+        @media(max-width:768px){.vl-lib-item{grid-template-columns:44px 1fr}.vl-lib-thumb{width:44px;height:32px;font-size:14px}}
     </style>
 </head>
 <body>
-    <div id="vl-app" class="vl-page">
-        <div id="vl-navbar"></div>
+    <div id="component-spinner"></div>
+    <div id="component-navbar"></div>
 
-        <div class="container py-4">
-            <div class="vl-eyebrow"><i class="fa fa-video"></i> <span data-i18n="video.eyebrow">AI Video Lessons</span></div>
-            <h1 class="vl-title" data-i18n="video.title">Learn with IREME AI Videos</h1>
-            <p class="vl-sub" data-i18n="video.subtitle">Personalized short video lessons generated from your curriculum.</p>
-
-            <div class="vl-tabs" id="vl-tabs">
-                <button class="vl-tab active" data-view="create"><i class="fa fa-plus-circle"></i> <span data-i18n="video.tabCreate">Create</span></button>
-                <button class="vl-tab" data-view="library"><i class="fa fa-bookmark"></i> <span data-i18n="video.tabLibrary">My Library</span> <span class="badge bg-primary" id="vl-lib-count" style="display:none"></span></button>
-            </div>
-
-            <div id="vl-view-create">
-                <div class="vl-card">
-                    <div class="vl-row">
-                        <div class="vl-field">
-                            <label data-i18n="video.level">Education Level</label>
-                            <div id="vl-level-dropdown"></div>
-                        </div>
-                        <div class="vl-field">
-                            <label data-i18n="video.subject">Subject</label>
-                            <div id="vl-subject-dropdown"></div>
-                        </div>
-                    </div>
-                    <div class="vl-field" style="margin-top:14px">
-                        <label data-i18n="video.topic">Topic</label>
-                        <div id="vl-topic-dropdown"></div>
-                        <input type="text" id="vl-custom-topic" class="vl-input" style="margin-top:8px;display:none" placeholder="Type your topic..." data-i18n-placeholder="video.customTopicPlaceholder">
-                        <label style="margin-top:8px;font-size:10px;color:var(--im);display:inline-flex;align-items:center;gap:6px;cursor:pointer">
-                            <input type="checkbox" id="vl-use-custom-topic"> <span data-i18n="video.useCustomTopic">Use a custom topic</span>
-                        </label>
-                    </div>
-                    <div class="vl-row" style="margin-top:14px">
-                        <div class="vl-field">
-                            <label data-i18n="video.language">Language</label>
-                            <div class="vl-btn-row" id="vl-language-row">
-                                <button class="vl-chip active" data-lang="en">English</button>
-                                <button class="vl-chip" data-lang="rw">Kinyarwanda</button>
-                            </div>
-                        </div>
-                        <div class="vl-field">
-                            <label data-i18n="video.duration">Duration</label>
-                            <div class="vl-btn-row" id="vl-duration-row">
-                                <button class="vl-chip" data-min="1">1-2 min</button>
-                                <button class="vl-chip active" data-min="3">3-5 min</button>
-                                <button class="vl-chip" data-min="5">5-8 min</button>
-                            </div>
-                        </div>
-                    </div>
-                    <button id="vl-generate-btn" class="vl-generate" style="margin-top:18px" disabled>
-                        <i class="fa fa-magic"></i> <span data-i18n="video.generate">Generate Video Lesson</span>
-                    </button>
-                    <div class="vl-quota" id="vl-quota"></div>
-                    <div class="vl-ai-note"><i class="fa fa-info-circle"></i> <span data-i18n="video.aiDisclosure">Lessons are AI-generated from verified curriculum sources. They are not official curriculum material.</span></div>
-                    <div id="vl-create-error"></div>
+    <!-- Hero Start -->
+    <div class="container-fluid pt-5 bg-primary hero-header">
+        <div class="container pt-5">
+            <div class="row g-5 pt-5">
+                <div class="col-lg-6 align-self-center text-center text-lg-start mb-lg-5">
+                    <h1 class="display-4 text-white mb-4 animated slideInRight" data-i18n="video.heroTitle">AI Video Lessons</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center justify-content-lg-start mb-0">
+                            <li class="breadcrumb-item"><a class="text-white" href="index.html" data-i18n="breadcrumb.home">Home</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page" data-i18n="breadcrumb.video">Video Lessons</li>
+                        </ol>
+                    </nav>
                 </div>
-            </div>
-
-            <div id="vl-view-progress" style="display:none">
-                <div class="vl-card">
-                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
-                        <div>
-                            <h3 class="vl-title" id="vl-progress-title"></h3>
-                            <p class="vl-sub" id="vl-progress-sub"></p>
-                        </div>
-                        <span class="vl-badge vl-badge-status" id="vl-progress-badge"></span>
-                    </div>
-                    <div class="vl-progress-bar"><div class="vl-progress-fill" id="vl-progress-fill" style="width:0%"></div></div>
-                    <div id="vl-progress-stages">
-                        <div class="vl-stage"><div class="vl-stage-dot" data-stage="planning">1</div><div><div class="vl-stage-label" data-i18n="video.stagePlanning">Planning lesson</div><div class="vl-stage-sub" data-i18n="video.stagePlanningSub">Writing the script aligned to your curriculum</div></div></div>
-                        <div class="vl-stage"><div class="vl-stage-dot" data-stage="narration">2</div><div><div class="vl-stage-label" data-i18n="video.stageNarration">Recording narration</div><div class="vl-stage-sub" data-i18n="video.stageNarrationSub">Generating voice-over in your language</div></div></div>
-                        <div class="vl-stage"><div class="vl-stage-dot" data-stage="visuals">3</div><div><div class="vl-stage-label" data-i18n="video.stageVisuals">Creating visuals</div><div class="vl-stage-sub" data-i18n="video.stageVisualsSub">Illustrations and title cards</div></div></div>
-                        <div class="vl-stage"><div class="vl-stage-dot" data-stage="render">4</div><div><div class="vl-stage-label" data-i18n="video.stageRender">Rendering video</div><div class="vl-stage-sub" data-i18n="video.stageRenderSub">Combining scenes, captions, and audio</div></div></div>
-                        <div class="vl-stage"><div class="vl-stage-dot" data-stage="upload">5</div><div><div class="vl-stage-label" data-i18n="video.stageUpload">Publishing</div><div class="vl-stage-sub" data-i18n="video.stageUploadSub">Saving to your library</div></div></div>
-                    </div>
-                    <div style="display:flex;gap:8px;margin-top:16px">
-                        <button id="vl-cancel-btn" class="vl-btn vl-btn-danger"><i class="fa fa-times"></i> <span data-i18n="video.cancel">Cancel</span></button>
-                        <button id="vl-back-create-btn" class="vl-btn"><i class="fa fa-arrow-left"></i> <span data-i18n="video.backToCreate">Back</span></button>
-                    </div>
-                    <div id="vl-progress-error"></div>
+                <div class="col-lg-6 align-self-end text-center text-lg-end">
+                    <img class="img-fluid" src="img/hero-img.png" alt="" style="max-height: 300px;">
                 </div>
-            </div>
-
-            <div id="vl-view-player" style="display:none">
-                <div class="vl-card">
-                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px">
-                        <div>
-                            <h3 class="vl-title" id="vl-player-title"></h3>
-                            <p class="vl-sub" id="vl-player-sub"></p>
-                        </div>
-                        <div style="display:flex;gap:6px;flex-wrap:wrap">
-                            <span class="vl-badge vl-badge-ai"><i class="fa fa-robot"></i> <span data-i18n="video.aiGenerated">AI-Generated</span></span>
-                            <button id="vl-library-toggle" class="vl-btn"><i class="fa fa-bookmark"></i> <span data-i18n="video.saveLibrary">Save</span></button>
-                        </div>
-                    </div>
-                    <div class="vl-player-wrap">
-                        <video id="vl-video" controls preload="metadata" crossorigin="anonymous"></video>
-                    </div>
-                    <div id="vl-player-error"></div>
-                    <div style="margin-top:14px">
-                        <h5 style="font-size:13px;margin:0 0 8px;color:var(--id)" data-i18n="video.scenes">Scenes</h5>
-                        <div class="vl-scenes" id="vl-scenes-list"></div>
-                    </div>
-                    <div class="vl-row" style="margin-top:18px">
-                        <div>
-                            <h5 style="font-size:13px;margin:0 0 8px;color:var(--id)" data-i18n="video.transcript">Transcript</h5>
-                            <div class="vl-transcript" id="vl-transcript"></div>
-                        </div>
-                        <div>
-                            <h5 style="font-size:13px;margin:0 0 8px;color:var(--id)" data-i18n="video.objectives">Learning Objectives</h5>
-                            <ul id="vl-objectives" style="font-size:11px;color:var(--id);padding-left:18px;line-height:1.7"></ul>
-                            <h5 style="font-size:13px;margin:14px 0 8px;color:var(--id)" data-i18n="video.sources">Sources</h5>
-                            <ul id="vl-sources" style="font-size:10px;color:var(--im);padding-left:18px;line-height:1.7"></ul>
-                        </div>
-                    </div>
-                    <div class="vl-card" style="margin-top:18px;background:#fafbfe" id="vl-quiz-section">
-                        <h4 style="font-size:15px;margin:0 0 12px;color:var(--id)"><i class="fa fa-question-circle text-primary"></i> <span data-i18n="video.quiz">Knowledge Check</span></h4>
-                        <div id="vl-quiz"></div>
-                        <button id="vl-quiz-submit" class="vl-generate" style="margin-top:12px;min-height:40px;font-size:11px" disabled>
-                            <i class="fa fa-check"></i> <span data-i18n="video.submitQuiz">Submit Answers</span>
-                        </button>
-                        <div id="vl-quiz-result" style="margin-top:12px"></div>
-                    </div>
-                    <div style="display:flex;gap:8px;margin-top:16px">
-                        <button id="vl-player-back-btn" class="vl-btn"><i class="fa fa-arrow-left"></i> <span data-i18n="video.backToLibrary">Back to Library</span></button>
-                        <a id="vl-ask-ai-btn" class="vl-btn" href="ai-tutor.html" style="text-decoration:none"><i class="fa fa-robot"></i> <span data-i18n="video.askAi">Ask IREME AI</span></a>
-                    </div>
-                </div>
-            </div>
-
-            <div id="vl-view-library" style="display:none">
-                <div id="vl-library-list"></div>
             </div>
         </div>
     </div>
+    <!-- Hero End -->
 
+    <!-- View Tabs Start -->
+    <div class="container-fluid bg-light py-4">
+        <div class="container py-3">
+            <div class="row g-3 wow fadeIn" data-wow-delay="0.1s">
+                <div class="col-12">
+                    <ul class="nav nav-pills d-flex justify-content-center flex-wrap gap-2" id="vl-tabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="btn btn-primary rounded-pill px-4 py-2 active" data-view="create" type="button" role="tab">
+                                <i class="fa fa-plus-circle me-1"></i> <span data-i18n="video.tabCreate">Create</span>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="btn btn-outline-primary rounded-pill px-4 py-2" data-view="library" type="button" role="tab">
+                                <i class="fa fa-bookmark me-1"></i> <span data-i18n="video.tabLibrary">My Library</span>
+                                <span class="badge bg-white text-primary ms-1" id="vl-lib-count" style="display:none"></span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- View Tabs End -->
+
+    <!-- Create View Start -->
+    <div id="vl-view-create" class="container-fluid py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-8 wow fadeIn" data-wow-delay="0.1s">
+                    <div class="bg-light rounded p-4">
+                        <h4 class="mb-4"><i class="fa fa-video text-primary me-2"></i><span data-i18n="video.createTitle">Generate a Video Lesson</span></h4>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted text-uppercase" data-i18n="video.level">Education Level</label>
+                                <div id="vl-level-dropdown"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted text-uppercase" data-i18n="video.subject">Subject</label>
+                                <div id="vl-subject-dropdown"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted text-uppercase" data-i18n="video.topic">Topic</label>
+                            <div id="vl-topic-dropdown"></div>
+                            <input type="text" id="vl-custom-topic" class="form-control mt-2" style="display:none" placeholder="Type your topic..." data-i18n-placeholder="video.customTopicPlaceholder">
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" id="vl-use-custom-topic">
+                                <label class="form-check-label small" for="vl-use-custom-topic" data-i18n="video.useCustomTopic">Use a custom topic</label>
+                            </div>
+                        </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted text-uppercase" data-i18n="video.language">Language</label>
+                                <div class="d-flex gap-2 flex-wrap" id="vl-language-row">
+                                    <button class="btn btn-primary rounded-pill px-4 py-2 btn-sm" data-lang="en">English</button>
+                                    <button class="btn btn-outline-primary rounded-pill px-4 py-2 btn-sm" data-lang="rw">Kinyarwanda</button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted text-uppercase" data-i18n="video.duration">Duration</label>
+                                <div class="d-flex gap-2 flex-wrap" id="vl-duration-row">
+                                    <button class="btn btn-outline-primary rounded-pill px-3 py-2 btn-sm" data-min="1">1-2 min</button>
+                                    <button class="btn btn-primary rounded-pill px-3 py-2 btn-sm" data-min="3">3-5 min</button>
+                                    <button class="btn btn-outline-primary rounded-pill px-3 py-2 btn-sm" data-min="5">5-8 min</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-grid mt-4">
+                            <button id="vl-generate-btn" class="btn btn-primary rounded-pill py-3" disabled>
+                                <i class="fa fa-magic me-2"></i> <span data-i18n="video.generate">Generate Video Lesson</span>
+                            </button>
+                        </div>
+                        <p class="text-center text-muted small mt-2" id="vl-quota"></p>
+                        <div class="vl-ai-note"><i class="fa fa-info-circle me-1"></i> <span data-i18n="video.aiDisclosure">Lessons are AI-generated from verified curriculum sources. They are not official curriculum material.</span></div>
+                        <div id="vl-create-error"></div>
+                    </div>
+                </div>
+                <div class="col-lg-4 wow fadeIn" data-wow-delay="0.3s">
+                    <div class="bg-light rounded p-4">
+                        <h4 class="mb-4">Quick Actions</h4>
+                        <div class="d-grid gap-3">
+                            <a href="ai-tutor.html" class="btn btn-outline-primary rounded-pill py-3"><i class="fa fa-robot me-2"></i>Ask IREME AI</a>
+                            <a href="resources.html" class="btn btn-outline-primary rounded-pill py-3"><i class="fa fa-book me-2"></i>Browse Resources</a>
+                            <a href="game-setup.html" class="btn btn-outline-primary rounded-pill py-3"><i class="fa fa-gamepad me-2"></i>Play Learning Game</a>
+                        </div>
+                        <hr class="my-4">
+                        <h5 class="mb-3">How It Works</h5>
+                        <div class="service-item rounded p-3 mb-2">
+                            <div class="d-flex align-items-center">
+                                <div class="btn-square bg-primary text-white rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:32px;height:32px;min-width:32px;font-size:12px;font-weight:700">1</div>
+                                <div><small class="fw-bold">Choose level, subject & topic</small></div>
+                            </div>
+                        </div>
+                        <div class="service-item rounded p-3 mb-2">
+                            <div class="d-flex align-items-center">
+                                <div class="btn-square bg-primary text-white rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:32px;height:32px;min-width:32px;font-size:12px;font-weight:700">2</div>
+                                <div><small class="fw-bold">AI generates your lesson</small></div>
+                            </div>
+                        </div>
+                        <div class="service-item rounded p-3">
+                            <div class="d-flex align-items-center">
+                                <div class="btn-square bg-primary text-white rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:32px;height:32px;min-width:32px;font-size:12px;font-weight:700">3</div>
+                                <div><small class="fw-bold">Watch, learn & take a quiz</small></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Create View End -->
+
+    <!-- Progress View Start -->
+    <div id="vl-view-progress" class="container-fluid py-5" style="display:none">
+        <div class="container">
+            <div class="row g-4 justify-content-center">
+                <div class="col-lg-8 wow fadeIn" data-wow-delay="0.1s">
+                    <div class="bg-light rounded p-4">
+                        <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                            <div>
+                                <h4 class="mb-1" id="vl-progress-title">Generating your lesson...</h4>
+                                <p class="text-muted small mb-0" id="vl-progress-sub">This takes a few minutes.</p>
+                            </div>
+                            <span class="badge bg-primary rounded-pill" id="vl-progress-badge"></span>
+                        </div>
+                        <div class="progress mb-4" style="height:8px;border-radius:6px">
+                            <div class="progress-bar" id="vl-progress-fill" role="progressbar" style="width:0%;background:linear-gradient(90deg,var(--primary),var(--secondary));border-radius:6px"></div>
+                        </div>
+                        <div id="vl-progress-stages">
+                            <div class="vl-stage"><div class="vl-stage-dot" data-stage="planning">1</div><div><div class="fw-bold small" data-i18n="video.stagePlanning">Planning lesson</div><div class="text-muted" style="font-size:10px" data-i18n="video.stagePlanningSub">Writing the script aligned to your curriculum</div></div></div>
+                            <div class="vl-stage"><div class="vl-stage-dot" data-stage="narration">2</div><div><div class="fw-bold small" data-i18n="video.stageNarration">Recording narration</div><div class="text-muted" style="font-size:10px" data-i18n="video.stageNarrationSub">Generating voice-over in your language</div></div></div>
+                            <div class="vl-stage"><div class="vl-stage-dot" data-stage="visuals">3</div><div><div class="fw-bold small" data-i18n="video.stageVisuals">Creating visuals</div><div class="text-muted" style="font-size:10px" data-i18n="video.stageVisualsSub">Illustrations and title cards</div></div></div>
+                            <div class="vl-stage"><div class="vl-stage-dot" data-stage="render">4</div><div><div class="fw-bold small" data-i18n="video.stageRender">Rendering video</div><div class="text-muted" style="font-size:10px" data-i18n="video.stageRenderSub">Combining scenes, captions, and audio</div></div></div>
+                            <div class="vl-stage"><div class="vl-stage-dot" data-stage="upload">5</div><div><div class="fw-bold small" data-i18n="video.stageUpload">Publishing</div><div class="text-muted" style="font-size:10px" data-i18n="video.stageUploadSub">Saving to your library</div></div></div>
+                        </div>
+                        <div class="d-flex gap-2 mt-4">
+                            <button id="vl-cancel-btn" class="btn btn-outline-danger rounded-pill btn-sm"><i class="fa fa-times me-1"></i> <span data-i18n="video.cancel">Cancel</span></button>
+                            <button id="vl-back-create-btn" class="btn btn-outline-primary rounded-pill btn-sm"><i class="fa fa-arrow-left me-1"></i> <span data-i18n="video.backToCreate">Back</span></button>
+                        </div>
+                        <div id="vl-progress-error"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Progress View End -->
+
+    <!-- Player View Start -->
+    <div id="vl-view-player" class="container-fluid py-5" style="display:none">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-8 wow fadeIn" data-wow-delay="0.1s">
+                    <div class="bg-light rounded p-4">
+                        <div class="d-flex justify-content-between align-items-start gap-3 mb-3 flex-wrap">
+                            <div>
+                                <h4 class="mb-1" id="vl-player-title"></h4>
+                                <p class="text-muted small mb-0" id="vl-player-sub"></p>
+                            </div>
+                            <div class="d-flex gap-2 flex-wrap">
+                                <span class="badge bg-warning text-dark rounded-pill"><i class="fa fa-robot me-1"></i> <span data-i18n="video.aiGenerated">AI-Generated</span></span>
+                                <button id="vl-library-toggle" class="btn btn-outline-primary rounded-pill btn-sm"><i class="fa fa-bookmark me-1"></i> <span data-i18n="video.saveLibrary">Save</span></button>
+                            </div>
+                        </div>
+                        <div class="vl-player-wrap mb-3">
+                            <video id="vl-video" controls preload="metadata" crossorigin="anonymous"></video>
+                        </div>
+                        <div id="vl-player-error"></div>
+                        <h5 class="mb-3" data-i18n="video.scenes">Scenes</h5>
+                        <div class="vl-scenes" id="vl-scenes-list"></div>
+                    </div>
+                </div>
+                <div class="col-lg-4 wow fadeIn" data-wow-delay="0.3s">
+                    <div class="bg-light rounded p-4 mb-4">
+                        <h5 class="mb-3" data-i18n="video.objectives">Learning Objectives</h5>
+                        <ul id="vl-objectives" class="small mb-0" style="padding-left:18px;line-height:1.8"></ul>
+                    </div>
+                    <div class="bg-light rounded p-4 mb-4">
+                        <h5 class="mb-3" data-i18n="video.sources">Sources</h5>
+                        <ul id="vl-sources" class="small text-muted mb-0" style="padding-left:18px;line-height:1.8"></ul>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button id="vl-player-back-btn" class="btn btn-outline-primary rounded-pill py-3"><i class="fa fa-arrow-left me-2"></i> <span data-i18n="video.backToLibrary">Back to Library</span></button>
+                        <a id="vl-ask-ai-btn" class="btn btn-primary rounded-pill py-3" href="ai-tutor.html"><i class="fa fa-robot me-2"></i> <span data-i18n="video.askAi">Ask IREME AI</span></a>
+                    </div>
+                </div>
+            </div>
+            <!-- Transcript -->
+            <div class="row g-4 mt-2 wow fadeIn" data-wow-delay="0.2s">
+                <div class="col-12">
+                    <div class="bg-light rounded p-4">
+                        <h5 class="mb-3" data-i18n="video.transcript">Transcript</h5>
+                        <div class="vl-transcript" id="vl-transcript"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Quiz -->
+            <div class="row g-4 mt-2 wow fadeIn" data-wow-delay="0.3s">
+                <div class="col-12">
+                    <div class="bg-light rounded p-4" id="vl-quiz-section">
+                        <h4 class="mb-4"><i class="fa fa-question-circle text-primary me-2"></i> <span data-i18n="video.quiz">Knowledge Check</span></h4>
+                        <div id="vl-quiz"></div>
+                        <div class="d-grid mt-3">
+                            <button id="vl-quiz-submit" class="btn btn-primary rounded-pill py-3" disabled>
+                                <i class="fa fa-check me-2"></i> <span data-i18n="video.submitQuiz">Submit Answers</span>
+                            </button>
+                        </div>
+                        <div id="vl-quiz-result" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Player View End -->
+
+    <!-- Library View Start -->
+    <div id="vl-view-library" class="container-fluid py-5" style="display:none">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-12 wow fadeIn" data-wow-delay="0.1s">
+                    <div id="vl-library-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Library View End -->
+
+    <div id="component-footer"></div>
+    <div id="component-backtotop"></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
     <script src="js/main.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/config.js"></script>
@@ -269,7 +346,15 @@
             ['create','progress','player','library'].forEach(function(v){
                 document.getElementById('vl-view-' + v).style.display = v === name ? 'block' : 'none';
             });
-            document.querySelectorAll('#vl-tabs .vl-tab').forEach(function(b){ b.classList.toggle('active', b.dataset.view === name); });
+            document.querySelectorAll('#vl-tabs button').forEach(function(b){
+                if (b.dataset.view === name) {
+                    b.classList.remove('btn-outline-primary');
+                    b.classList.add('btn-primary', 'active');
+                } else {
+                    b.classList.remove('btn-primary', 'active');
+                    b.classList.add('btn-outline-primary');
+                }
+            });
             if (state.pollTimer) { clearInterval(state.pollTimer); state.pollTimer = null; }
             if (name !== 'player' && state.progressTimer) { clearInterval(state.progressTimer); state.progressTimer = null; }
         }
@@ -283,7 +368,7 @@
         function showError(elId, msg) {
             var el = document.getElementById(elId);
             if (!msg) { el.innerHTML = ''; el.style.display = 'none'; return; }
-            el.innerHTML = '<div class="vl-error"><i class="fa fa-exclamation-triangle"></i> ' + msg + '</div>';
+            el.innerHTML = '<div class="vl-error"><i class="fa fa-exclamation-triangle me-1"></i> ' + msg + '</div>';
             el.style.display = 'block';
         }
 
@@ -291,7 +376,7 @@
             IremeAPI.getCurriculumLevels().then(function(data){
                 state.levels = data.levels || [];
                 state.dropdowns.level.setItems(state.levels.map(function(l){
-                    return { value: l.id, label: l.name, sublabel: l.code + ' • ' + l.levelType, icon: 'fa-graduation-cap' };
+                    return { value: l.id, label: l.name, sublabel: l.code + ' \u2022 ' + l.levelType, icon: 'fa-graduation-cap' };
                 }));
                 if (state.levels.length) selectLevel(state.levels[0].id);
             }).catch(function(e){ showError('vl-create-error', e.message); });
@@ -360,7 +445,7 @@
         function generateLesson() {
             var btn = document.getElementById('vl-generate-btn');
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Queuing...';
+            btn.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i> Queuing...';
             showError('vl-create-error', null);
             IremeAPI.requestVideoLesson({
                 subjectId: state.sel.subjectId,
@@ -382,7 +467,7 @@
                 }
             }).catch(function(e){
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fa fa-magic"></i> <span data-i18n="video.generate">Generate Video Lesson</span>';
+                btn.innerHTML = '<i class="fa fa-magic me-2"></i> <span data-i18n="video.generate">Generate Video Lesson</span>';
                 showError('vl-create-error', e.message || 'Could not queue video lesson');
             });
         }
@@ -458,7 +543,7 @@
                 state.currentLesson = lesson;
                 state.currentLessonId = lesson.id;
                 document.getElementById('vl-player-title').textContent = lesson.title || lesson.topicName || 'Video Lesson';
-                document.getElementById('vl-player-sub').textContent = (lesson.topicName || '') + ' • ' + (lesson.language === 'rw' ? 'Kinyarwanda' : 'English') + ' • ' + lesson.durationMinutes + ' min';
+                document.getElementById('vl-player-sub').textContent = (lesson.topicName || '') + ' \u2022 ' + (lesson.language === 'rw' ? 'Kinyarwanda' : 'English') + ' \u2022 ' + lesson.durationMinutes + ' min';
                 var video = document.getElementById('vl-video');
                 video.src = mediaUrl(lesson.videoUrl);
                 video.innerHTML = '';
@@ -491,11 +576,12 @@
 
         function renderScenes(scenes) {
             var el = document.getElementById('vl-scenes-list');
+            if (!scenes.length) { el.innerHTML = '<p class="text-muted small">No scene breakdown available.</p>'; return; }
             el.innerHTML = scenes.map(function(s){
                 return '<div class="vl-scene" data-time="' + s.startSeconds + '">' +
                     '<div class="vl-scene-num">' + s.sceneNumber + '</div>' +
-                    '<div><div class="vl-scene-title">' + escapeHtml(s.title) + '</div><div class="vl-scene-time">' + formatTime(s.startSeconds) + ' • ' + Math.round(s.durationSeconds) + 's</div></div>' +
-                    '<i class="fa fa-play-circle text-primary"></i></div>';
+                    '<div><div class="fw-bold small mb-0">' + escapeHtml(s.title) + '</div><small class="text-muted">' + formatTime(s.startSeconds) + ' \u2022 ' + Math.round(s.durationSeconds) + 's</small></div>' +
+                    '<i class="fa fa-play-circle text-primary fa-lg"></i></div>';
             }).join('');
             el.querySelectorAll('.vl-scene').forEach(function(node){
                 node.addEventListener('click', function(){
@@ -510,7 +596,7 @@
 
         function renderTranscript(transcript) {
             var el = document.getElementById('vl-transcript');
-            if (!transcript || !transcript.scenes || !transcript.scenes.length) { el.innerHTML = '<div class="vl-empty">No transcript available</div>'; return; }
+            if (!transcript || !transcript.scenes || !transcript.scenes.length) { el.innerHTML = '<div class="vl-empty"><i class="fa fa-file-alt d-block"></i>No transcript available</div>'; return; }
             el.innerHTML = transcript.scenes.map(function(s){
                 return '<div class="vl-transcript-item" data-time="' + s.startSeconds + '">' +
                     '<div class="tt-time">' + formatTime(s.startSeconds) + '</div>' +
@@ -529,6 +615,7 @@
 
         function renderObjectives(objectives) {
             var el = document.getElementById('vl-objectives');
+            if (!objectives.length) { el.innerHTML = '<li class="text-muted">No specific objectives listed.</li>'; return; }
             el.innerHTML = objectives.map(function(o){ return '<li>' + escapeHtml(o) + '</li>'; }).join('');
         }
 
@@ -542,13 +629,13 @@
 
         function renderQuiz(questions, progress) {
             var el = document.getElementById('vl-quiz');
-            if (!questions.length) { el.innerHTML = '<div class="vl-empty">No knowledge check for this lesson.</div>'; return; }
+            if (!questions.length) { el.innerHTML = '<div class="vl-empty"><i class="fa fa-question-circle d-block"></i>No knowledge check for this lesson.</div>'; return; }
             el.innerHTML = questions.map(function(q, i){
                 var opts = (q.options || []).map(function(opt, j){
                     return '<label class="vl-quiz-opt" data-q="' + i + '" data-opt="' + j + '">' +
                         '<input type="radio" name="q' + i + '" value="' + j + '"> ' + escapeHtml(opt) + '</label>';
                 }).join('');
-                return '<div class="vl-quiz-q"><h5>Question ' + (i + 1) + '</h5><p style="font-size:12px;color:var(--id);margin:0 0 10px">' + escapeHtml(q.questionText) + '</p>' + opts + '</div>';
+                return '<div class="bg-white rounded p-3 mb-3 border"><h6 class="mb-2">Question ' + (i + 1) + '</h6><p class="small mb-3">' + escapeHtml(q.questionText) + '</p>' + opts + '</div>';
             }).join('');
             el.querySelectorAll('.vl-quiz-opt').forEach(function(node){
                 node.addEventListener('click', function(){
@@ -556,14 +643,14 @@
                     var radio = node.querySelector('input');
                     radio.checked = true;
                     node.parentElement.querySelectorAll('.vl-quiz-opt').forEach(function(n){ n.style.borderColor = ''; });
-                    node.style.borderColor = 'var(--ip)';
+                    node.style.borderColor = 'var(--primary)';
                     checkQuizReady();
                 });
             });
             if (progress && progress.quizCompletedAt) {
                 state.quizSubmitted = true;
                 document.getElementById('vl-quiz-submit').style.display = 'none';
-                el.innerHTML = '<div class="vl-badge vl-badge-completed" style="padding:10px 16px"><i class="fa fa-check"></i> Quiz completed: ' + progress.quizScore + '/' + progress.quizTotal + '</div>';
+                el.innerHTML = '<div class="text-center py-4"><span class="badge bg-success rounded-pill px-4 py-3 fs-6"><i class="fa fa-check me-2"></i>Quiz completed: ' + progress.quizScore + '/' + progress.quizTotal + '</span></div>';
             }
         }
 
@@ -599,7 +686,7 @@
                     });
                 });
                 var res = document.getElementById('vl-quiz-result');
-                res.innerHTML = '<div class="vl-badge vl-badge-completed" style="padding:12px 20px;font-size:12px"><i class="fa fa-trophy"></i> Score: ' + data.score + '/' + data.total + '</div>';
+                res.innerHTML = '<div class="text-center"><span class="badge bg-success rounded-pill px-4 py-3 fs-6"><i class="fa fa-trophy me-2"></i>Score: ' + data.score + '/' + data.total + '</span></div>';
             }).catch(function(e){ showError('vl-player-error', e.message); });
         }
 
@@ -629,33 +716,33 @@
         function updateLibraryButton(progress) {
             var btn = document.getElementById('vl-library-toggle');
             var saved = progress && progress.savedToLibrary;
-            btn.innerHTML = '<i class="fa fa-bookmark"></i> ' + (saved ? 'Saved' : 'Save');
+            btn.innerHTML = '<i class="fa fa-bookmark me-1"></i> ' + (saved ? 'Saved' : 'Save');
             btn.onclick = function(){
                 IremeAPI.toggleVideoLibrary(state.currentLessonId).then(function(data){
-                    btn.innerHTML = '<i class="fa fa-bookmark"></i> ' + (data.savedToLibrary ? 'Saved' : 'Save');
+                    btn.innerHTML = '<i class="fa fa-bookmark me-1"></i> ' + (data.savedToLibrary ? 'Saved' : 'Save');
                 }).catch(function(e){ showError('vl-player-error', e.message); });
             };
         }
 
         function loadLibrary() {
             var el = document.getElementById('vl-library-list');
-            el.innerHTML = '<div class="vl-empty"><i class="fa fa-spinner fa-spin"></i> Loading...</div>';
+            el.innerHTML = '<div class="vl-empty"><i class="fa fa-spinner fa-spin d-block"></i>Loading...</div>';
             IremeAPI.getVideoLessons().then(function(data){
                 renderQuota(data.quota);
                 var lessons = data.lessons || [];
                 document.getElementById('vl-lib-count').textContent = lessons.length;
                 document.getElementById('vl-lib-count').style.display = lessons.length ? 'inline' : 'none';
                 if (!lessons.length) {
-                    el.innerHTML = '<div class="vl-empty"><i class="fa fa-video"></i><p>No video lessons yet.</p><p style="font-size:10px">Create your first lesson from the Create tab.</p></div>';
+                    el.innerHTML = '<div class="bg-light rounded p-5 text-center"><i class="fa fa-video fa-3x text-muted mb-3 d-block" style="opacity:.3"></i><h5 class="text-muted">No video lessons yet</h5><p class="text-muted small">Create your first lesson from the Create tab.</p><button class="btn btn-primary rounded-pill px-4 mt-2" onclick="document.querySelector(\'[data-view=create]\').click()"><i class="fa fa-plus-circle me-1"></i> Create Lesson</button></div>';
                     return;
                 }
                 var continueWatching = lessons.find(function(l){ return l.status === 'completed' && l.progress && l.progress.completionPercent > 5 && l.progress.completionPercent < 95; });
                 var html = '';
                 if (continueWatching) {
-                    html += '<div class="vl-card"><h4 style="font-size:14px;margin:0 0 10px;color:var(--id)"><i class="fa fa-play-circle text-primary"></i> Continue Watching</h4>' +
+                    html += '<div class="bg-light rounded p-4 mb-4 wow fadeIn" data-wow-delay="0.1s"><h4 class="mb-3"><i class="fa fa-play-circle text-primary me-2"></i>Continue Watching</h4>' +
                         renderLibraryItem(continueWatching, true) + '</div>';
                 }
-                html += '<div class="vl-card"><h4 style="font-size:14px;margin:0 0 10px;color:var(--id)">All Lessons</h4>';
+                html += '<div class="bg-light rounded p-4 wow fadeIn" data-wow-delay="0.2s"><h4 class="mb-3">All Lessons</h4>';
                 lessons.forEach(function(l){
                     if (continueWatching && l.id === continueWatching.id) return;
                     html += renderLibraryItem(l, false);
@@ -663,30 +750,31 @@
                 html += '</div>';
                 el.innerHTML = html;
                 bindLibraryEvents();
+                if (window.WOW) { new WOW().init(); }
             }).catch(function(e){
-                el.innerHTML = '<div class="vl-empty"><i class="fa fa-exclamation-triangle"></i><p>' + escapeHtml(e.message) + '</p></div>';
+                el.innerHTML = '<div class="vl-empty"><i class="fa fa-exclamation-triangle d-block"></i><p>' + escapeHtml(e.message) + '</p></div>';
             });
         }
 
         function renderLibraryItem(lesson, highlight) {
             var statusBadge = '';
-            if (lesson.status === 'completed') statusBadge = '<span class="vl-badge vl-badge-completed">Ready</span>';
-            else if (lesson.status === 'failed') statusBadge = '<span class="vl-badge vl-badge-failed">Failed</span>';
-            else if (lesson.status === 'generating') statusBadge = '<span class="vl-badge vl-badge-status">Generating ' + (lesson.jobProgress || 0) + '%</span>';
-            else if (lesson.status === 'cancelled') statusBadge = '<span class="vl-badge">Cancelled</span>';
-            else statusBadge = '<span class="vl-badge vl-badge-status">' + lesson.status + '</span>';
-            var meta = (lesson.topicName || '') + ' • ' + (lesson.language === 'rw' ? 'Kinyarwanda' : 'English') + ' • ' + lesson.durationMinutes + ' min';
-            if (lesson.progress && lesson.progress.completionPercent) meta += ' • ' + lesson.progress.completionPercent + '% watched';
-            return '<div class="vl-lib-item" data-lesson="' + lesson.id + '" data-status="' + lesson.status + '" style="' + (highlight ? 'border-color:var(--ip);background:#f5f9ff' : '') + '">' +
+            if (lesson.status === 'completed') statusBadge = '<span class="badge bg-success rounded-pill">Ready</span>';
+            else if (lesson.status === 'failed') statusBadge = '<span class="badge bg-danger rounded-pill">Failed</span>';
+            else if (lesson.status === 'generating') statusBadge = '<span class="badge bg-primary rounded-pill">Generating ' + (lesson.jobProgress || 0) + '%</span>';
+            else if (lesson.status === 'cancelled') statusBadge = '<span class="badge bg-secondary rounded-pill">Cancelled</span>';
+            else statusBadge = '<span class="badge bg-primary rounded-pill">' + lesson.status + '</span>';
+            var meta = (lesson.topicName || '') + ' \u2022 ' + (lesson.language === 'rw' ? 'Kinyarwanda' : 'English') + ' \u2022 ' + lesson.durationMinutes + ' min';
+            if (lesson.progress && lesson.progress.completionPercent) meta += ' \u2022 ' + lesson.progress.completionPercent + '% watched';
+            return '<div class="vl-lib-item" data-lesson="' + lesson.id + '" data-status="' + lesson.status + '" style="' + (highlight ? 'border-color:var(--primary);background:#e9f0ff' : '') + '">' +
                 '<div class="vl-lib-thumb"><i class="fa fa-' + (lesson.status === 'completed' ? 'play-circle' : lesson.status === 'failed' ? 'exclamation-circle' : 'spinner fa-spin') + '"></i></div>' +
                 '<div><div class="vl-lib-title">' + escapeHtml(lesson.title || lesson.topicName || 'Untitled') + '</div><div class="vl-lib-meta">' + meta + '</div></div>' +
-                '<div class="vl-lib-actions">' + statusBadge + '</div></div>';
+                '<div>' + statusBadge + '</div></div>';
         }
 
         function bindLibraryEvents() {
             document.querySelectorAll('.vl-lib-item').forEach(function(node){
                 node.addEventListener('click', function(e){
-                    if (e.target.closest('.vl-btn')) return;
+                    if (e.target.closest('.btn')) return;
                     var id = node.dataset.lesson;
                     var status = node.dataset.status;
                     if (status === 'completed') openPlayerView(id);
@@ -716,7 +804,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function(){
-            document.getElementById('vl-navbar').innerHTML = IremeComponents.renderNavbar('video-lessons.html');
+            document.getElementById('component-navbar').innerHTML = IremeComponents.renderNavbar('video-lessons.html');
 
             state.dropdowns.level = IremeDropdown.create(document.getElementById('vl-level-dropdown'), {
                 placeholder: 'Select level...', searchPlaceholder: 'Search levels...', maxHeight: '240px',
@@ -734,17 +822,25 @@
                 onChange: function(value, item){ selectTopic(value, item); }
             });
 
-            document.getElementById('vl-language-row').querySelectorAll('.vl-chip').forEach(function(btn){
+            document.getElementById('vl-language-row').querySelectorAll('.btn').forEach(function(btn){
                 btn.addEventListener('click', function(){
-                    document.querySelectorAll('#vl-language-row .vl-chip').forEach(function(b){ b.classList.remove('active'); });
-                    btn.classList.add('active');
+                    document.querySelectorAll('#vl-language-row .btn').forEach(function(b){
+                        b.classList.remove('btn-primary');
+                        b.classList.add('btn-outline-primary');
+                    });
+                    btn.classList.remove('btn-outline-primary');
+                    btn.classList.add('btn-primary');
                     state.sel.language = btn.dataset.lang;
                 });
             });
-            document.getElementById('vl-duration-row').querySelectorAll('.vl-chip').forEach(function(btn){
+            document.getElementById('vl-duration-row').querySelectorAll('.btn').forEach(function(btn){
                 btn.addEventListener('click', function(){
-                    document.querySelectorAll('#vl-duration-row .vl-chip').forEach(function(b){ b.classList.remove('active'); });
-                    btn.classList.add('active');
+                    document.querySelectorAll('#vl-duration-row .btn').forEach(function(b){
+                        b.classList.remove('btn-primary');
+                        b.classList.add('btn-outline-primary');
+                    });
+                    btn.classList.remove('btn-outline-primary');
+                    btn.classList.add('btn-primary');
                     state.sel.durationMinutes = parseInt(btn.dataset.min, 10);
                 });
             });
@@ -769,7 +865,7 @@
             document.getElementById('vl-player-back-btn').addEventListener('click', function(){ switchView('library'); loadLibrary(); });
             document.getElementById('vl-quiz-submit').addEventListener('click', submitQuiz);
 
-            document.querySelectorAll('#vl-tabs .vl-tab').forEach(function(btn){
+            document.querySelectorAll('#vl-tabs button').forEach(function(btn){
                 btn.addEventListener('click', function(){
                     var v = btn.dataset.view;
                     switchView(v);

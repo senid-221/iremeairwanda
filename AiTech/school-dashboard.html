@@ -46,14 +46,14 @@
                     <div class="d-flex align-items-center">
                         <div class="service-icon btn-square me-3"><i class="fa fa-school fa-lg"></i></div>
                         <div>
-                            <h3 class="mb-1">GS Kigali</h3>
-                            <span class="badge bg-success me-2" data-i18n="schoolDashboard.verifiedSchool">Verified School</span>
-                            <small class="text-muted">Code: SCH-KGL-001</small>
+                            <h3 class="mb-1" id="school-banner-name">School</h3>
+                            <span class="badge bg-success me-2" id="school-banner-status">Verified</span>
+                            <small class="text-muted" id="school-banner-code"></small>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                    <small class="text-muted">Last profile update: <strong>2024-01-20</strong></small>
+                    <small class="text-muted">Last update: <strong id="school-banner-updated">&mdash;</strong></small>
                 </div>
             </div>
         </div>
@@ -63,32 +63,32 @@
     <div class="container-fluid py-5">
         <div class="container">
             <div class="row g-4 mb-5">
-                <div class="col-md-3 wow fadeIn" data-wow-delay="0.1s">
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.1s">
                     <div class="service-item rounded text-center p-4">
                         <i class="bi bi-people-fill fa-2x text-primary mb-3"></i>
                         <h3 class="fw-bold" id="dash-school-students">0</h3>
-                        <p class="mb-0" data-i18n="schoolDashboard.students">Students Enrolled</p>
+                        <p class="mb-0">Students</p>
                     </div>
                 </div>
-                <div class="col-md-3 wow fadeIn" data-wow-delay="0.2s">
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.2s">
                     <div class="service-item rounded text-center p-4">
                         <i class="bi bi-person-badge fa-2x text-primary mb-3"></i>
                         <h3 class="fw-bold" id="dash-school-teachers">0</h3>
-                        <p class="mb-0" data-i18n="schoolDashboard.teachers">Teachers</p>
+                        <p class="mb-0">Teachers</p>
                     </div>
                 </div>
-                <div class="col-md-3 wow fadeIn" data-wow-delay="0.3s">
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.3s">
                     <div class="service-item rounded text-center p-4">
                         <i class="bi bi-book fa-2x text-primary mb-3"></i>
                         <h3 class="fw-bold" id="dash-school-classes">0</h3>
-                        <p class="mb-0" data-i18n="schoolDashboard.classes">Classes</p>
+                        <p class="mb-0">Classes</p>
                     </div>
                 </div>
-                <div class="col-md-3 wow fadeIn" data-wow-delay="0.4s">
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.4s">
                     <div class="service-item rounded text-center p-4">
                         <i class="bi bi-check-circle fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold" id="dash-school-status">—</h3>
-                        <p class="mb-0" data-i18n="schoolDashboard.registration">Registration</p>
+                        <h3 class="fw-bold" id="dash-school-status">&mdash;</h3>
+                        <p class="mb-0">Registration</p>
                     </div>
                 </div>
             </div>
@@ -308,14 +308,18 @@
 
                     <!-- Quick Actions -->
                     <div class="bg-light rounded p-4 wow fadeIn" data-wow-delay="0.3s">
-                        <h4 class="mb-4" data-i18n="schoolDashboard.quickActions">Quick Actions</h4>
+                        <h4 class="mb-4">Quick Actions</h4>
                         <div class="d-grid gap-3">
-                            <button class="btn btn-primary rounded-pill py-3" data-i18n="schoolDashboard.editProfile">Edit Profile</button>
-                            <button class="btn btn-outline-primary rounded-pill py-3" data-i18n="schoolDashboard.uploadPhoto">Upload Photos</button>
-                            <button class="btn btn-outline-primary rounded-pill py-3" data-i18n="schoolDashboard.addStaff">Add Staff</button>
-                            <button class="btn btn-outline-primary rounded-pill py-3" data-i18n="schoolDashboard.createAnnouncement">Create Announcement</button>
-                            <a href="school-profile.html" class="btn btn-outline-primary rounded-pill py-3" data-i18n="schoolDashboard.viewProfile">View Public Profile</a>
-                            <button class="btn btn-outline-primary rounded-pill py-3" data-i18n="schoolDashboard.submitReview">Submit for Review</button>
+                            <a href="school-profile.html" class="btn btn-primary rounded-pill py-3"><i class="fa fa-eye me-2"></i>View Public Profile</a>
+                            <a href="resources.html" class="btn btn-outline-primary rounded-pill py-3"><i class="fa fa-book me-2"></i>Browse Resources</a>
+                            <a href="video-lessons.html" class="btn btn-outline-primary rounded-pill py-3"><i class="fa fa-video me-2"></i>Video Lessons</a>
+                            <a href="ai-tutor.html" class="btn btn-outline-primary rounded-pill py-3"><i class="fa fa-robot me-2"></i>Ask Ireme AI</a>
+                        </div>
+                        <hr class="my-4">
+                        <h5 class="mb-3">Settings</h5>
+                        <div class="d-grid gap-2">
+                            <a href="profile.html" class="btn btn-sm btn-outline-primary rounded-pill"><i class="fa fa-user me-1"></i>My Profile</a>
+                            <a href="subscription.html" class="btn btn-sm btn-outline-primary rounded-pill"><i class="fa fa-credit-card me-1"></i>Subscription</a>
                         </div>
                     </div>
                 </div>
@@ -383,7 +387,23 @@
             document.getElementById('dash-school-teachers').textContent = stats.teachers || 0;
             document.getElementById('dash-school-classes').textContent = stats.classes || 0;
             if (school) {
-                document.getElementById('dash-school-status').textContent = school.registrationStatus || 'pending';
+                var name = school.nameEn || school.name || 'School';
+                var status = school.registrationStatus || 'pending';
+                document.getElementById('dash-school-status').textContent = status;
+                document.getElementById('school-banner-name').textContent = name;
+                document.getElementById('school-banner-code').textContent = school.code ? 'Code: ' + school.code : '';
+                document.getElementById('school-banner-updated').textContent = school.updatedAt ? new Date(school.updatedAt).toLocaleDateString() : '\u2014';
+                var statusEl = document.getElementById('school-banner-status');
+                if (status === 'approved' || status === 'active') {
+                    statusEl.textContent = 'Verified';
+                    statusEl.className = 'badge bg-success me-2';
+                } else if (status === 'rejected') {
+                    statusEl.textContent = 'Rejected';
+                    statusEl.className = 'badge bg-danger me-2';
+                } else {
+                    statusEl.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+                    statusEl.className = 'badge bg-warning text-dark me-2';
+                }
             }
         }).catch(function() {});
     </script>

@@ -41,32 +41,32 @@
     <div class="container-fluid py-5">
         <div class="container">
             <div class="row g-4 mb-5">
-                <div class="col-md-3 wow fadeIn" data-wow-delay="0.1s">
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.1s">
                     <div class="service-item rounded text-center p-4">
                         <i class="fa fa-book-open fa-2x text-primary mb-3"></i>
                         <h3 class="fw-bold" id="dash-subjects-count">0</h3>
                         <p class="mb-0" data-i18n="dashboard.mySubjects">My Subjects</p>
                     </div>
                 </div>
-                <div class="col-md-3 wow fadeIn" data-wow-delay="0.2s">
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.2s">
                     <div class="service-item rounded text-center p-4">
-                        <i class="fa fa-tasks fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold" id="dash-pending-count">0</h3>
-                        <p class="mb-0" data-i18n="dashboard.pending">Pending</p>
+                        <i class="fa fa-video fa-2x text-primary mb-3"></i>
+                        <h3 class="fw-bold" id="dash-videos-watched">0</h3>
+                        <p class="mb-0">Videos Watched</p>
                     </div>
                 </div>
-                <div class="col-md-3 wow fadeIn" data-wow-delay="0.3s">
-                    <div class="service-item rounded text-center p-4">
-                        <i class="fa fa-check-circle fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold" id="dash-completed-count">0</h3>
-                        <p class="mb-0" data-i18n="dashboard.completed">Completed</p>
-                    </div>
-                </div>
-                <div class="col-md-3 wow fadeIn" data-wow-delay="0.4s">
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.3s">
                     <div class="service-item rounded text-center p-4">
                         <i class="fa fa-gamepad fa-2x text-primary mb-3"></i>
                         <h3 class="fw-bold" id="dash-games-played">0</h3>
                         <p class="mb-0" data-i18n="game.history">Matches</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.4s">
+                    <div class="service-item rounded text-center p-4">
+                        <i class="fa fa-trophy fa-2x text-primary mb-3"></i>
+                        <h3 class="fw-bold" id="dash-xp-earned">0</h3>
+                        <p class="mb-0">Total XP</p>
                     </div>
                 </div>
             </div>
@@ -85,18 +85,40 @@
                 <!-- Quick Actions -->
                 <div class="col-lg-4 wow fadeIn" data-wow-delay="0.3s">
                     <div class="bg-light rounded p-4">
-                        <h4 class="mb-4" data-i18n="dashboard.overview">Quick Actions</h4>
+                        <h4 class="mb-4">Quick Actions</h4>
                         <div class="d-grid gap-3">
-                            <a href="game-setup.html" class="btn btn-primary rounded-pill py-3" data-i18n="dashboard.playGame">Play Learning Game</a>
-                            <a href="resources.html" class="btn btn-outline-primary rounded-pill py-3" data-i18n="home.browseResources">Browse Resources</a>
-                            <a href="ai-tutor.html" class="btn btn-outline-primary rounded-pill py-3" data-i18n="dashboard.aiAssistant">Ask Ireme AI</a>
+                            <a href="video-lessons.html" class="btn btn-primary rounded-pill py-3"><i class="fa fa-video me-2"></i>Video Lessons</a>
+                            <a href="game-setup.html" class="btn btn-outline-primary rounded-pill py-3"><i class="fa fa-gamepad me-2"></i>Play Learning Game</a>
+                            <a href="resources.html" class="btn btn-outline-primary rounded-pill py-3"><i class="fa fa-book me-2"></i>Browse Resources</a>
+                            <a href="ai-tutor.html" class="btn btn-outline-primary rounded-pill py-3"><i class="fa fa-robot me-2"></i>Ask Ireme AI</a>
                         </div>
 
                         <hr class="my-4">
-                        <h5 class="mb-3" data-i18n="dashboard.subscription">Subscription</h5>
-                        <div class="service-item rounded p-3 text-center">
-                            <span class="badge bg-success px-3 py-2" data-i18n="dashboard.active">Active</span>
-                            <p class="mb-0 mt-2 small text-muted">Student Plan</p>
+                        <h5 class="mb-3">My Progress</h5>
+                        <div class="service-item rounded p-3 mb-2">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <small class="fw-bold">Video Lessons</small>
+                                <small class="text-primary fw-bold" id="dash-video-progress-text">0 completed</small>
+                            </div>
+                            <div class="progress" style="height:6px">
+                                <div class="progress-bar bg-primary" id="dash-video-progress-bar" style="width:0%"></div>
+                            </div>
+                        </div>
+                        <div class="service-item rounded p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <small class="fw-bold">Game Win Rate</small>
+                                <small class="text-success fw-bold" id="dash-game-winrate">0%</small>
+                            </div>
+                            <div class="progress" style="height:6px">
+                                <div class="progress-bar bg-success" id="dash-game-winrate-bar" style="width:0%"></div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+                        <h5 class="mb-3">Settings</h5>
+                        <div class="d-grid gap-2">
+                            <a href="subscription.html" class="btn btn-sm btn-outline-primary rounded-pill"><i class="fa fa-credit-card me-1"></i>Subscription</a>
+                            <a href="profile.html" class="btn btn-sm btn-outline-primary rounded-pill"><i class="fa fa-user me-1"></i>My Profile</a>
                         </div>
                     </div>
                 </div>
@@ -182,8 +204,23 @@
 
             document.getElementById('dash-subjects-count').textContent = subjects.length;
             document.getElementById('dash-games-played').textContent = gameStats.matchesPlayed || 0;
-            document.getElementById('dash-completed-count').textContent = videoLessons.completed || 0;
-            document.getElementById('dash-pending-count').textContent = videoLessons.inProgress || 0;
+
+            var totalXp = (gameStats.totalXp || 0);
+            document.getElementById('dash-xp-earned').textContent = totalXp;
+
+            var videosCompleted = videoLessons.completed || 0;
+            var videosTotal = (videoLessons.completed || 0) + (videoLessons.inProgress || 0);
+            document.getElementById('dash-videos-watched').textContent = videosCompleted;
+
+            var videoPct = videosTotal > 0 ? Math.round((videosCompleted / videosTotal) * 100) : 0;
+            document.getElementById('dash-video-progress-text').textContent = videosCompleted + ' completed';
+            document.getElementById('dash-video-progress-bar').style.width = videoPct + '%';
+
+            var wins = gameStats.wins || 0;
+            var matches = gameStats.matchesPlayed || 0;
+            var winRate = matches > 0 ? Math.round((wins / matches) * 100) : 0;
+            document.getElementById('dash-game-winrate').textContent = winRate + '%';
+            document.getElementById('dash-game-winrate-bar').style.width = winRate + '%';
 
             var subjectsList = document.getElementById('dash-subjects-list');
             if (subjects.length === 0) {
@@ -226,11 +263,13 @@
             var list = document.getElementById('dash-continue-list');
             container.style.display = 'block';
             list.innerHTML = lessons.slice(0, 3).map(function(l){
-                return '<div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:#fff;border:1px solid #E5EAF4;border-radius:10px;margin-bottom:8px;cursor:pointer" onclick="window.location.href=\'video-lessons.html?lesson=' + l.id + '\'">' +
-                    '<div style="width:44px;height:32px;border-radius:7px;background:#e9f0ff;display:grid;place-items:center;color:#1363C6"><i class="fa fa-play-circle"></i></div>' +
-                    '<div style="flex:1"><div style="font-size:12px;font-weight:700;color:#14183E">' + (l.title || l.topicName || 'Video Lesson').replace(/</g,'&lt;') + '</div>' +
-                    '<div style="font-size:10px;color:#6B7A99">' + (l.language === 'rw' ? 'Kinyarwanda' : 'English') + ' • ' + l.durationMinutes + ' min • ' + l.progress.completionPercent + '% watched</div></div>' +
-                    '<div style="width:60px;height:6px;background:#e9f0ff;border-radius:4px;overflow:hidden"><div style="width:' + l.progress.completionPercent + '%;height:100%;background:#1363C6;border-radius:4px"></div></div></div>';
+                return '<div class="service-item rounded p-3 mb-2" style="cursor:pointer" onclick="window.location.href=\'video-lessons.html?lesson=' + l.id + '\'">' +
+                    '<div class="d-flex align-items-center gap-3">' +
+                    '<div class="btn-square bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width:40px;height:40px;min-width:40px"><i class="fa fa-play"></i></div>' +
+                    '<div class="flex-grow-1"><h6 class="mb-1 small">' + (l.title || l.topicName || 'Video Lesson').replace(/</g,'&lt;') + '</h6>' +
+                    '<small class="text-muted">' + (l.language === 'rw' ? 'Kinyarwanda' : 'English') + ' &bull; ' + l.durationMinutes + ' min &bull; ' + l.progress.completionPercent + '% watched</small></div>' +
+                    '<div style="width:60px"><div class="progress" style="height:6px"><div class="progress-bar bg-primary" style="width:' + l.progress.completionPercent + '%"></div></div></div>' +
+                    '</div></div>';
             }).join('');
         }).catch(function(){});
     </script>
