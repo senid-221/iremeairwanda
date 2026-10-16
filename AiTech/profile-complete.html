@@ -172,19 +172,25 @@
                                 <option value="teach">Teacher (I want to teach)</option>
                             </select>
                         </div>
-                        <div class="col-12" id="school-selection-wrapper">
+                        <div class="col-12" id="school-selection-wrapper" style="display: none;">
                             <label class="form-label">School *</label>
                             <select class="form-select" id="school-select" required>
                                 <option value="">Select your school</option>
                             </select>
                         </div>
-                        <div class="col-md-6" id="class-selection-wrapper">
+                        <div class="col-12" id="subjects-selection-wrapper" style="display: none;">
+                            <label class="form-label">Subjects (select all that apply)</label>
+                            <div id="subjects-container" style="max-height: 200px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 0.5rem;">
+                                <div class="text-muted small">Loading subjects...</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6" id="class-selection-wrapper" style="display: none;">
                             <label class="form-label">Class/Grade</label>
                             <select class="form-select" id="class-select">
                                 <option value="">Select class</option>
                             </select>
                         </div>
-                        <div class="col-md-6" id="student-id-wrapper">
+                        <div class="col-md-6" id="student-id-wrapper" style="display: none;">
                             <label class="form-label">Student ID Number</label>
                             <input type="text" class="form-control" id="student-id" placeholder="Your student ID">
                         </div>
@@ -326,16 +332,21 @@
                     schoolWrapper.style.display = 'block';
                     classWrapper.style.display = 'block';
                     studentIdWrapper.style.display = 'block';
+                    document.getElementById('subjects-selection-wrapper').style.display = 'block';
                     loadSchools();
+                    loadSubjects();
                 } else if (track === 'teach') {
                     schoolWrapper.style.display = 'block';
                     classWrapper.style.display = 'none';
                     studentIdWrapper.style.display = 'none';
+                    document.getElementById('subjects-selection-wrapper').style.display = 'block';
                     loadSchools();
+                    loadSubjects();
                 } else {
                     schoolWrapper.style.display = 'none';
                     classWrapper.style.display = 'none';
                     studentIdWrapper.style.display = 'none';
+                    document.getElementById('subjects-selection-wrapper').style.display = 'none';
                 }
             });
 
@@ -356,6 +367,37 @@
                 }).catch(function(err) {
                     console.error('Failed to load schools:', err);
                 });
+            }
+
+            function loadSubjects() {
+                var container = document.getElementById('subjects-container');
+                IremeAPI.get('/api/curriculum/subjects').then(function(res) {
+                    var subjects = res.data || res.subjects || [];
+                    if (subjects.length === 0) {
+                        container.innerHTML = '<div class="text-muted small">No subjects available</div>';
+                        return;
+                    }
+                    container.innerHTML = '';
+                    subjects.forEach(function(subject) {
+                        var div = document.createElement('div');
+                        div.className = 'form-check';
+                        div.innerHTML = '<input class="form-check-input subject-checkbox" type="checkbox" value="' + subject.id + '" id="subject-' + subject.id + '">' +
+                            '<label class="form-check-label" for="subject-' + subject.id + '">' + (subject.name || subject.nameEn) + '</label>';
+                        container.appendChild(div);
+                    });
+                }).catch(function(err) {
+                    console.error('Failed to load subjects:', err);
+                    container.innerHTML = '<div class="text-danger small">Failed to load subjects</div>';
+                });
+            }
+
+            function getSelectedSubjects() {
+                var checkboxes = document.querySelectorAll('.subject-checkbox:checked');
+                var subjectIds = [];
+                checkboxes.forEach(function(cb) {
+                    subjectIds.push(cb.value);
+                });
+                return subjectIds;
             }
 
             var form = document.getElementById('profile-complete-form');
@@ -402,6 +444,7 @@
 
                 Promise.all(uploadPromises).then(function() {
                     var locSel = IremeLocation.getSelection('profile-location-selector');
+                    var selectedSubjects = getSelectedSubjects();
                     var data = {
                         fullName: document.getElementById('full-name').value.trim(),
                         phone: document.getElementById('phone').value.trim() || null,
@@ -409,6 +452,7 @@
                         gender: document.getElementById('gender').value || null,
                         educationTrack: educationTrack.value,
                         schoolId: document.getElementById('school-select').value || null,
+                        subjectIds: selectedSubjects.length > 0 ? selectedSubjects : null,
                         classId: document.getElementById('class-select').value || null,
                         studentId: document.getElementById('student-id').value.trim() || null,
                         role: session.role,
