@@ -1,13 +1,64 @@
 const IremeComponents = {
     /** Links shown to logged-out visitors */
     publicNavItems: [
-        { href: 'index.html',       key: 'nav.home' },
-        { href: 'service.html',     key: 'nav.services' },
-        { href: 'booking-management.html', key: 'nav.booking' },
-        { href: 'schools.html',     key: 'nav.schools' },
-        { href: 'resources.html',   key: 'nav.resources' },
-        { href: 'about.html',       key: 'nav.about' },
-        { href: 'contact.html',     key: 'nav.contact' },
+        { href: 'index.html', key: 'nav.home' },
+        {
+            key: 'nav.student',
+            children: [
+                { href: 'video-lessons.html', key: 'nav.student.lessons', icon: 'fa-book' },
+                { href: 'quizzes.html', key: 'nav.student.quizzes', icon: 'fa-question-circle' },
+                { href: 'exams.html', key: 'nav.student.exams', icon: 'fa-file-alt' },
+                { href: 'national-exams.html', key: 'nav.student.nationalExams', icon: 'fa-graduation-cap' },
+                { href: 'ai-tutor.html', key: 'nav.student.ai', icon: 'fa-robot' },
+                { href: 'resources.html', key: 'nav.student.books', icon: 'fa-book-open' },
+                { href: 'game-setup.html', key: 'nav.student.game', icon: 'fa-gamepad' },
+                { href: 'check-results.html', key: 'nav.student.results', icon: 'fa-chart-bar' },
+                { href: 'online-learning.html', key: 'nav.student.onlineLearning', icon: 'fa-laptop' },
+                { href: 'test-skills.html', key: 'nav.student.testSkills', icon: 'fa-clipboard-check' },
+            ]
+        },
+        {
+            key: 'nav.teacher',
+            children: [
+                { href: 'lesson-planner.html', key: 'nav.teacher.lessonPlanner', icon: 'fa-calendar-check' },
+                { href: 'stream-lesson.html', key: 'nav.teacher.streamLesson', icon: 'fa-video' },
+                { href: 'teacher-jobs.html', key: 'nav.teacher.jobs', icon: 'fa-briefcase' },
+                { href: 'umwarimu-sacco.html', key: 'nav.teacher.sacco', icon: 'fa-piggy-bank' },
+                { href: 'student-report.html', key: 'nav.teacher.studentReport', icon: 'fa-file-signature' },
+                { href: 'prepare-exam.html', key: 'nav.teacher.prepareExam', icon: 'fa-pencil-alt' },
+                { href: 'staff-meeting.html', key: 'nav.teacher.staffMeeting', icon: 'fa-users' },
+                { href: 'report-to-parent.html', key: 'nav.teacher.reportParent', icon: 'fa-user-friends' },
+                { href: 'report-to-head.html', key: 'nav.teacher.reportHead', icon: 'fa-user-tie' },
+            ]
+        },
+        {
+            key: 'nav.headteacher',
+            children: [
+                { href: 'register-school.html', key: 'nav.headteacher.registerSchool', icon: 'fa-school' },
+                { href: 'register-teacher.html', key: 'nav.headteacher.registerTeacher', icon: 'fa-user-plus' },
+                { href: 'ask-teacher-report.html', key: 'nav.headteacher.askReport', icon: 'fa-file-contract' },
+                { href: 'available-teachers.html', key: 'nav.headteacher.availableTeachers', icon: 'fa-user-check' },
+                { href: 'absent-teachers.html', key: 'nav.headteacher.absentTeachers', icon: 'fa-user-clock' },
+                { href: 'school-events.html', key: 'nav.headteacher.events', icon: 'fa-calendar-alt' },
+                { href: 'parent-meetings.html', key: 'nav.headteacher.parentMeetings', icon: 'fa-handshake' },
+                { href: 'school-statistics.html', key: 'nav.headteacher.statistics', icon: 'fa-chart-line' },
+            ]
+        },
+        {
+            key: 'nav.parents',
+            children: [
+                { href: 'monitor-learning.html', key: 'nav.parents.monitorLearning', icon: 'fa-eye' },
+                { href: 'view-grades.html', key: 'nav.parents.viewGrades', icon: 'fa-star' },
+                { href: 'booking-management.html', key: 'nav.parents.bookTutor', icon: 'fa-chalkboard-teacher' },
+                { href: 'school-news.html', key: 'nav.parents.schoolNews', icon: 'fa-newspaper' },
+                { href: 'contact-teacher.html', key: 'nav.parents.contactTeacher', icon: 'fa-envelope' },
+                { href: 'school-fees.html', key: 'nav.parents.schoolFees', icon: 'fa-money-bill-wave' },
+                { href: 'parent-community.html', key: 'nav.parents.community', icon: 'fa-users' },
+            ]
+        },
+        { href: 'schools.html', key: 'nav.schools' },
+        { href: 'about.html', key: 'nav.about' },
+        { href: 'contact.html', key: 'nav.contact' },
     ],
 
     /** Role-specific links shown to logged-in users */
@@ -94,9 +145,26 @@ const IremeComponents = {
     renderNavbar(activePage) {
         var items = this.getNavItems();
         var showLoginRegister = !(typeof IremeAuth !== 'undefined' && IremeAuth.isLoggedIn());
-        const navLinks = items.map(item =>
-            `<a href="${item.href}" class="nav-item nav-link${item.href === activePage ? ' active' : ''}" data-i18n="${item.key}">${item.key}</a>`
-        ).join('');
+        
+        const navLinks = items.map(item => {
+            // If item has children, render as dropdown
+            if (item.children && item.children.length > 0) {
+                const dropdownItems = item.children.map(child => 
+                    `<li><a class="dropdown-item" href="${child.href}">` +
+                    (child.icon ? `<i class="fa ${child.icon} me-2 text-primary"></i>` : '') +
+                    `<span data-i18n="${child.key}">${child.key}</span></a></li>`
+                ).join('');
+                
+                return `<div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-i18n="${item.key}">${item.key}</a>
+                    <ul class="dropdown-menu">
+                        ${dropdownItems}
+                    </ul>
+                </div>`;
+            }
+            // Otherwise render as regular link
+            return `<a href="${item.href}" class="nav-item nav-link${item.href === activePage ? ' active' : ''}" data-i18n="${item.key}">${item.key}</a>`;
+        }).join('');
 
         var authSection = '';
         if (typeof IremeAuth !== 'undefined' && IremeAuth.isLoggedIn()) {

@@ -10,6 +10,52 @@ const translations = {
         "nav.aiTutor": "AI Tutor",
         "nav.contact": "Contact",
         "nav.booking": "Book Teacher",
+        
+        // Student Menu
+        "nav.student": "Student",
+        "nav.student.lessons": "Amasomo — Lessons",
+        "nav.student.quizzes": "Quizzes",
+        "nav.student.exams": "Exams",
+        "nav.student.nationalExams": "National Exam Papers",
+        "nav.student.ai": "AI — IREME AI Learning Assistant",
+        "nav.student.books": "Books — Learning Resources Library",
+        "nav.student.game": "Game — Educational Games",
+        "nav.student.results": "Check Results",
+        "nav.student.onlineLearning": "Learning Online",
+        "nav.student.testSkills": "Test Your Skills",
+        
+        // Teacher Menu
+        "nav.teacher": "Teacher",
+        "nav.teacher.lessonPlanner": "Lesson Planner",
+        "nav.teacher.streamLesson": "Stream Lesson",
+        "nav.teacher.jobs": "Search Available Jobs",
+        "nav.teacher.sacco": "Umwarimu SACCO",
+        "nav.teacher.studentReport": "Submit Student Report",
+        "nav.teacher.prepareExam": "Prepare Quiz, Exam",
+        "nav.teacher.staffMeeting": "Join Staff Online Meeting",
+        "nav.teacher.reportParent": "Report Student's Behavior / Skills to Parent",
+        "nav.teacher.reportHead": "Report to Headteacher",
+        
+        // Headteacher Menu
+        "nav.headteacher": "Headteacher",
+        "nav.headteacher.registerSchool": "Register School",
+        "nav.headteacher.registerTeacher": "Register Teacher",
+        "nav.headteacher.askReport": "Ask for a Teacher's Report",
+        "nav.headteacher.availableTeachers": "Check Available Teachers",
+        "nav.headteacher.absentTeachers": "Absent Teachers",
+        "nav.headteacher.events": "Post School Events and Activities",
+        "nav.headteacher.parentMeetings": "Announce School Meetings to Parents",
+        "nav.headteacher.statistics": "Check Class Reports and School Statistics",
+        
+        // Parents Menu
+        "nav.parents": "BABYEYI",
+        "nav.parents.monitorLearning": "Kureba Imyigire y'Umwana — Monitor Child's Learning",
+        "nav.parents.viewGrades": "Kureba Amanota ya Buri Somo — View Grades by Subject",
+        "nav.parents.bookTutor": "Gushaka Umwarimu wo Kwigisha Umwana — Find and Book a Tutor",
+        "nav.parents.schoolNews": "Kureba Amakuru n'Amatangazo y'Ikigo — School News and Announcements",
+        "nav.parents.contactTeacher": "Kwandikira Umwarimu Ushinzwe Ishuri ry'Umwana — Contact the Child's Class Teacher",
+        "nav.parents.schoolFees": "Kwishyura School Fees — School Fees and Payment Schedule",
+        "nav.parents.community": "Kureba Ababyeyi b'Ikigo — School Parent Community/Directory",
 
         // Hero - index
         "hero.badge": "IREME",
@@ -723,6 +769,52 @@ const translations = {
         "nav.programs": "Gahunda",
         "nav.contact": "Twandikire",
         "nav.booking": "Gusaba Mwarimu",
+        
+        // Student Menu
+        "nav.student": "Umunyeshuri",
+        "nav.student.lessons": "Amasomo",
+        "nav.student.quizzes": "Ibizamini bya Vuba",
+        "nav.student.exams": "Ibizamini",
+        "nav.student.nationalExams": "Ibizamini by'Igihugu",
+        "nav.student.ai": "AI — Umufasha wa Ireme AI",
+        "nav.student.books": "Ibitabo — Ububiko bw'Ibikoresho byo Kwiga",
+        "nav.student.game": "Umukino — Imikino yo Kwiga",
+        "nav.student.results": "Reba Amanota",
+        "nav.student.onlineLearning": "Kwiga ku Murongo",
+        "nav.student.testSkills": "Suzuma Ubumenyi Bwawe",
+        
+        // Teacher Menu
+        "nav.teacher": "Umwarimu",
+        "nav.teacher.lessonPlanner": "Gutegura Isomo",
+        "nav.teacher.streamLesson": "Tanga Isomo ku Murongo",
+        "nav.teacher.jobs": "Gushaka Akazi k'Ubwarimu",
+        "nav.teacher.sacco": "Umwarimu SACCO",
+        "nav.teacher.studentReport": "Tanga Raporo y'Umunyeshuri",
+        "nav.teacher.prepareExam": "Gutegura Ikizamini",
+        "nav.teacher.staffMeeting": "Inama y'Abwarimu",
+        "nav.teacher.reportParent": "Tanga Raporo ku Mubyeyi",
+        "nav.teacher.reportHead": "Tanga Raporo ku Muyobozi w'Ishuri",
+        
+        // Headteacher Menu
+        "nav.headteacher": "Umuyobozi w'Ishuri",
+        "nav.headteacher.registerSchool": "Andika Ishuri",
+        "nav.headteacher.registerTeacher": "Andika Umwarimu",
+        "nav.headteacher.askReport": "Saba Raporo y'Umwarimu",
+        "nav.headteacher.availableTeachers": "Reba Abarimu Bahari",
+        "nav.headteacher.absentTeachers": "Abarimu Badahari",
+        "nav.headteacher.events": "Shyiraho Ibirori n'Imirimo y'Ishuri",
+        "nav.headteacher.parentMeetings": "Menyesha Inama y'Ababyeyi",
+        "nav.headteacher.statistics": "Reba Raporo n'Imibare y'Ishuri",
+        
+        // Parents Menu
+        "nav.parents": "BABYEYI",
+        "nav.parents.monitorLearning": "Kureba Imyigire y'Umwana",
+        "nav.parents.viewGrades": "Kureba Amanota ya Buri Somo",
+        "nav.parents.bookTutor": "Gushaka Umwarimu wo Kwigisha Umwana",
+        "nav.parents.schoolNews": "Amakuru n'Amatangazo y'Ikigo",
+        "nav.parents.contactTeacher": "Kwandikira Umwarimu w'Ishuri ry'Umwana",
+        "nav.parents.schoolFees": "Amafaranga y'Ishuri",
+        "nav.parents.community": "Ababyeyi b'Ikigo",
 
         // Hero - index
         "hero.badge": "IREME",
