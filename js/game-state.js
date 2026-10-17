@@ -262,27 +262,37 @@ var IremeGame = {
         this.state.opponentScore = 0;
         this.state.currentRound = 0;
         this.state.answers = [];
-        this.state.matchId = this.generateMatchId();
         this.state.startedAt = new Date().toISOString();
 
         this.setPhase('checking');
         var self = this;
 
-        setTimeout(function() {
+        var useApi = typeof IremeApi !== 'undefined' && IremeApi.findMatch;
+
+        if (useApi) {
+            // Use backend API for real multiplayer
             self.setPhase('searching');
-            var delay = 2000 + Math.random() * 2000;
-            setTimeout(function() {
-                var names = ['Mugisha', 'Uwase', 'Ishimwe', 'Niyonzima', 'Habimana', 'Uwimana', 'Mukiza', 'Ndayisaba', 'Tuyishime', 'Nshimiyimana'];
-                var firstNames = ['Jean', 'Marie', 'Pierre', 'Ange', 'Grace', 'Patrick', 'Diane', 'Eric', 'Aline', 'Thierry'];
-                var fn = firstNames[Math.floor(Math.random() * firstNames.length)];
-                var ln = names[Math.floor(Math.random() * names.length)];
+            IremeApi.findMatch({
+                subject: subject,
+                subjectCode: subject,
+                subjectName: subjectName || subject,
+                level: level,
+                pathway: pathway,
+                topic: topic || 'all',
+                difficulty: difficulty || 'adaptive',
+                mode: mode || 'quick',
+                totalRounds: self.state.totalRounds,
+            }).then(function(data) {
+                self.state.matchId = data.match.id;
                 self.state.opponent = {
-                    name: fn + ' ' + ln,
-                    initials: (fn[0] + ln[0]).toUpperCase(),
+                    name: data.opponent.name,
+                    initials: data.opponent.initials,
                     level: level,
                     pathway: pathway,
-                    winRate: Math.floor(50 + Math.random() * 30)
+                    winRate: Math.floor(50 + Math.random() * 30),
+                    isBot: data.opponent.isBot,
                 };
+                self.state.questions = data.questions || [];
                 self.setPhase('found');
                 setTimeout(function() {
                     self.setPhase('preparing');
@@ -291,14 +301,53 @@ var IremeGame = {
                         setTimeout(function() { self.startGameplay(); }, 1500);
                     }, 1500);
                 }, 2000);
-            }, delay);
-        }, 1000);
+            }).catch(function(err) {
+                console.error('findMatch error:', err);
+                // Fallback to local mode
+                self.startLocalMatchmaking();
+            });
+        } else {
+            // Fallback to local mode (no API)
+            this.startLocalMatchmaking();
+        }
 
         return { error: false };
     },
 
+    startLocalMatchmaking: function() {
+        this.state.matchId = this.generateMatchId();
+        this.setPhase('searching');
+        var self = this;
+        var delay = 2000 + Math.random() * 2000;
+        setTimeout(function() {
+            var names = ['Mugisha', 'Uwase', 'Ishimwe', 'Niyonzima', 'Habimana', 'Uwimana', 'Mukiza', 'Ndayisaba', 'Tuyishime', 'Nshimiyimana'];
+            var firstNames = ['Jean', 'Marie', 'Pierre', 'Ange', 'Grace', 'Patrick', 'Diane', 'Eric', 'Aline', 'Thierry'];
+            var fn = firstNames[Math.floor(Math.random() * firstNames.length)];
+            var ln = names[Math.floor(Math.random() * names.length)];
+            self.state.opponent = {
+                name: fn + ' ' + ln,
+                initials: (fn[0] + ln[0]).toUpperCase(),
+                level: self.state.level,
+                pathway: self.state.pathway,
+                winRate: Math.floor(50 + Math.random() * 30),
+                isBot: true,
+            };
+            self.setPhase('found');
+            setTimeout(function() {
+                self.setPhase('preparing');
+                setTimeout(function() {
+                    self.setPhase('ready');
+                    setTimeout(function() { self.startGameplay(); }, 1500);
+                }, 1500);
+            }, 2000);
+        }, delay);
+    },
+
     startGameplay: function() {
-        var questions = this.getQuestions(this.state.subject, this.state.level, this.state.topic, this.state.difficulty);
+        var questions = this.state.questions;
+        if (!questions || questions.length === 0) {
+            questions = this.getQuestions(this.state.subject, this.state.level, this.state.topic, this.state.difficulty);
+        }
         if (questions.length === 0) {
             questions = this.getQuestions(this.state.subject);
         }
@@ -378,9 +427,31 @@ var IremeGame = {
             isCorrect: isCorrect,
             points: points,
             timeUsed: 30 - this.state.timer,
+            roundNumber: this.state.currentRound,
         });
 
         this.saveState();
+
+        // Send answer to backend if API is available
+        var useApi = typeof IremeApi !== 'undefined' && IremeApi.submitGameAnswer && this.state.matchId;
+        if (useApi && this.state.matchId && !this.state.matchId.startsWith('M')) {
+            IremeApi.submitGameAnswer(this.state.matchId, {
+                questionId: q.id,
+                roundNumber: this.state.currentRound,
+                selectedAnswer: answerIndex,
+                isCorrect: isCorrect,
+                points: points,
+                timeUsed: 30 - this.state.timer,
+            }).then(function(data) {
+                // Sync scores from backend
+                if (data.player1Score !== undefined) {
+                    // Backend returned authoritative scores
+                }
+            }).catch(function(err) {
+                // Silently continue with local scores
+            });
+        }
+
         this.showAnswerResult(isCorrect, points);
     },
 
@@ -545,6 +616,34 @@ var IremeGame = {
         if (this.state.matchHistory.length > 50) this.state.matchHistory = this.state.matchHistory.slice(0, 50);
         this.saveHistory();
         this.saveState();
+
+        // Save match to backend
+        var useApi = typeof IremeApi !== 'undefined';
+        if (useApi) {
+            var isBackendMatch = this.state.matchId && !this.state.matchId.startsWith('M');
+            if (isBackendMatch && IremeApi.completeMatch) {
+                IremeApi.completeMatch(this.state.matchId, {
+                    playerScore: this.state.playerScore,
+                    opponentScore: this.state.opponentScore,
+                    answers: this.state.answers,
+                }).catch(function(err) { /* silent fallback */ });
+            } else if (IremeApi.saveMatch) {
+                IremeApi.saveMatch({
+                    subject: this.state.subject,
+                    subjectName: this.state.subjectName,
+                    level: this.state.level,
+                    pathway: this.state.pathway,
+                    topic: this.state.topic,
+                    difficulty: this.state.difficulty,
+                    mode: this.state.mode,
+                    totalRounds: this.state.totalRounds,
+                    playerScore: this.state.playerScore,
+                    opponentScore: this.state.opponentScore,
+                    opponentName: this.state.opponent ? this.state.opponent.name : 'AI',
+                    answers: this.state.answers,
+                }).catch(function(err) { /* silent fallback */ });
+            }
+        }
 
         return matchRecord;
     },

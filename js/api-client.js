@@ -152,6 +152,35 @@ var IremeAPI = (function() {
       return this.post('/api/game/match', matchData);
     },
 
+    getGameQuestions: function(params) {
+      var qs = '?subjectCode=' + (params.subjectCode || params.subject || 'MAT');
+      if (params.level) qs += '&level=' + encodeURIComponent(params.level);
+      if (params.topic) qs += '&topic=' + encodeURIComponent(params.topic);
+      if (params.difficulty) qs += '&difficulty=' + encodeURIComponent(params.difficulty);
+      if (params.count) qs += '&count=' + params.count;
+      return this.get('/api/game/questions' + qs);
+    },
+
+    findMatch: function(matchParams) {
+      return this.post('/api/game/find-match', matchParams);
+    },
+
+    getGameMatch: function(matchId) {
+      return this.get('/api/game/matches/' + matchId);
+    },
+
+    submitGameAnswer: function(matchId, answerData) {
+      return this.post('/api/game/matches/' + matchId + '/answer', answerData);
+    },
+
+    completeMatch: function(matchId, resultData) {
+      return this.post('/api/game/matches/' + matchId + '/complete', resultData);
+    },
+
+    getGameLeaderboard: function(limit) {
+      return this.get('/api/game/leaderboard' + (limit ? '?limit=' + limit : ''));
+    },
+
     getCurriculumLevels: function() {
       return this.get('/api/curriculum/levels');
     },

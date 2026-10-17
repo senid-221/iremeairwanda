@@ -104,13 +104,65 @@ async function getLearningPreferences(userId) {
 }
 
 /**
+ * Fetch the student's academic context: profile, enrollment, education level,
+ * and school. Returns null for non-student users.
+ */
+async function getStudentContext(userId) {
+  var profile = await prisma.studentProfile.findUnique({
+    where: { userId: userId },
+    include: {
+      currentSchool: { select: { id: true, name: true } },
+      currentEducationLevel: { select: { id: true, name: true, code: true } },
+    },
+  });
+  if (!profile) return null;
+
+  var latestEnrollment = await prisma.studentEnrollment.findFirst({
+    where: { studentProfileId: profile.id, status: 'active' },
+    orderBy: { enrollmentDate: 'desc' },
+    include: {
+      educationLevel: { select: { id: true, name: true, code: true } },
+      school: { select: { id: true, name: true } },
+      curriculumProgramme: { select: { id: true, name: true, nameEn: true } },
+    },
+  });
+
+  return { profile: profile, enrollment: latestEnrollment };
+}
+
+/**
  * Build the system prompt for the AI tutor.
  */
-function buildSystemPrompt(conversation, preferences, subject, topic) {
+function buildSystemPrompt(conversation, preferences, subject, topic, studentContext) {
   var parts = [];
 
   parts.push('You are IREME AI, a personalized learning assistant for Rwandan students.');
   parts.push('You help students understand concepts, solve problems, and prepare for assessments.');
+
+  // Student academic context
+  if (studentContext) {
+    var enrollment = studentContext.enrollment;
+    var profile = studentContext.profile;
+    var level = enrollment ? enrollment.educationLevel : (profile ? profile.currentEducationLevel : null);
+    var school = enrollment ? enrollment.school : (profile ? profile.currentSchool : null);
+
+    if (level) {
+      parts.push('The student is at education level: ' + (level.name || level.code) + '.');
+      parts.push('Tailor your explanations, vocabulary, and difficulty to this level.');
+    }
+    if (profile && profile.currentGrade) {
+      parts.push('Current grade/class: ' + profile.currentGrade + '.');
+    }
+    if (school) {
+      parts.push('School: ' + school.name + '.');
+    }
+    if (enrollment && enrollment.curriculumProgramme) {
+      var programmeName = enrollment.curriculumProgramme.nameEn || enrollment.curriculumProgramme.name;
+      if (programmeName) {
+        parts.push('Curriculum programme: ' + programmeName + '.');
+      }
+    }
+  }
 
   // Language guidance
   if (preferences) {
@@ -442,11 +494,12 @@ router.post('/conversations', requireAuth, async function (req, res) {
     // Fetch subject/topic for the system prompt
     var subjectTopic = await fetchSubjectAndTopic(conversation.subjectId, conversation.topicId);
 
-    // Fetch learning preferences
+    // Fetch learning preferences and student context
     var preferences = await getLearningPreferences(userId);
+    var studentContext = await getStudentContext(userId);
 
     // Build system prompt and generate AI response
-    var systemPrompt = buildSystemPrompt(conversation, preferences, subjectTopic.subject, subjectTopic.topic);
+    var systemPrompt = buildSystemPrompt(conversation, preferences, subjectTopic.subject, subjectTopic.topic, studentContext);
 
     var contextMessages = [{
       role: 'user',
@@ -612,7 +665,8 @@ router.post('/conversations/:id/messages', requireAuth, async function (req, res
     // Fetch subject/topic and preferences for the system prompt
     var subjectTopic = await fetchSubjectAndTopic(conversation.subjectId, conversation.topicId);
     var preferences = await getLearningPreferences(userId);
-    var systemPrompt = buildSystemPrompt(conversation, preferences, subjectTopic.subject, subjectTopic.topic);
+    var studentContext = await getStudentContext(userId);
+    var systemPrompt = buildSystemPrompt(conversation, preferences, subjectTopic.subject, subjectTopic.topic, studentContext);
 
     // Generate AI response
     var aiResult = await generateAiResponse(systemPrompt, contextMessages);
