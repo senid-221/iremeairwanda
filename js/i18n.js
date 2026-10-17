@@ -1291,6 +1291,16 @@ const translations = {
         "nav.parents.schoolFees": "Kwishyura Ishuri",
         "nav.parents.community": "Ababyeyi b'Ibigo",
 
+        // Booking Management
+        "booking.badge": "Tutor Booking",
+        "booking.title": "Find and Book a Tutor",
+        "booking.desc": "Connect with qualified tutors for personalized learning sessions tailored to your child's needs.",
+        "booking.comingSoon": "Coming Soon",
+        "booking.comingSoonDesc": "The tutor booking system is currently under development. You will soon be able to:",
+        "booking.feature1": "Search for qualified tutors",
+        "booking.feature2": "Book learning sessions",
+        "booking.feature3": "Rate and review tutors",
+
         // Hero - index
         "hero.badge": "IREME",
         "hero.title": "Kwiga Neza ku Rwanda Rwiza",
