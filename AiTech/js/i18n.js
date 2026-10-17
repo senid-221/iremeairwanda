@@ -9,6 +9,7 @@ const translations = {
         "nav.schools": "Schools",
         "nav.aiTutor": "AI Tutor",
         "nav.contact": "Contact",
+        "nav.booking": "Book Teacher",
 
         // Hero - index
         "hero.badge": "IREME",
@@ -721,6 +722,7 @@ const translations = {
         "nav.contact": "Tuvugishe",
         "nav.programs": "Gahunda",
         "nav.contact": "Twandikire",
+        "nav.booking": "Gusaba Mwarimu",
 
         // Hero - index
         "hero.badge": "IREME",

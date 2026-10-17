@@ -371,12 +371,20 @@
         }
 
         function loadCurriculum() {
-            IremeAPI.getCurriculumLevels().then(function(data){
-                state.levels = data.levels || [];
+            Promise.all([
+                IremeAPI.getCurriculumLevels(),
+                IremeAPI.getCurriculumSubjects()
+            ]).then(function(results) {
+                var levelsData = results[0];
+                var subjectsData = results[1];
+                state.levels = levelsData.levels || [];
+                state.subjects = subjectsData.subjects || [];
                 state.dropdowns.level.setItems(state.levels.map(function(l){
                     return { value: l.id, label: l.name, sublabel: l.code + ' \u2022 ' + l.levelType, icon: 'fa-graduation-cap' };
                 }));
-                if (state.levels.length) selectLevel(state.levels[0].id);
+                state.dropdowns.subject.setItems(state.subjects.map(function(s){
+                    return { value: s.id, label: s.name, sublabel: s.code, icon: 'fa-book' };
+                }));
             }).catch(function(e){ showError('vl-create-error', e.message); });
         }
 
@@ -385,19 +393,10 @@
             state.sel.subjectId = null;
             state.sel.topicKey = null;
             state.sel.topicName = null;
-            state.subjects = [];
             state.topics = [];
-            state.dropdowns.subject.setItems([]);
             state.dropdowns.topic.setItems([{ value: 'custom', label: 'Type a custom topic', sublabel: 'Enter any topic', icon: 'fa-keyboard' }]);
             document.getElementById('vl-custom-topic').style.display = 'none';
             document.getElementById('vl-use-custom-topic').checked = false;
-            if (!levelId) { updateGenerateState(); return; }
-            IremeAPI.getCurriculumSubjects(levelId).then(function(data){
-                state.subjects = data.subjects || [];
-                state.dropdowns.subject.setItems(state.subjects.map(function(s){
-                    return { value: s.id, label: s.name, sublabel: s.code, icon: 'fa-book' };
-                }));
-            }).catch(function(e){ showError('vl-create-error', e.message); });
             updateGenerateState();
         }
 
