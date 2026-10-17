@@ -184,8 +184,7 @@ const IremeComponents = {
                 </div>`;
         } else {
             authSection = `
-                <a href="login.html" class="btn btn-sm btn-primary rounded-pill px-3 py-1 ms-lg-3" data-i18n="auth.login">Log In</a>
-                <a href="register.html" class="btn btn-sm btn-primary rounded-pill px-3 py-1 ms-lg-2" data-i18n="auth.register">Register</a>`;
+                <a href="login.html" class="btn btn-sm btn-primary rounded-pill px-3 py-1 ms-lg-3" data-i18n="auth.login">Log In</a>`;
         }
 
         return `
