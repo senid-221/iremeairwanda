@@ -1523,4 +1523,134 @@ router.get('/upcoming', requireAuth, async function (req, res) {
   }
 });
 
+// ---------------------------------------------------------------------------
+// 15. POST /quiz-attempt — Save quiz attempt results
+// ---------------------------------------------------------------------------
+router.post('/quiz-attempt', requireAuth, async function (req, res) {
+  try {
+    var studentProfile = await getStudentProfile(req.user.id);
+    if (!studentProfile) {
+      return res.status(403).json({ error: 'Student profile not found' });
+    }
+
+    var subjectId = req.body.subjectId;
+    var score = parseInt(req.body.score, 10) || 0;
+    var total = parseInt(req.body.total, 10) || 0;
+    var percentage = parseFloat(req.body.percentage) || 0;
+    var duration = parseInt(req.body.duration, 10) || 0;
+
+    if (total === 0) {
+      return res.status(400).json({ error: 'Invalid quiz data' });
+    }
+
+    // Create a simple assessment attempt record
+    // Note: This is a simplified version. For full assessment system, 
+    // you would link to actual Assessment records
+    var attempt = await prisma.assessmentAttempt.create({
+      data: {
+        assessmentId: 'quiz-' + Date.now(), // Generate a temporary ID
+        studentProfileId: studentProfile.id,
+        startedAt: new Date(Date.now() - duration * 1000),
+        completedAt: new Date(),
+        timeSpentSeconds: duration,
+        totalScore: score,
+        maxScore: total,
+        percentage: percentage,
+        status: 'completed',
+      },
+    });
+
+    // Create result record
+    var result = await prisma.assessmentResult.create({
+      data: {
+        assessmentAttemptId: attempt.id,
+        totalScore: score,
+        maxScore: total,
+        percentage: percentage,
+        grade: computeGrade(percentage),
+        passed: percentage >= 50,
+      },
+    });
+
+    res.json({ 
+      success: true, 
+      attemptId: attempt.id,
+      resultId: result.id,
+      message: 'Quiz attempt saved successfully'
+    });
+  } catch (error) {
+    console.error('POST /assessments/quiz-attempt error:', error);
+    res.status(500).json({ error: 'Failed to save quiz attempt' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 16. GET /my-results — Get student's assessment history
+// ---------------------------------------------------------------------------
+router.get('/my-results', requireAuth, async function (req, res) {
+  try {
+    var studentProfile = await getStudentProfile(req.user.id);
+    if (!studentProfile) {
+      return res.status(403).json({ error: 'Student profile not found' });
+    }
+
+    var limit = Math.min(parseInt(req.query.limit, 10) || 50, 200);
+    var offset = parseInt(req.query.offset, 10) || 0;
+
+    var attempts = await prisma.assessmentAttempt.findMany({
+      where: {
+        studentProfileId: studentProfile.id,
+        status: 'completed',
+      },
+      include: {
+        assessment: {
+          select: {
+            id: true,
+            title: true,
+            titleEn: true,
+            titleRw: true,
+            assessmentType: true,
+            subject: {
+              select: {
+                name: true,
+                nameEn: true,
+                nameRw: true,
+              },
+            },
+          },
+        },
+        assessmentResults: {
+          take: 1,
+        },
+      },
+      orderBy: { completedAt: 'desc' },
+      take: limit,
+      skip: offset,
+    });
+
+    var formatted = attempts.map(function (a) {
+      var result = a.assessmentResults[0];
+      return {
+        id: a.id,
+        assessmentId: a.assessmentId,
+        title: a.assessment ? (a.assessment.titleEn || a.assessment.title) : 'Quiz',
+        assessmentType: a.assessment ? a.assessment.assessmentType : 'quiz',
+        subject: a.assessment && a.assessment.subject ? (a.assessment.subject.nameEn || a.assessment.subject.name) : null,
+        score: a.totalScore,
+        maxScore: a.maxScore,
+        percentage: a.percentage ? parseFloat(a.percentage) : null,
+        grade: result ? result.grade : null,
+        passed: result ? result.passed : null,
+        duration: a.timeSpentSeconds,
+        completedAt: a.completedAt,
+      };
+    });
+
+    res.json({ results: formatted, count: formatted.length });
+  } catch (error) {
+    console.error('GET /assessments/my-results error:', error);
+    res.status(500).json({ error: 'Failed to fetch results' });
+  }
+});
+
 module.exports = router;
