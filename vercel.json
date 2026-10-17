@@ -1,5 +1,5 @@
 {
-  "buildCommand": null,
+  "buildCommand": "echo 'Static frontend - no build needed'",
   "outputDirectory": "AiTech",
   "cleanUrls": true,
   "headers": [
