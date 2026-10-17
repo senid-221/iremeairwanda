@@ -2,11 +2,11 @@ const IremeComponents = {
     /** Links shown to logged-out visitors */
     publicNavItems: [
         { href: 'index.html',       key: 'nav.home' },
-        { href: 'about.html',       key: 'nav.about' },
         { href: 'service.html',     key: 'nav.services' },
         { href: 'booking-management.html', key: 'nav.booking' },
-        { href: 'resources.html',   key: 'nav.resources' },
         { href: 'schools.html',     key: 'nav.schools' },
+        { href: 'resources.html',   key: 'nav.resources' },
+        { href: 'about.html',       key: 'nav.about' },
         { href: 'contact.html',     key: 'nav.contact' },
     ],
 
