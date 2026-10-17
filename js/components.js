@@ -57,8 +57,6 @@ const IremeComponents = {
             ]
         },
         { href: 'schools.html', key: 'nav.schools' },
-        { href: 'about.html', key: 'nav.about' },
-        { href: 'contact.html', key: 'nav.contact' },
     ],
 
     /** Role-specific links shown to logged-in users */

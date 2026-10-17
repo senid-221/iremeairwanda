@@ -437,6 +437,23 @@
                                     </select>
                                 </div>
                             </div>
+
+                            <!-- Enhanced AI Features -->
+                            <div class="mt-3 d-flex flex-wrap gap-2">
+                                <button class="btn btn-sm btn-outline-secondary rounded-pill" id="btn-create-task" title="Create a learning task">
+                                    <i class="fa fa-tasks me-1"></i> Create Task
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary rounded-pill" id="btn-generate-image" title="Generate educational image">
+                                    <i class="fa fa-image me-1"></i> Generate Image
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary rounded-pill" id="btn-search-content" title="Search platform content">
+                                    <i class="fa fa-search me-1"></i> Search Content
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary rounded-pill" id="btn-get-recommendations" title="Get lesson recommendations">
+                                    <i class="fa fa-lightbulb me-1"></i> Recommend Lessons
+                                </button>
+                            </div>
+
                             <div class="mt-2 language-note">
                                 <i class="fa fa-globe me-1"></i> <span data-i18n="aiTutor.languageNote">Available in English and Kinyarwanda</span>
                             </div>
@@ -450,57 +467,24 @@
                 <div class="d-flex align-items-center mb-4">
                     <h4 class="mb-0" data-i18n="aiTutor.recommendedResources">Recommended Resources</h4>
                 </div>
-                <div class="row g-4">
-                    <div class="col-md-6 col-lg-3">
-                        <div class="service-item rounded p-4 h-100">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <span class="badge bg-primary" data-i18n="resources.lesson">Lesson</span>
-                                <span class="badge bg-success" data-i18n="resources.official">Official REB Material</span>
-                            </div>
-                            <h5>Integrated Science P6</h5>
-                            <p class="text-muted small mb-2">Primary P6 &bull; Science &bull; REB Curriculum 2024</p>
-                            <p>Covers photosynthesis, plant biology, and ecosystems aligned with the national curriculum.</p>
-                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="aiTutor.viewResource">View</a>
-                        </div>
+                <div class="row g-4" id="recommended-resources">
+                    <div class="col-12 text-center text-muted">
+                        <p>Loading recommendations...</p>
                     </div>
+                </div>
+            </div>
 
-                    <div class="col-md-6 col-lg-3">
-                        <div class="service-item rounded p-4 h-100">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <span class="badge bg-info" data-i18n="resources.quiz">Quiz</span>
-                                <span class="badge bg-warning text-dark" data-i18n="resources.aiGenerated">AI-Generated Supplement</span>
-                            </div>
-                            <h5>Science Practice Quiz - P6</h5>
-                            <p class="text-muted small mb-2">Primary P6 &bull; Science &bull; AI-Generated</p>
-                            <p>Practice questions covering plant biology, human body, and environmental science topics.</p>
-                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="aiTutor.viewResource">View</a>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 col-lg-3">
-                        <div class="service-item rounded p-4 h-100">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <span class="badge bg-primary" data-i18n="resources.lesson">Lesson</span>
-                                <span class="badge bg-success" data-i18n="resources.official">Official REB Material</span>
-                            </div>
-                            <h5>Mathematics S1 Guide</h5>
-                            <p class="text-muted small mb-2">Secondary S1 &bull; Mathematics &bull; REB Curriculum 2024</p>
-                            <p>Comprehensive guide to algebra, geometry, and number concepts for Senior 1 students.</p>
-                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="aiTutor.viewResource">View</a>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 col-lg-3">
-                        <div class="service-item rounded p-4 h-100">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <span class="badge bg-secondary" data-i18n="resources.document">Document</span>
-                                <span class="badge bg-success" data-i18n="resources.official">Official REB Material</span>
-                            </div>
-                            <h5>English Grammar Handbook</h5>
-                            <p class="text-muted small mb-2">Primary P5-P6 &bull; English &bull; REB Curriculum 2024</p>
-                            <p>Essential grammar rules and exercises for primary school English language learners.</p>
-                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill mt-auto" data-i18n="aiTutor.viewResource">View</a>
-                        </div>
+            <!-- My Generated Images Section -->
+            <div class="mt-5 wow fadeIn" data-wow-delay="0.2s">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h4 class="mb-0">My Generated Images</h4>
+                    <button class="btn btn-sm btn-outline-primary rounded-pill" id="btn-refresh-images">
+                        <i class="fa fa-refresh me-1"></i> Refresh
+                    </button>
+                </div>
+                <div class="row g-4" id="generated-images-gallery">
+                    <div class="col-12 text-center text-muted">
+                        <p>No generated images yet. Use the "Generate Image" button above to create educational visuals.</p>
                     </div>
                 </div>
             </div>
@@ -537,6 +521,175 @@
     <script src="js/components.js?v=2"></script>
     <script>
         IremeComponents.initPage('ai-tutor.html');
+        if (!IremeAuth.requireAuth()) { throw new Error('Authentication required'); }
+
+        var currentConversationId = null;
+        var conversations = [];
+
+        // Load conversations on page load
+        function loadConversations() {
+            IremeApi.getConversations()
+                .then(function(data) {
+                    conversations = data.conversations || [];
+                    renderConversationList();
+                })
+                .catch(function(err) {
+                    console.error('Failed to load conversations:', err);
+                });
+        }
+
+        function renderConversationList() {
+            var list = document.querySelector('.conversation-list');
+            if (conversations.length === 0) {
+                list.innerHTML = '<li class="text-muted text-center py-3"><small>No conversations yet</small></li>';
+                return;
+            }
+
+            list.innerHTML = conversations.map(function(convo) {
+                var isActive = convo.id === currentConversationId ? ' active' : '';
+                var date = new Date(convo.lastMessageAt || convo.createdAt).toLocaleDateString();
+                var title = convo.title || 'Conversation';
+                if (title.length > 30) title = title.substring(0, 30) + '...';
+
+                return '<li>' +
+                    '<a href="#" class="conversation-item' + isActive + '" data-convo-id="' + convo.id + '">' +
+                    '<i class="fa fa-comment-dots me-2 text-muted"></i>' +
+                    '<span class="conversation-title">' + title + '</span>' +
+                    '<span class="conversation-date">' + date + '</span>' +
+                    '</a>' +
+                    '</li>';
+            }).join('');
+
+            // Bind click events
+            document.querySelectorAll('.conversation-item').forEach(function(item) {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var id = this.getAttribute('data-convo-id');
+                    loadConversation(id);
+                });
+            });
+        }
+
+        function loadConversation(id) {
+            currentConversationId = id;
+            renderConversationList();
+
+            IremeApi.getConversation(id)
+                .then(function(data) {
+                    var convo = data.conversation;
+                    var container = document.getElementById('chat-container');
+                    container.innerHTML = '';
+
+                    // Update header
+                    var title = convo.title || 'Conversation';
+                    document.querySelector('.chat-header h5').textContent = title;
+
+                    // Render messages
+                    convo.messages.forEach(function(msg) {
+                        appendMessage(msg.role, msg.contentEn || msg.content);
+                    });
+
+                    container.scrollTop = container.scrollHeight;
+                })
+                .catch(function(err) {
+                    console.error('Failed to load conversation:', err);
+                });
+        }
+
+        function appendMessage(role, text) {
+            var container = document.getElementById('chat-container');
+            var msgDiv = document.createElement('div');
+            msgDiv.className = 'chat-message ' + (role === 'user' ? 'student' : 'ai');
+
+            var sender = role === 'user' ? 'Student' : '<i class="fa fa-robot me-1"></i> Ireme AI';
+            var formattedText = formatAIText(text);
+
+            msgDiv.innerHTML = '<div class="message-bubble">' +
+                '<div class="message-sender">' + sender + '</div>' +
+                '<div class="message-text">' + formattedText + '</div>' +
+                '</div>';
+
+            container.appendChild(msgDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function formatAIText(text) {
+            if (!text) return '';
+            // Basic formatting: escape HTML, convert newlines to <br>
+            var escaped = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            // Convert **bold** to <strong>
+            escaped = escaped.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            // Convert newlines to <br>
+            escaped = escaped.replace(/\n/g, '<br>');
+            return escaped;
+        }
+
+        // New conversation button
+        document.querySelector('[data-i18n="aiTutor.newConversation"]').addEventListener('click', function() {
+            currentConversationId = null;
+            renderConversationList();
+            var container = document.getElementById('chat-container');
+            container.innerHTML = '<div class="welcome-card">' +
+                '<h5>Hello! I\'m Ireme AI, your learning assistant.</h5>' +
+                '<p class="mb-2">I can help you with:</p>' +
+                '<ul>' +
+                '<li>Explaining difficult concepts step by step</li>' +
+                '<li>Answering questions about your subjects</li>' +
+                '<li>Creating revision notes and summaries</li>' +
+                '<li>Generating practice exercises</li>' +
+                '<li>Explaining exam answers</li>' +
+                '<li>Recommending study resources</li>' +
+                '</ul>' +
+                '<p class="mb-0 fw-semibold">Select a subject or type your question below to get started.</p>' +
+                '</div>';
+            document.getElementById('chat-input').value = '';
+        });
+
+        // Send message
+        function sendMessage() {
+            var input = document.getElementById('chat-input');
+            var message = input.value.trim();
+            if (!message) return;
+
+            input.value = '';
+            appendMessage('user', message);
+
+            if (currentConversationId) {
+                // Send to existing conversation
+                IremeApi.sendMessage(currentConversationId, message)
+                    .then(function(data) {
+                        var assistantMsg = data.messages[1];
+                        if (assistantMsg) {
+                            appendMessage('assistant', assistantMsg.contentEn || assistantMsg.content);
+                        }
+                    })
+                    .catch(function(err) {
+                        console.error('Failed to send message:', err);
+                        appendMessage('assistant', 'I\'m currently unavailable. Please try again later.');
+                    });
+            } else {
+                // Start new conversation
+                IremeApi.startConversation({ message: message })
+                    .then(function(data) {
+                        currentConversationId = data.conversation.id;
+                        data.conversation.messages.forEach(function(msg) {
+                            if (msg.role === 'assistant') {
+                                appendMessage('assistant', msg.contentEn || msg.content);
+                            }
+                        });
+                        loadConversations(); // Refresh list
+                    })
+                    .catch(function(err) {
+                        console.error('Failed to start conversation:', err);
+                        appendMessage('assistant', 'I\'m currently unavailable. Please try again later.');
+                    });
+            }
+        }
+
+        document.getElementById('chat-send-btn').addEventListener('click', sendMessage);
+        document.getElementById('chat-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMessage();
+        });
 
         // Subject quick-select buttons
         document.querySelectorAll('.subject-btn').forEach(function(btn) {
@@ -547,12 +700,8 @@
                 var subject = this.getAttribute('data-subject');
                 var select = document.getElementById('subject-context-select');
                 var badge = document.getElementById('chat-context-badge');
-                if (select) {
-                    select.value = subject;
-                }
-                if (badge) {
-                    badge.textContent = this.textContent.trim();
-                }
+                if (select) select.value = subject;
+                if (badge) badge.textContent = this.textContent.trim();
             });
         });
 
@@ -560,51 +709,178 @@
         document.getElementById('subject-context-select').addEventListener('change', function() {
             var badge = document.getElementById('chat-context-badge');
             var selectedText = this.options[this.selectedIndex].textContent.trim();
-            if (badge) {
-                badge.textContent = selectedText;
-            }
-            // Sync sidebar buttons
+            if (badge) badge.textContent = selectedText;
             var value = this.value;
             document.querySelectorAll('.subject-btn').forEach(function(b) {
                 b.classList.toggle('active', b.getAttribute('data-subject') === value);
             });
         });
 
-        // Conversation item click
-        document.querySelectorAll('.conversation-item').forEach(function(item) {
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
-                document.querySelectorAll('.conversation-item').forEach(function(i) { i.classList.remove('active'); });
-                this.classList.add('active');
+        // Initialize
+        loadConversations();
+        loadGeneratedImages();
+        loadRecommendations();
+
+        function loadGeneratedImages() {
+            IremeApi.getGeneratedImages({ limit: 8 })
+                .then(function(data) {
+                    var images = data.images || [];
+                    var gallery = document.getElementById('generated-images-gallery');
+
+                    if (images.length === 0) {
+                        gallery.innerHTML = '<div class="col-12 text-center text-muted"><p>No generated images yet. Use the "Generate Image" button above to create educational visuals.</p></div>';
+                        return;
+                    }
+
+                    gallery.innerHTML = images.map(function(img) {
+                        return '<div class="col-md-6 col-lg-3">' +
+                            '<div class="service-item rounded p-3 h-100">' +
+                            '<img src="' + img.imageUrl + '" alt="' + (img.prompt || 'Generated image') + '" class="img-fluid rounded mb-2" style="height: 150px; object-fit: cover; width: 100%;">' +
+                            '<small class="text-muted d-block" style="font-size: 0.75rem;">' + (img.prompt || 'Generated image').substring(0, 60) + (img.prompt && img.prompt.length > 60 ? '...' : '') + '</small>' +
+                            '<small class="text-muted d-block" style="font-size: 0.7rem;">' + new Date(img.createdAt).toLocaleDateString() + '</small>' +
+                            '</div>' +
+                            '</div>';
+                    }).join('');
+                })
+                .catch(function(err) {
+                    console.error('Failed to load images:', err);
+                });
+        }
+
+        function loadRecommendations() {
+            IremeApi.getRecommendations()
+                .then(function(data) {
+                    var recommendations = data.recommendations || [];
+                    var container = document.getElementById('recommended-resources');
+
+                    if (recommendations.length === 0) {
+                        container.innerHTML = '<div class="col-12 text-center text-muted"><p>Keep learning to get personalized recommendations!</p></div>';
+                        return;
+                    }
+
+                    container.innerHTML = recommendations.slice(0, 4).map(function(rec) {
+                        return '<div class="col-md-6 col-lg-3">' +
+                            '<div class="service-item rounded p-4 h-100">' +
+                            '<div class="d-flex justify-content-between align-items-start mb-3">' +
+                            '<span class="badge bg-primary">' + (rec.type || 'Lesson') + '</span>' +
+                            '</div>' +
+                            '<h5>' + (rec.title || rec.name) + '</h5>' +
+                            '<p class="text-muted small mb-2">' + (rec.subject || '') + ' &bull; ' + (rec.level || '') + '</p>' +
+                            '<p>' + (rec.description || rec.reason || '') + '</p>' +
+                            (rec.url ? '<a href="' + rec.url + '" class="btn btn-sm btn-outline-primary rounded-pill mt-auto">View</a>' : '') +
+                            '</div>' +
+                            '</div>';
+                    }).join('');
+                })
+                .catch(function(err) {
+                    console.error('Failed to load recommendations:', err);
+                    document.getElementById('recommended-resources').innerHTML = '<div class="col-12 text-center text-muted"><p>Unable to load recommendations</p></div>';
+                });
+        }
+
+        document.getElementById('btn-refresh-images').addEventListener('click', loadGeneratedImages);
+
+        // Enhanced AI Features
+        document.getElementById('btn-create-task').addEventListener('click', function() {
+            var taskTitle = prompt('Enter task title:');
+            if (!taskTitle) return;
+
+            var taskDesc = prompt('Enter task description (optional):') || '';
+            var dueDate = prompt('Enter due date (YYYY-MM-DD, optional):') || null;
+
+            IremeApi.createTask({
+                title: taskTitle,
+                description: taskDesc,
+                taskType: 'study',
+                dueDate: dueDate,
+                priority: 'medium'
+            })
+            .then(function(data) {
+                appendMessage('assistant', '✓ Task created successfully: "' + taskTitle + '"');
+            })
+            .catch(function(err) {
+                console.error('Failed to create task:', err);
+                appendMessage('assistant', 'Failed to create task. Please try again.');
             });
         });
 
-        // Chat send (placeholder)
-        document.getElementById('chat-send-btn').addEventListener('click', function() {
-            var input = document.getElementById('chat-input');
-            var message = input.value.trim();
-            if (!message) return;
+        document.getElementById('btn-generate-image').addEventListener('click', function() {
+            var imagePrompt = prompt('Describe the educational image you want to generate:');
+            if (!imagePrompt) return;
 
-            var container = document.getElementById('chat-container');
+            appendMessage('assistant', 'Generating image... This may take a moment.');
 
-            // Add student message
-            var studentMsg = document.createElement('div');
-            studentMsg.className = 'chat-message student';
-            studentMsg.innerHTML = '<div class="message-bubble"><div class="message-sender">Student</div><div class="message-text">' + message.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div></div>';
-            container.appendChild(studentMsg);
-
-            // Clear input
-            input.value = '';
-
-            // Scroll to bottom
-            container.scrollTop = container.scrollHeight;
+            IremeApi.generateImage({
+                prompt: imagePrompt,
+                subject: document.getElementById('subject-context-select').value
+            })
+            .then(function(data) {
+                var imageUrl = data.image.imageUrl;
+                var imgHtml = '<div class="mt-2"><img src="' + imageUrl + '" alt="Generated image" class="img-fluid rounded" style="max-width: 400px;"><br><small class="text-muted">AI-generated educational image</small></div>';
+                var container = document.getElementById('chat-container');
+                var msgDiv = document.createElement('div');
+                msgDiv.className = 'chat-message ai';
+                msgDiv.innerHTML = '<div class="message-bubble">' +
+                    '<div class="message-sender"><i class="fa fa-robot me-1"></i> Ireme AI</div>' +
+                    '<div class="message-text">Here\'s your generated image:' + imgHtml + '</div>' +
+                    '</div>';
+                container.appendChild(msgDiv);
+                container.scrollTop = container.scrollHeight;
+            })
+            .catch(function(err) {
+                console.error('Failed to generate image:', err);
+                appendMessage('assistant', 'Failed to generate image. Please try again.');
+            });
         });
 
-        // Enter key to send
-        document.getElementById('chat-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                document.getElementById('chat-send-btn').click();
-            }
+        document.getElementById('btn-search-content').addEventListener('click', function() {
+            var searchQuery = prompt('Search for content (videos, resources, lessons):');
+            if (!searchQuery) return;
+
+            IremeApi.searchContent({ query: searchQuery })
+            .then(function(data) {
+                var results = data.results || [];
+                if (results.length === 0) {
+                    appendMessage('assistant', 'No results found for "' + searchQuery + '"');
+                    return;
+                }
+
+                var resultText = 'Found ' + results.length + ' results for "' + searchQuery + '":<br><br>';
+                results.slice(0, 5).forEach(function(r, idx) {
+                    resultText += (idx + 1) + '. <strong>' + (r.title || r.name) + '</strong> (' + r.type + ')<br>';
+                });
+
+                appendMessage('assistant', resultText);
+            })
+            .catch(function(err) {
+                console.error('Failed to search:', err);
+                appendMessage('assistant', 'Search failed. Please try again.');
+            });
+        });
+
+        document.getElementById('btn-get-recommendations').addEventListener('click', function() {
+            appendMessage('assistant', 'Finding personalized recommendations for you...');
+
+            IremeApi.getRecommendations()
+            .then(function(data) {
+                var recommendations = data.recommendations || [];
+                if (recommendations.length === 0) {
+                    appendMessage('assistant', 'No recommendations available yet. Keep learning and I\'ll suggest lessons for you!');
+                    return;
+                }
+
+                var recText = 'Here are some recommended lessons for you:<br><br>';
+                recommendations.slice(0, 5).forEach(function(rec, idx) {
+                    recText += (idx + 1) + '. <strong>' + (rec.title || rec.name) + '</strong><br>';
+                    if (rec.reason) recText += '   <small class="text-muted">' + rec.reason + '</small><br>';
+                });
+
+                appendMessage('assistant', recText);
+            })
+            .catch(function(err) {
+                console.error('Failed to get recommendations:', err);
+                appendMessage('assistant', 'Failed to get recommendations. Please try again.');
+            });
         });
     </script>
 </body>

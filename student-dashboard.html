@@ -147,7 +147,7 @@
 
             <!-- Recent Activity -->
             <div class="row mt-4">
-                <div class="col-12 wow fadeIn" data-wow-delay="0.1s">
+                <div class="col-lg-6 wow fadeIn" data-wow-delay="0.1s">
                     <div class="bg-light rounded p-4">
                         <h4 class="mb-4" data-i18n="dashboard.recentActivity">Recent Activity</h4>
                         <div class="table-responsive">
@@ -160,27 +160,27 @@
                                         <th>Date</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="recent-activity-body">
                                     <tr>
-                                        <td>Mathematics Quiz - Fractions</td>
-                                        <td>Math</td>
-                                        <td><span class="badge bg-success" data-i18n="dashboard.completed">Completed</span></td>
-                                        <td>2026-10-14</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Science Lesson - Photosynthesis</td>
-                                        <td>Science</td>
-                                        <td><span class="badge bg-success" data-i18n="dashboard.completed">Completed</span></td>
-                                        <td>2026-10-13</td>
-                                    </tr>
-                                    <tr>
-                                        <td>English Assignment - Grammar</td>
-                                        <td>English</td>
-                                        <td><span class="badge bg-warning text-dark" data-i18n="dashboard.pending">Pending</span></td>
-                                        <td>2026-10-15</td>
+                                        <td colspan="4" class="text-center text-muted">Loading...</td>
                                     </tr>
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- My Learning Tasks -->
+                <div class="col-lg-6 wow fadeIn" data-wow-delay="0.2s">
+                    <div class="bg-light rounded p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="mb-0" data-i18n="dashboard.myTasks">My Learning Tasks</h4>
+                            <a href="ai-tutor.html" class="btn btn-sm btn-primary rounded-pill">
+                                <i class="fa fa-plus me-1"></i> New Task
+                            </a>
+                        </div>
+                        <div id="tasks-container">
+                            <p class="text-muted text-center">Loading tasks...</p>
                         </div>
                     </div>
                 </div>
@@ -259,18 +259,22 @@
                     }
 
                     // Update recent activity
-                    var activityTable = document.querySelector('.table-responsive tbody');
-                    if (activityTable && data.recentActivity && data.recentActivity.length > 0) {
-                        activityTable.innerHTML = data.recentActivity.slice(0, 5).map(function(activity) {
-                            var date = new Date(activity.createdAt).toLocaleDateString();
-                            var status = activity.xpEarned > 0 ? '<span class="badge bg-success">Completed</span>' : '<span class="badge bg-warning text-dark">In Progress</span>';
-                            return '<tr>' +
-                                '<td>' + activity.activityTitle + '</td>' +
-                                '<td>' + (activity.subjectId || '-') + '</td>' +
-                                '<td>' + status + '</td>' +
-                                '<td>' + date + '</td>' +
-                                '</tr>';
-                        }).join('');
+                    var activityTable = document.getElementById('recent-activity-body');
+                    if (activityTable) {
+                        if (data.recentActivity && data.recentActivity.length > 0) {
+                            activityTable.innerHTML = data.recentActivity.slice(0, 5).map(function(activity) {
+                                var date = new Date(activity.createdAt).toLocaleDateString();
+                                var status = activity.xpEarned > 0 ? '<span class="badge bg-success">Completed</span>' : '<span class="badge bg-warning text-dark">In Progress</span>';
+                                return '<tr>' +
+                                    '<td>' + activity.activityTitle + '</td>' +
+                                    '<td>' + (activity.subjectId || '-') + '</td>' +
+                                    '<td>' + status + '</td>' +
+                                    '<td>' + date + '</td>' +
+                                    '</tr>';
+                            }).join('');
+                        } else {
+                            activityTable.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No recent activity</td></tr>';
+                        }
                     }
                 })
                 .catch(function(err) {
@@ -278,7 +282,45 @@
                 });
         }
 
+        function loadStudentTasks() {
+            IremeApi.getTasks({ status: 'pending', limit: 5 })
+                .then(function(data) {
+                    var tasks = data.tasks || [];
+                    var container = document.getElementById('tasks-container');
+
+                    if (tasks.length === 0) {
+                        container.innerHTML = '<p class="text-muted text-center mb-0">No pending tasks. <a href="ai-tutor.html">Create one with AI</a></p>';
+                        return;
+                    }
+
+                    container.innerHTML = tasks.map(function(task) {
+                        var priorityClass = task.priority === 'high' ? 'bg-danger' : (task.priority === 'medium' ? 'bg-warning text-dark' : 'bg-info');
+                        var dueDate = task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No due date';
+                        var statusBadge = task.status === 'completed' ? '<span class="badge bg-success">Done</span>' : '<span class="badge bg-warning text-dark">Pending</span>';
+
+                        return '<div class="service-item rounded p-3 mb-2">' +
+                            '<div class="d-flex justify-content-between align-items-start">' +
+                            '<div class="flex-grow-1">' +
+                            '<h6 class="mb-1">' + (task.title || 'Untitled Task') + '</h6>' +
+                            '<small class="text-muted">' + dueDate + '</small>' +
+                            (task.description ? '<p class="small mb-0 mt-1">' + task.description.substring(0, 80) + (task.description.length > 80 ? '...' : '') + '</p>' : '') +
+                            '</div>' +
+                            '<div class="ms-2">' +
+                            '<span class="badge ' + priorityClass + ' me-1">' + (task.priority || 'medium') + '</span>' +
+                            statusBadge +
+                            '</div>' +
+                            '</div>' +
+                            '</div>';
+                    }).join('');
+                })
+                .catch(function(err) {
+                    console.error('Failed to load tasks:', err);
+                    document.getElementById('tasks-container').innerHTML = '<p class="text-muted text-center mb-0">Failed to load tasks</p>';
+                });
+        }
+
         loadStudentDashboard();
+        loadStudentTasks();
     </script>
 </body>
 </html>

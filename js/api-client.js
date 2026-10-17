@@ -286,6 +286,51 @@ var IremeAPI = (function() {
       return this.post('/api/resources/' + encodeURIComponent(resourceId) + '/download');
     },
 
+    // Enhanced AI Capabilities
+    createTask: function(data) {
+      return this.post('/api/ai-enhanced/tasks', data);
+    },
+
+    getTasks: function(filters) {
+      var qs = [];
+      if (filters) {
+        if (filters.status) qs.push('status=' + encodeURIComponent(filters.status));
+        if (filters.taskType) qs.push('taskType=' + encodeURIComponent(filters.taskType));
+        if (filters.subject) qs.push('subject=' + encodeURIComponent(filters.subject));
+        if (filters.limit) qs.push('limit=' + filters.limit);
+      }
+      var query = qs.length ? '?' + qs.join('&') : '';
+      return this.get('/api/ai-enhanced/tasks' + query);
+    },
+
+    updateTask: function(taskId, data) {
+      return this.put('/api/ai-enhanced/tasks/' + encodeURIComponent(taskId), data);
+    },
+
+    generateImage: function(data) {
+      return this.post('/api/ai-enhanced/generate-image', data);
+    },
+
+    getGeneratedImages: function(limit) {
+      return this.get('/api/ai-enhanced/images' + (limit ? '?limit=' + limit : ''));
+    },
+
+    searchContent: function(query) {
+      return this.post('/api/ai-enhanced/search', { query: query });
+    },
+
+    askAI: function(data) {
+      return this.post('/api/ai-enhanced/ask', data);
+    },
+
+    getRecommendations: function() {
+      return this.get('/api/ai-enhanced/recommendations');
+    },
+
+    getAIUsage: function() {
+      return this.get('/api/ai-enhanced/usage');
+    },
+
     createSubject: function(data) {
       return this.post('/api/curriculum/subjects', data);
     },

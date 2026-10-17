@@ -559,46 +559,187 @@
     <script>
         IremeComponents.initPage('resources.html');
 
-        // Category tab switching
-        document.querySelectorAll('#resource-category-tabs button').forEach(function(tab) {
-            tab.addEventListener('click', function() {
-                // Update active tab styling
-                document.querySelectorAll('#resource-category-tabs button').forEach(function(btn) {
-                    btn.classList.remove('btn-primary', 'active');
-                    btn.classList.add('btn-outline-primary');
-                });
-                this.classList.remove('btn-outline-primary');
-                this.classList.add('btn-primary', 'active');
+        var PAGE_SIZE = 12;
+        var currentOffset = 0;
+        var currentCategory = 'all';
+        var useApi = true;
 
-                // Apply category filter
-                var category = this.getAttribute('data-category');
-                document.querySelectorAll('.resource-card').forEach(function(card) {
-                    if (category === 'all' || card.getAttribute('data-category') === category) {
-                        card.style.display = '';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-
-                // Re-apply other filters
-                filterResources();
-            });
-        });
-
-        // Get active category
-        function getActiveCategory() {
-            var activeTab = document.querySelector('#resource-category-tabs button.active');
-            return activeTab ? activeTab.getAttribute('data-category') : 'all';
+        function getFilterParams() {
+            var params = { limit: PAGE_SIZE, offset: currentOffset };
+            if (currentCategory && currentCategory !== 'all') params.category = currentCategory;
+            var level = document.getElementById('filter-level').value;
+            var subject = document.getElementById('filter-subject').value;
+            var search = document.getElementById('resource-search').value.trim();
+            if (level) params.level = level;
+            if (subject) params.subject = subject;
+            if (search) params.search = search;
+            return params;
         }
 
-        // Filter resources
-        function filterResources() {
+        function getCategoryBadgeClass(type) {
+            switch (type) {
+                case 'textbook': return 'bg-primary';
+                case 'student-guide': return 'bg-info';
+                case 'teacher-guide': return 'bg-secondary';
+                case 'exam': return 'bg-danger';
+                case 'exam-paper': return 'bg-danger';
+                case 'worksheet': return 'bg-dark';
+                case 'video': return 'bg-danger';
+                case 'document': return 'bg-secondary';
+                default: return 'bg-dark';
+            }
+        }
+
+        function getCategoryLabel(type) {
+            switch (type) {
+                case 'textbook': return 'Textbook';
+                case 'student-guide': return 'Student Guide';
+                case 'teacher-guide': return 'Teacher Guide';
+                case 'exam': return 'Exam Paper';
+                case 'exam-paper': return 'Exam Paper';
+                case 'worksheet': return 'Worksheet';
+                case 'video': return 'Video';
+                case 'document': return 'Document';
+                default: return type || 'Resource';
+            }
+        }
+
+        function getResourceIcon(type) {
+            switch (type) {
+                case 'textbook': return 'fa-book';
+                case 'student-guide': return 'fa-user-graduate';
+                case 'teacher-guide': return 'fa-chalkboard-teacher';
+                case 'exam': case 'exam-paper': return 'fa-file-alt';
+                case 'worksheet': return 'fa-pencil-alt';
+                case 'video': return 'fa-video';
+                default: return 'fa-file-pdf';
+            }
+        }
+
+        function renderResourceCard(r) {
+            var langBadges = '';
+            var langs = r.language || [];
+            for (var i = 0; i < langs.length; i++) {
+                langBadges += '<span class="badge bg-light text-dark border"><i class="fa fa-globe me-1"></i>' + langs[i] + '</span>';
+            }
+
+            var sourceBadge = r.isVerified
+                ? '<span class="badge bg-success">Verified Source</span>'
+                : '<span class="badge bg-warning text-dark">Community Content</span>';
+
+            var formatIcon = (r.format || '').toLowerCase() === 'video' ? 'fa-video' : 'fa-file-pdf';
+
+            return '<div class="col-md-6 col-lg-4 wow fadeIn resource-card" data-category="' + (r.resourceType || '') + '" data-level="' + (r.levelCode || '') + '" data-subject="' + (r.subjectCode || '') + '">' +
+                '<div class="service-item rounded p-4 h-100">' +
+                '<div class="d-flex flex-wrap justify-content-between align-items-start mb-3 gap-1">' +
+                '<span class="badge ' + getCategoryBadgeClass(r.resourceType) + '">' + getCategoryLabel(r.resourceType) + '</span>' +
+                sourceBadge +
+                '</div>' +
+                '<h5>' + (r.title || 'Untitled Resource') + '</h5>' +
+                '<p class="text-muted small mb-2">' +
+                '<span>Level</span>: ' + (r.level || '-') + ' &bull; ' +
+                '<span>Subject</span>: ' + (r.subject || '-') + '<br>' +
+                '<span>Publisher</span>: ' + (r.publisher || '-') + ' &bull; ' +
+                '<span>Year</span>: ' + (r.year || '-') +
+                '</p>' +
+                '<p>' + (r.description || '') + '</p>' +
+                '<div class="d-flex flex-wrap align-items-center gap-2 mb-3">' +
+                langBadges +
+                '<span class="badge bg-light text-dark border"><i class="fa ' + formatIcon + ' me-1"></i>' + (r.format || 'PDF').toUpperCase() + '</span>' +
+                '</div>' +
+                '<div class="d-flex gap-2 mt-auto">' +
+                (r.url ? '<a href="' + r.url + '" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill">View Resource</a>' : '<span class="btn btn-sm btn-outline-primary rounded-pill disabled">View Resource</span>') +
+                (r.url ? '<a href="' + r.url + '" target="_blank" class="btn btn-sm btn-primary rounded-pill" data-resource-id="' + r.id + '" onclick="recordDownload(this)"><i class="fa fa-download me-1"></i>Download</a>' : '<span class="btn btn-sm btn-primary rounded-pill disabled"><i class="fa fa-download me-1"></i>Download</span>') +
+                '</div>' +
+                '</div>' +
+                '</div>';
+        }
+
+        function recordDownload(el) {
+            var id = el.getAttribute('data-resource-id');
+            if (id && typeof IremeApi !== 'undefined') {
+                IremeApi.recordResourceDownload(id).catch(function() {});
+            }
+        }
+
+        function updateResultsCount(total) {
+            var countEl = document.getElementById('results-count');
+            if (total === 0) {
+                countEl.textContent = 'No resources found';
+            } else if (total === 1) {
+                countEl.textContent = '1 resource found';
+            } else {
+                countEl.textContent = total + ' resources found';
+            }
+        }
+
+        function renderPagination(total) {
+            var area = document.getElementById('pagination-area');
+            if (total <= PAGE_SIZE) {
+                area.classList.add('d-none');
+                return;
+            }
+            area.classList.remove('d-none');
+            var totalPages = Math.ceil(total / PAGE_SIZE);
+            var currentPage = Math.floor(currentOffset / PAGE_SIZE) + 1;
+            var html = '<ul class="pagination justify-content-center">';
+            html += '<li class="page-item' + (currentPage <= 1 ? ' disabled' : '') + '"><a class="page-link rounded-pill" href="#" onclick="goToPage(' + (currentPage - 1) + '); return false;"><i class="fa fa-chevron-left"></i></a></li>';
+            for (var p = 1; p <= totalPages && p <= 5; p++) {
+                html += '<li class="page-item' + (p === currentPage ? ' active' : '') + '"><a class="page-link rounded-pill" href="#" onclick="goToPage(' + p + '); return false;">' + p + '</a></li>';
+            }
+            html += '<li class="page-item' + (currentPage >= totalPages ? ' disabled' : '') + '"><a class="page-link rounded-pill" href="#" onclick="goToPage(' + (currentPage + 1) + '); return false;"><i class="fa fa-chevron-right"></i></a></li>';
+            html += '</ul>';
+            area.innerHTML = html;
+        }
+
+        function goToPage(page) {
+            currentOffset = (page - 1) * PAGE_SIZE;
+            loadResources();
+        }
+
+        function loadResources() {
+            if (!useApi || typeof IremeApi === 'undefined') {
+                applyStaticFilters();
+                return;
+            }
+
+            var params = getFilterParams();
+            var grid = document.getElementById('resources-grid');
+            var noResults = document.getElementById('no-resources');
+
+            IremeApi.getResources(params)
+                .then(function(data) {
+                    var resources = data.resources || [];
+                    var total = data.total || 0;
+
+                    if (resources.length === 0 && total === 0) {
+                        grid.innerHTML = '';
+                        noResults.classList.remove('d-none');
+                        updateResultsCount(0);
+                        document.getElementById('pagination-area').classList.add('d-none');
+                        return;
+                    }
+
+                    noResults.classList.add('d-none');
+                    grid.innerHTML = resources.map(renderResourceCard).join('');
+                    updateResultsCount(total);
+                    renderPagination(total);
+
+                    if (typeof WOW !== 'undefined') { new WOW().init(); }
+                })
+                .catch(function(err) {
+                    console.warn('API unavailable, using static resources:', err.message || err);
+                    useApi = false;
+                    applyStaticFilters();
+                });
+        }
+
+        function applyStaticFilters() {
             var search = document.getElementById('resource-search').value.toLowerCase();
             var level = document.getElementById('filter-level').value;
             var subject = document.getElementById('filter-subject').value;
             var type = document.getElementById('filter-type').value;
             var language = document.getElementById('filter-language').value;
-            var category = getActiveCategory();
             var visible = 0;
 
             document.querySelectorAll('.resource-card').forEach(function(card) {
@@ -607,63 +748,59 @@
                 var matchSubject = !subject || card.getAttribute('data-subject') === subject;
                 var matchType = !type || card.getAttribute('data-type') === type;
                 var matchLanguage = !language || card.getAttribute('data-language') === language;
-                var matchCategory = category === 'all' || card.getAttribute('data-category') === category;
+                var matchCategory = currentCategory === 'all' || card.getAttribute('data-category') === currentCategory;
                 var show = matchSearch && matchLevel && matchSubject && matchType && matchLanguage && matchCategory;
                 card.style.display = show ? '' : 'none';
                 if (show) visible++;
             });
 
-            // Update results count
-            var countEl = document.getElementById('results-count');
-            if (visible === 0) {
-                countEl.textContent = 'No resources found';
-            } else if (visible === 1) {
-                countEl.textContent = '1 resource found';
-            } else {
-                countEl.textContent = visible + ' resources found';
-            }
-
-            // Toggle no results message
+            updateResultsCount(visible);
             document.getElementById('no-resources').classList.toggle('d-none', visible > 0);
-            // Toggle pagination
-            document.getElementById('pagination-area').classList.toggle('d-none', visible === 0);
+            document.getElementById('pagination-area').classList.add('d-none');
         }
 
-        // Sort resources
-        function sortResources() {
-            var sortBy = document.getElementById('sort-select').value;
-            var grid = document.getElementById('resources-grid');
-            var cards = Array.from(grid.querySelectorAll('.resource-card'));
-
-            cards.sort(function(a, b) {
-                var yearA = parseInt(a.getAttribute('data-year')) || 0;
-                var yearB = parseInt(b.getAttribute('data-year')) || 0;
-                var titleA = a.querySelector('h5').textContent.toLowerCase();
-                var titleB = b.querySelector('h5').textContent.toLowerCase();
-
-                switch (sortBy) {
-                    case 'newest': return yearB - yearA;
-                    case 'oldest': return yearA - yearB;
-                    case 'title-az': return titleA < titleB ? -1 : titleA > titleB ? 1 : 0;
-                    case 'title-za': return titleB < titleA ? -1 : titleB > titleA ? 1 : 0;
-                    default: return 0;
-                }
+        // Category tab switching
+        document.querySelectorAll('#resource-category-tabs button').forEach(function(tab) {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('#resource-category-tabs button').forEach(function(btn) {
+                    btn.classList.remove('btn-primary', 'active');
+                    btn.classList.add('btn-outline-primary');
+                });
+                this.classList.remove('btn-outline-primary');
+                this.classList.add('btn-primary', 'active');
+                currentCategory = this.getAttribute('data-category');
+                currentOffset = 0;
+                loadResources();
             });
+        });
 
-            cards.forEach(function(card) {
-                grid.appendChild(card);
+        // Bind filter events
+        var debounceTimer;
+        ['filter-level', 'filter-subject', 'filter-type', 'filter-language'].forEach(function(id) {
+            document.getElementById(id).addEventListener('change', function() {
+                currentOffset = 0;
+                loadResources();
             });
-        }
+        });
+        document.getElementById('resource-search').addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(function() {
+                currentOffset = 0;
+                loadResources();
+            }, 400);
+        });
 
-        // Clear all filters
-        function clearAllFilters() {
+        document.getElementById('sort-select').addEventListener('change', function() {
+            currentOffset = 0;
+            loadResources();
+        });
+
+        document.getElementById('btn-clear-filters').addEventListener('click', function() {
             document.getElementById('resource-search').value = '';
             document.getElementById('filter-level').value = '';
             document.getElementById('filter-subject').value = '';
             document.getElementById('filter-type').value = '';
             document.getElementById('filter-language').value = '';
-
-            // Reset category tab to "All"
             document.querySelectorAll('#resource-category-tabs button').forEach(function(btn) {
                 btn.classList.remove('btn-primary', 'active');
                 btn.classList.add('btn-outline-primary');
@@ -671,25 +808,12 @@
             var allTab = document.getElementById('tab-all');
             allTab.classList.remove('btn-outline-primary');
             allTab.classList.add('btn-primary', 'active');
-
-            filterResources();
-        }
-
-        // Bind filter events
-        ['resource-search', 'filter-level', 'filter-subject', 'filter-type', 'filter-language'].forEach(function(id) {
-            var el = document.getElementById(id);
-            el.addEventListener('input', filterResources);
-            el.addEventListener('change', filterResources);
+            currentCategory = 'all';
+            currentOffset = 0;
+            loadResources();
         });
 
-        // Bind sort event
-        document.getElementById('sort-select').addEventListener('change', sortResources);
-
-        // Bind clear filters button
-        document.getElementById('btn-clear-filters').addEventListener('click', clearAllFilters);
-
-        // Initialize results count
-        filterResources();
+        loadResources();
     </script>
 </body>
 
