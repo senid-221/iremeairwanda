@@ -348,6 +348,11 @@ var IremeAPI = (function() {
       return this.get('/api/assessments/history');
     },
 
+    getUpcomingAssessments: function(limit) {
+      var qs = limit ? '?limit=' + limit : '';
+      return this.get('/api/assessments/upcoming' + qs);
+    },
+
     getTutorProfile: function() {
       return this.get('/api/tutors/profile');
     },

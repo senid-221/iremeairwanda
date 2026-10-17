@@ -1453,4 +1453,74 @@ router.delete(
   }
 );
 
+// ---------------------------------------------------------------------------
+// 14. GET /upcoming — List upcoming exams for students
+// ---------------------------------------------------------------------------
+router.get('/upcoming', requireAuth, async function (req, res) {
+  try {
+    var studentProfile = await getStudentProfile(req.user.id);
+    if (!studentProfile) {
+      return res.status(403).json({ error: 'Student profile not found' });
+    }
+
+    var now = new Date();
+    var limit = Math.min(parseInt(req.query.limit, 10) || 20, 100);
+
+    // Fetch published assessments with start dates in the future
+    var upcomingAssessments = await prisma.assessment.findMany({
+      where: {
+        isPublished: true,
+        startDate: { gte: now },
+      },
+      include: {
+        subject: {
+          select: {
+            id: true,
+            name: true,
+            nameEn: true,
+            nameRw: true,
+          },
+        },
+        educationLevel: {
+          select: {
+            id: true,
+            name: true,
+            nameEn: true,
+            nameRw: true,
+          },
+        },
+      },
+      orderBy: { startDate: 'asc' },
+      take: limit,
+    });
+
+    // Format response
+    var formatted = upcomingAssessments.map(function (a) {
+      return {
+        id: a.id,
+        title: a.titleEn || a.title,
+        titleEn: a.titleEn,
+        titleRw: a.titleRw,
+        description: a.description,
+        assessmentType: a.assessmentType,
+        subject: a.subject ? (a.subject.nameEn || a.subject.name) : null,
+        subjectId: a.subjectId,
+        educationLevel: a.educationLevel ? (a.educationLevel.nameEn || a.educationLevel.name) : null,
+        educationLevelId: a.educationLevelId,
+        startDate: a.startDate,
+        endDate: a.endDate,
+        timeLimitMinutes: a.timeLimitMinutes,
+        totalPoints: a.totalPoints,
+        passingScore: a.passingScore,
+        maxAttempts: a.maxAttempts,
+      };
+    });
+
+    res.json({ assessments: formatted, count: formatted.length });
+  } catch (error) {
+    console.error('GET /assessments/upcoming error:', error);
+    res.status(500).json({ error: 'Failed to fetch upcoming assessments' });
+  }
+});
+
 module.exports = router;

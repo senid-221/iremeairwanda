@@ -6,7 +6,7 @@ const IremeComponents = {
             key: 'nav.student',
             children: [
                 { href: 'video-lessons.html', key: 'nav.student.lessons' },
-                { href: 'quizzes.html', key: 'nav.student.quizzes' },
+                { href: 'upcoming-exams.html', key: 'nav.student.quizzes' },
                 { href: 'exams.html', key: 'nav.student.exams' },
                 { href: 'national-exams.html', key: 'nav.student.nationalExams' },
                 { href: 'ai-tutor.html', key: 'nav.student.ai' },

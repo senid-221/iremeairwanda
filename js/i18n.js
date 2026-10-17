@@ -1301,6 +1301,14 @@ const translations = {
         "booking.feature2": "Book learning sessions",
         "booking.feature3": "Rate and review tutors",
 
+        // Upcoming Exams
+        "upcomingExams.badge": "Ibizamini bya Vuba",
+        "upcomingExams.title": "Ibizamini Bigiye Kuba",
+        "upcomingExams.desc": "Reba ibizamini n'amasuzuma bigiye kuba mu gihe kiri imbere.",
+        "upcomingExams.noExams": "Nta bizamini biri hafi",
+        "upcomingExams.noExamsDesc": "Nta bizamini cyangwa amasuzuma biri hafi mu gihe kiri imbere.",
+        "upcomingExams.loading": "Gutegereza...",
+
         // Hero - index
         "hero.badge": "IREME",
         "hero.title": "Kwiga Neza ku Rwanda Rwiza",
