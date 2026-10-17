@@ -126,10 +126,10 @@
                     <div class="bg-light rounded p-4">
                         <h4 class="mb-4" data-i18n="dashboard.overview">Quick Actions</h4>
                         <div class="d-grid gap-3">
-                            <a href="#" class="btn btn-primary rounded-pill py-3" data-i18n="parent.viewReports">View Reports</a>
-                            <a href="#" class="btn btn-outline-primary rounded-pill py-3" data-i18n="parent.contactTeacher">Contact Teacher</a>
-                            <a href="#" class="btn btn-outline-primary rounded-pill py-3" data-i18n="parent.schoolAnnouncements">School Announcements</a>
-                            <a href="#" class="btn btn-outline-primary rounded-pill py-3" data-i18n="parent.accountSettings">Account Settings</a>
+                            <a href="view-grades.html" class="btn btn-primary rounded-pill py-3" data-i18n="parent.viewReports">View Reports</a>
+                            <a href="contact-teacher.html" class="btn btn-outline-primary rounded-pill py-3" data-i18n="parent.contactTeacher">Contact Teacher</a>
+                            <a href="school-news.html" class="btn btn-outline-primary rounded-pill py-3" data-i18n="parent.schoolAnnouncements">School Announcements</a>
+                            <a href="parent-documents.html" class="btn btn-outline-primary rounded-pill py-3" data-i18n="parent.accountSettings">Account Settings</a>
                         </div>
                     </div>
                 </div>
@@ -201,11 +201,52 @@
     <script>
         IremeComponents.initPage('parent-dashboard.html');
         if (!IremeAuth.requireRole('parent')) { throw new Error('Access denied'); }
-        var user = IremeAuth.currentUser();
-        if (user) {
-            var welcomeEl = document.getElementById('parent-welcome');
-            if (welcomeEl) welcomeEl.textContent = user.name;
+
+        function loadParentDashboard() {
+            IremeApi.getDashboard('parent')
+                .then(function(data) {
+                    if (!data.user) return;
+
+                    // Update welcome
+                    var user = IremeAuth.currentUser();
+                    if (user) {
+                        var welcomeEl = document.getElementById('parent-welcome');
+                        if (welcomeEl) welcomeEl.textContent = user.name;
+                    }
+
+                    // Update children count
+                    var childrenCount = data.childrenCount || 0;
+                    var statCards = document.querySelectorAll('.col-md-3 .fw-bold');
+                    if (statCards.length >= 1) {
+                        statCards[0].textContent = childrenCount;
+                    }
+
+                    // Update children list
+                    var childrenContainer = document.querySelector('[data-i18n="parent.myChildren"]')?.closest('.bg-light')?.querySelector('.row.g-3');
+                    if (childrenContainer && data.children && data.children.length > 0) {
+                        childrenContainer.innerHTML = data.children.map(function(child) {
+                            var schoolName = child.school ? child.school.nameEn : 'N/A';
+                            var levelName = child.level ? child.level.nameEn : '';
+                            return '<div class="col-md-6">' +
+                                '<div class="service-item rounded p-3">' +
+                                '<div class="d-flex align-items-center mb-2">' +
+                                '<div class="service-icon btn-square me-3"><i class="fa fa-user fa-lg"></i></div>' +
+                                '<div>' +
+                                '<h6 class="mb-1">' + (child.fullName || 'Student') + '</h6>' +
+                                '<small class="text-muted">' + levelName + ' - ' + schoolName + '</small>' +
+                                '</div>' +
+                                '</div>' +
+                                '</div>' +
+                                '</div>';
+                        }).join('');
+                    }
+                })
+                .catch(function(err) {
+                    console.error('Parent dashboard error:', err);
+                });
         }
+
+        loadParentDashboard();
     </script>
 </body>
 </html>

@@ -111,10 +111,10 @@
                     <div class="bg-light rounded p-4">
                         <h4 class="mb-4">Quick Actions</h4>
                         <div class="d-grid gap-3">
-                            <button class="btn btn-primary rounded-pill py-3" data-i18n="dashboard.createLesson">Create Lesson</button>
-                            <button class="btn btn-outline-primary rounded-pill py-3" data-i18n="dashboard.createQuiz">Create Quiz</button>
-                            <button class="btn btn-outline-primary rounded-pill py-3" data-i18n="dashboard.viewReports">View Reports</button>
-                            <button class="btn btn-outline-primary rounded-pill py-3" data-i18n="dashboard.aiAssistant">Ask Ireme AI</button>
+                            <a href="lesson-planner.html" class="btn btn-primary rounded-pill py-3" data-i18n="dashboard.createLesson">Create Lesson</a>
+                            <a href="prepare-exam.html" class="btn btn-outline-primary rounded-pill py-3" data-i18n="dashboard.createQuiz">Create Quiz</a>
+                            <a href="student-report.html" class="btn btn-outline-primary rounded-pill py-3" data-i18n="dashboard.viewReports">View Reports</a>
+                            <a href="ai-tutor.html" class="btn btn-outline-primary rounded-pill py-3" data-i18n="dashboard.aiAssistant">Ask Ireme AI</a>
                         </div>
                     </div>
                 </div>
@@ -159,6 +159,65 @@
     <script>
         IremeComponents.initPage('teacher-dashboard.html');
         if (!IremeAuth.requireRole('teacher')) { throw new Error('Access denied'); }
+
+        function loadTeacherDashboard() {
+            IremeApi.getDashboard('teacher')
+                .then(function(data) {
+                    if (!data.user) return;
+
+                    // Update welcome
+                    var user = IremeAuth.currentUser();
+                    if (user) {
+                        var welcomeEl = document.querySelector('[data-i18n="dashboard.welcome"]');
+                        if (welcomeEl) welcomeEl.textContent = 'Welcome back, ' + user.name + '!';
+                    }
+
+                    // Update stats
+                    var studentCount = data.studentCount || 0;
+                    var assignmentCount = data.assignments ? data.assignments.length : 0;
+                    var classCount = data.classes ? data.classes.length : 0;
+
+                    var statCards = document.querySelectorAll('.col-md-3 .fw-bold');
+                    if (statCards.length >= 4) {
+                        statCards[0].textContent = studentCount;
+                        statCards[1].textContent = assignmentCount;
+                    }
+
+                    // Update classes list
+                    var classesContainer = document.querySelector('.col-lg-8 .row.g-3');
+                    if (classesContainer && data.assignments && data.assignments.length > 0) {
+                        classesContainer.innerHTML = data.assignments.slice(0, 6).map(function(a) {
+                            var className = a.class ? (a.class.name || a.class.level + '-' + a.class.section) : 'N/A';
+                            var subjectName = a.subject ? (a.subject.nameEn || a.subject.name) : 'N/A';
+                            return '<div class="col-md-6">' +
+                                '<div class="service-item rounded p-3">' +
+                                '<h6 class="mb-1">' + className + ' - ' + subjectName + '</h6>' +
+                                '<small class="text-muted">' + studentCount + ' students</small>' +
+                                '</div>' +
+                                '</div>';
+                        }).join('');
+                    }
+
+                    // Update recent activity
+                    var activityTable = document.querySelector('.table-responsive tbody');
+                    if (activityTable && data.recentActivity && data.recentActivity.length > 0) {
+                        activityTable.innerHTML = data.recentActivity.slice(0, 5).map(function(activity) {
+                            var date = new Date(activity.createdAt).toLocaleDateString();
+                            return '<tr>' +
+                                '<td>' + activity.activityTitle + '</td>' +
+                                '<td>-</td>' +
+                                '<td><span class="badge bg-success">Completed</span></td>' +
+                                '<td>' + date + '</td>' +
+                                '</tr>';
+                        }).join('');
+                    }
+                })
+                .catch(function(err) {
+                    console.error('Teacher dashboard error:', err);
+                });
+        }
+
+        loadTeacherDashboard();
     </script>
 </body>
 </html>

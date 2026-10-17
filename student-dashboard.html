@@ -132,7 +132,7 @@
                         <div class="d-grid gap-3">
                             <a href="game-setup.html" class="btn btn-primary rounded-pill py-3" data-i18n="dashboard.playGame">Play Learning Game</a>
                             <a href="resources.html" class="btn btn-outline-primary rounded-pill py-3" data-i18n="home.browseResources">Browse Resources</a>
-                            <a href="" class="btn btn-outline-primary rounded-pill py-3" data-i18n="dashboard.aiAssistant">Ask Ireme AI</a>
+                            <a href="ai-tutor.html" class="btn btn-outline-primary rounded-pill py-3" data-i18n="dashboard.aiAssistant">Ask Ireme AI</a>
                         </div>
 
                         <hr class="my-4">
@@ -206,12 +206,79 @@
     <script>
         IremeComponents.initPage('student-dashboard.html', ['js/game-state.js']);
         if (!IremeAuth.requireRole('student')) { throw new Error('Access denied'); }
-        var user = IremeAuth.currentUser();
-        if (user) {
-            var welcomeEl = document.querySelector('[data-i18n="dashboard.welcome"]');
-            if (welcomeEl) welcomeEl.textContent = user.name;
+
+        function loadStudentDashboard() {
+            IremeApi.getDashboard('student')
+                .then(function(res) {
+                    if (!res.success && !res.user) {
+                        console.error('Failed to load dashboard:', res);
+                        return;
+                    }
+
+                    var data = res;
+
+                    // Update welcome message
+                    var user = IremeAuth.currentUser();
+                    if (user) {
+                        var welcomeEl = document.querySelector('[data-i18n="dashboard.welcome"]');
+                        if (welcomeEl) welcomeEl.textContent = 'Welcome back, ' + user.name + '!';
+                    }
+
+                    // Update stats
+                    var subjectCount = data.subjects ? data.subjects.length : 0;
+                    var pendingCount = data.videoLessons ? data.videoLessons.inProgress : 0;
+                    var completedCount = data.videoLessons ? data.videoLessons.completed : 0;
+                    var gamesPlayed = data.gameStats ? data.gameStats.matchesPlayed : 0;
+
+                    var statCards = document.querySelectorAll('.col-md-3 .fw-bold');
+                    if (statCards.length >= 4) {
+                        statCards[0].textContent = subjectCount;
+                        statCards[1].textContent = pendingCount;
+                        statCards[2].textContent = completedCount;
+                    }
+                    document.getElementById('dash-games-played').textContent = gamesPlayed;
+
+                    // Update subjects list
+                    var subjectsContainer = document.querySelector('.col-lg-8 .row.g-3');
+                    if (subjectsContainer && data.subjects && data.subjects.length > 0) {
+                        subjectsContainer.innerHTML = data.subjects.slice(0, 6).map(function(subject) {
+                            var icon = subject.iconUrl || 'fa-book';
+                            var level = subject.level ? subject.level.nameEn : '';
+                            return '<div class="col-md-6">' +
+                                '<div class="service-item rounded p-3">' +
+                                '<div class="d-flex align-items-center">' +
+                                '<div class="service-icon btn-square me-3"><i class="fa ' + icon + ' fa-lg"></i></div>' +
+                                '<div>' +
+                                '<h6 class="mb-1">' + (subject.nameEn || subject.name) + '</h6>' +
+                                '<small class="text-muted">' + level + '</small>' +
+                                '</div>' +
+                                '</div>' +
+                                '</div>' +
+                                '</div>';
+                        }).join('');
+                    }
+
+                    // Update recent activity
+                    var activityTable = document.querySelector('.table-responsive tbody');
+                    if (activityTable && data.recentActivity && data.recentActivity.length > 0) {
+                        activityTable.innerHTML = data.recentActivity.slice(0, 5).map(function(activity) {
+                            var date = new Date(activity.createdAt).toLocaleDateString();
+                            var status = activity.xpEarned > 0 ? '<span class="badge bg-success">Completed</span>' : '<span class="badge bg-warning text-dark">In Progress</span>';
+                            return '<tr>' +
+                                '<td>' + activity.activityTitle + '</td>' +
+                                '<td>' + (activity.subjectId || '-') + '</td>' +
+                                '<td>' + status + '</td>' +
+                                '<td>' + date + '</td>' +
+                                '</tr>';
+                        }).join('');
+                    }
+                })
+                .catch(function(err) {
+                    console.error('Dashboard load error:', err);
+                });
         }
-        document.getElementById('dash-games-played').textContent = IremeGame.getMatchHistory().length;
+
+        loadStudentDashboard();
     </script>
 </body>
 </html>

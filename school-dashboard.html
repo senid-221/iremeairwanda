@@ -375,6 +375,52 @@
     <script>
         IremeComponents.initPage('school-dashboard.html');
         if (!IremeAuth.requireAnyRole(['school_admin', 'headteacher'])) { throw new Error('Access denied'); }
+
+        function loadSchoolDashboard() {
+            // Try to get school data via headteacher dashboard endpoint first
+            var user = IremeAuth.currentUser();
+            var role = user ? user.role : null;
+
+            if (role === 'headteacher') {
+                IremeApi.getDashboard('headteacher')
+                    .then(function(data) {
+                        if (!data.school) return;
+                        renderSchoolData(data.school, data.stats || {});
+                    })
+                    .catch(function(err) {
+                        console.error('Headteacher dashboard error:', err);
+                    });
+            } else {
+                // For school_admin, try to get their school
+                IremeApi.getMySchool()
+                    .then(function(res) {
+                        if (res.school) {
+                            renderSchoolData(res.school, res.stats || {});
+                        }
+                    })
+                    .catch(function(err) {
+                        console.error('School load error:', err);
+                    });
+            }
+        }
+
+        function renderSchoolData(school, stats) {
+            // Update school name
+            var schoolNameEl = document.querySelector('.bg-light .d-flex h3');
+            if (schoolNameEl) {
+                schoolNameEl.textContent = school.nameEn || school.name || 'School';
+            }
+
+            // Update stats
+            var statCards = document.querySelectorAll('.col-md-3 .fw-bold');
+            if (statCards.length >= 3) {
+                statCards[0].textContent = stats.students || 0;
+                statCards[1].textContent = stats.teachers || 0;
+                statCards[2].textContent = stats.classes || 0;
+            }
+        }
+
+        loadSchoolDashboard();
     </script>
 </body>
 </html>

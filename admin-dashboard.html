@@ -171,6 +171,27 @@
     <script>
         IremeComponents.initPage('admin-dashboard.html');
         if (!IremeAuth.requireAnyRole(['admin', 'super_admin'])) { throw new Error('Access denied'); }
+
+        function loadAdminDashboard() {
+            IremeApi.getDashboard('admin')
+                .then(function(data) {
+                    if (!data.user || !data.stats) return;
+
+                    // Update stats
+                    var stats = data.stats;
+                    var statCards = document.querySelectorAll('.col-md-3 .fw-bold');
+                    if (statCards.length >= 4) {
+                        statCards[0].textContent = stats.totalUsers || 0;
+                        statCards[1].textContent = stats.totalSchools || 0;
+                        statCards[3].textContent = stats.totalMatches || 0;
+                    }
+                })
+                .catch(function(err) {
+                    console.error('Admin dashboard error:', err);
+                });
+        }
+
+        loadAdminDashboard();
     </script>
 </body>
 </html>
