@@ -13,16 +13,16 @@ const translations = {
         
         // Student Menu
         "nav.student": "Student",
-        "nav.student.lessons": "Amasomo — Lessons",
-        "nav.student.quizzes": "Quizzes",
-        "nav.student.exams": "Exams",
-        "nav.student.nationalExams": "National Exam Papers",
-        "nav.student.ai": "AI — IREME AI Learning Assistant",
-        "nav.student.books": "Books — Learning Resources Library",
-        "nav.student.game": "Game — Educational Games",
-        "nav.student.results": "Check Results",
-        "nav.student.onlineLearning": "Learning Online",
-        "nav.student.testSkills": "Test Your Skills",
+        "nav.student.lessons": "AMASOMO",
+        "nav.student.quizzes": "QUIZZES",
+        "nav.student.exams": "EXAMS",
+        "nav.student.nationalExams": "NATIONAL EXAMS",
+        "nav.student.ai": "AI TUTOR",
+        "nav.student.books": "BOOKS",
+        "nav.student.game": "GAME",
+        "nav.student.results": "CHECK RESULTS",
+        "nav.student.onlineLearning": "ONLINE LEARNING",
+        "nav.student.testSkills": "TEST SKILLS",
         
         // Teacher Menu
         "nav.teacher": "Teacher",
