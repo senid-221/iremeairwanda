@@ -52,7 +52,7 @@ const IremeComponents = {
                 { href: 'booking-management.html', key: 'nav.parents.bookTutor' },
                 { href: 'school-news.html', key: 'nav.parents.schoolNews' },
                 { href: 'contact-teacher.html', key: 'nav.parents.contactTeacher' },
-                { href: 'school-fees.html', key: 'nav.parents.schoolFees' },
+                { href: 'parent-documents.html', key: 'nav.parents.schoolFees' },
                 { href: 'parent-community.html', key: 'nav.parents.community' },
             ]
         },

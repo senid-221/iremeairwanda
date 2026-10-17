@@ -759,12 +759,40 @@ model School {
   parentMeetings ParentMeeting[]
   schoolFees     SchoolFee[]
   teacherReportRequests TeacherReportRequest[]
+  schoolDocuments SchoolDocument[]
 
   @@index([code])
   @@index([schoolType])
   @@index([status])
   @@index([isVerified])
   @@index([registrationStatus])
+}
+
+model SchoolDocument {
+  id              String   @id @default(uuid())
+  schoolId        String
+  title           String
+  titleEn         String?
+  titleRw         String?
+  documentType    String   // fees, materials, instructions, announcement
+  description     String?
+  fileUrl         String?
+  academicYear    String?
+  publishedAt     DateTime?
+  dueDate         DateTime?
+  amount          Decimal?
+  currency        String?  @default("RWF")
+  isActive        Boolean  @default(true)
+  createdBy       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  school          School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  @@index([schoolId])
+  @@index([documentType])
+  @@index([isActive])
+  @@index([publishedAt])
 }
 
 model SchoolLocation {

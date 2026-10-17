@@ -490,6 +490,10 @@ var IremeAPI = (function() {
       return this.get('/api/assessments/my-results');
     },
 
+    getSchoolDocuments: function() {
+      return this.get('/api/parents/school-documents');
+    },
+
     getNationalExams: function(params) {
       var qs = '';
       if (params) {

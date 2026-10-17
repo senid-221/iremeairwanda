@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>INYANDIKO Z'ISHURI - IREME</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link href="img/ireme-icon.png" rel="icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+    <div id="component-spinner"></div>
+    <div id="component-navbar"></div>
+
+    <!-- Header Start -->
+    <div class="container-fluid bg-primary py-5 hero-header mb-5">
+        <div class="container py-5">
+            <div class="row g-5 pt-5">
+                <div class="col-12 text-center text-lg-start">
+                    <div class="btn btn-sm border rounded-pill text-white px-3 mb-3 animated slideInRight" data-i18n="parentDocs.badge">Inyandiko z'Ishuri</div>
+                    <h1 class="display-4 text-white mb-4 animated slideInRight" data-i18n="parentDocs.title">Inyandiko n'Amabwiriza y'Ishuri</h1>
+                    <p class="text-white mb-4 animated slideInRight" data-i18n="parentDocs.desc">Reba inyandiko z'ishuri, amafaranga asabwa, n'ibikoresho bisabwa.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Header End -->
+
+    <!-- Documents Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <!-- Filters -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <select id="doc-type-filter" class="form-select rounded-pill px-4 py-2">
+                        <option value="" data-i18n="parentDocs.allTypes">Ubwoko Bwose</option>
+                        <option value="fees" data-i18n="parentDocs.fees">Amafaranga y'Ishuri</option>
+                        <option value="materials" data-i18n="parentDocs.materials">Ibikoresho</option>
+                        <option value="instructions" data-i18n="parentDocs.instructions">Amabwiriza</option>
+                        <option value="announcement" data-i18n="parentDocs.announcements">Amatangazo</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <select id="doc-school-filter" class="form-select rounded-pill px-4 py-2">
+                        <option value="" data-i18n="parentDocs.allSchools">Amashuri Yose</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <input type="text" id="doc-search" class="form-control rounded-pill px-4 py-2" placeholder="Shakisha..." data-i18n="parentDocs.search">
+                </div>
+            </div>
+
+            <!-- Documents List -->
+            <div id="documents-list" class="row g-4">
+                <!-- Documents will be loaded here -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="documents-empty" class="text-center py-5" style="display: none;">
+                <i class="fa fa-folder-open fa-3x text-primary mb-3"></i>
+                <h3 data-i18n="parentDocs.noDocuments">Nta nyandiko zihari</h3>
+                <p class="text-muted" data-i18n="parentDocs.noDocumentsDesc">Nta nyandiko z'ishuri zihari muri iki gihe.</p>
+            </div>
+
+            <!-- Loading State -->
+            <div id="documents-loading" class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-3 text-muted" data-i18n="parentDocs.loading">Gutegereza...</p>
+            </div>
+        </div>
+    </div>
+    <!-- Documents End -->
+
+    <div id="component-footer"></div>
+    <div id="component-backtotop"></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js?v=2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js?v=2"></script>
+    <script src="lib/wow/wow.min.js?v=2"></script>
+    <script src="lib/easing/easing.min.js?v=2"></script>
+    <script src="lib/waypoints/waypoints.min.js?v=2"></script>
+    <script src="js/main.js?v=2"></script>
+    <script src="js/i18n.js?v=2"></script>
+    <script src="js/config.js?v=2"></script>
+    <script src="js/api-client.js?v=2"></script>
+    <script src="js/auth.js?v=2"></script>
+    <script src="js/components.js?v=2"></script>
+    <script>
+        // Check authentication
+        if (!IremeAuth.isAuthenticated() || !IremeAuth.isParent()) {
+            window.location.href = 'parent-login.html';
+        }
+
+        var allDocuments = [];
+
+        // Load school documents
+        async function loadDocuments() {
+            try {
+                const response = await IremeAPI.getSchoolDocuments();
+                allDocuments = response.documents || [];
+                
+                document.getElementById('documents-loading').style.display = 'none';
+                
+                // Populate school filter
+                const schools = [...new Set(allDocuments.map(d => d.schoolName))];
+                const schoolFilter = document.getElementById('doc-school-filter');
+                schools.forEach(school => {
+                    const option = document.createElement('option');
+                    option.value = school;
+                    option.textContent = school;
+                    schoolFilter.appendChild(option);
+                });
+                
+                filterAndDisplayDocuments();
+            } catch (error) {
+                console.error('Error loading documents:', error);
+                document.getElementById('documents-loading').style.display = 'none';
+                document.getElementById('documents-empty').style.display = 'block';
+            }
+        }
+
+        // Filter and display documents
+        function filterAndDisplayDocuments() {
+            const typeFilter = document.getElementById('doc-type-filter').value;
+            const schoolFilter = document.getElementById('doc-school-filter').value;
+            const searchTerm = document.getElementById('doc-search').value.toLowerCase();
+
+            let filtered = allDocuments;
+
+            if (typeFilter) {
+                filtered = filtered.filter(d => d.documentType === typeFilter);
+            }
+
+            if (schoolFilter) {
+                filtered = filtered.filter(d => d.schoolName === schoolFilter);
+            }
+
+            if (searchTerm) {
+                filtered = filtered.filter(d => 
+                    (d.title || '').toLowerCase().includes(searchTerm) ||
+                    (d.description || '').toLowerCase().includes(searchTerm)
+                );
+            }
+
+            displayDocuments(filtered);
+        }
+
+        // Display documents
+        function displayDocuments(documents) {
+            const list = document.getElementById('documents-list');
+            const empty = document.getElementById('documents-empty');
+
+            if (documents.length === 0) {
+                list.innerHTML = '';
+                empty.style.display = 'block';
+                return;
+            }
+
+            empty.style.display = 'none';
+
+            const typeIcons = {
+                fees: 'fa-money-bill-wave text-success',
+                materials: 'fa-book text-info',
+                instructions: 'fa-clipboard-list text-warning',
+                announcement: 'fa-bullhorn text-primary'
+            };
+
+            const typeLabels = {
+                fees: 'Amafaranga',
+                materials: 'Ibikoresho',
+                instructions: 'Amabwiriza',
+                announcement: 'Itangazo'
+            };
+
+            list.innerHTML = documents.map(doc => {
+                const icon = typeIcons[doc.documentType] || 'fa-file text-secondary';
+                const typeLabel = typeLabels[doc.documentType] || doc.documentType;
+                const publishedDate = doc.publishedAt ? new Date(doc.publishedAt).toLocaleDateString('rw-RW') : '';
+                const dueDate = doc.dueDate ? new Date(doc.dueDate).toLocaleDateString('rw-RW') : '';
+
+                return `
+                    <div class="col-lg-6 col-xl-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="flex-shrink-0 bg-light rounded-circle p-3 me-3">
+                                        <i class="fa ${icon} fa-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="card-title mb-1">${doc.title}</h5>
+                                        <p class="text-muted small mb-0">${doc.schoolName}</p>
+                                    </div>
+                                </div>
+                                ${doc.description ? `<p class="card-text small text-muted mb-3">${doc.description}</p>` : ''}
+                                <div class="mb-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fa fa-tag text-primary me-2"></i>
+                                        <span class="badge bg-primary-subtle text-primary">${typeLabel}</span>
+                                    </div>
+                                    ${doc.academicYear ? `
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fa fa-calendar text-primary me-2"></i>
+                                        <span class="small">Umwaka: ${doc.academicYear}</span>
+                                    </div>
+                                    ` : ''}
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fa fa-clock text-primary me-2"></i>
+                                        <span class="small">Byashyizwe: ${publishedDate}</span>
+                                    </div>
+                                    ${dueDate ? `
+                                    <div class="d-flex align-items-center">
+                                        <i class="fa fa-calendar-check text-danger me-2"></i>
+                                        <span class="small text-danger">Italiki ntarengwa: ${dueDate}</span>
+                                    </div>
+                                    ` : ''}
+                                    ${doc.amount ? `
+                                    <div class="d-flex align-items-center mt-2">
+                                        <i class="fa fa-money-bill text-success me-2"></i>
+                                        <span class="small text-success fw-bold">${doc.amount.toLocaleString()} ${doc.currency || 'RWF'}</span>
+                                    </div>
+                                    ` : ''}
+                                </div>
+                                ${doc.fileUrl ? `
+                                <a href="${doc.fileUrl}" target="_blank" class="btn btn-sm btn-primary w-100">
+                                    <i class="fa fa-download me-2"></i>Kura Inyandiko
+                                </a>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Event listeners
+        document.getElementById('doc-type-filter').addEventListener('change', filterAndDisplayDocuments);
+        document.getElementById('doc-school-filter').addEventListener('change', filterAndDisplayDocuments);
+        document.getElementById('doc-search').addEventListener('input', filterAndDisplayDocuments);
+
+        // Initialize page
+        IremeComponents.initPage('parent-documents.html');
+        loadDocuments();
+    </script>
+</body>
+
+</html>

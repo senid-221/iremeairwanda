@@ -1309,6 +1309,21 @@ const translations = {
         "upcomingExams.noExamsDesc": "Nta bizamini cyangwa amasuzuma biri hafi mu gihe kiri imbere.",
         "upcomingExams.loading": "Gutegereza...",
 
+        // Parent Documents
+        "parentDocs.badge": "Inyandiko z'Ishuri",
+        "parentDocs.title": "Inyandiko n'Amabwiriza y'Ishuri",
+        "parentDocs.desc": "Reba inyandiko z'ishuri, amafaranga asabwa, n'ibikoresho bisabwa.",
+        "parentDocs.allTypes": "Ubwoko Bwose",
+        "parentDocs.fees": "Amafaranga y'Ishuri",
+        "parentDocs.materials": "Ibikoresho",
+        "parentDocs.instructions": "Amabwiriza",
+        "parentDocs.announcements": "Amatangazo",
+        "parentDocs.allSchools": "Amashuri Yose",
+        "parentDocs.search": "Shakisha...",
+        "parentDocs.noDocuments": "Nta nyandiko zihari",
+        "parentDocs.noDocumentsDesc": "Nta nyandiko z'ishuri zihari muri iki gihe.",
+        "parentDocs.loading": "Gutegereza...",
+
         // Hero - index
         "hero.badge": "IREME",
         "hero.title": "Kwiga Neza ku Rwanda Rwiza",

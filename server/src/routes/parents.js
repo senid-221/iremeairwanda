@@ -367,4 +367,66 @@ router.post('/payments', requireAuth, requireRole('PARENT', 'ADMIN', 'SUPER_ADMI
   }
 });
 
+// ---------------------------------------------------------------------------
+// 9. GET /api/parents/school-documents — Get school documents for parent's children
+// ---------------------------------------------------------------------------
+router.get('/school-documents', requireAuth, requireRole('PARENT', 'ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+  try {
+    const profile = await getParentProfile(req.user.id);
+    if (!profile || !profile.studentGuardians.length) {
+      return res.json({ documents: [] });
+    }
+
+    // Get unique school IDs from parent's children
+    const schoolIds = [...new Set(profile.studentGuardians
+      .map(g => g.studentProfile.currentSchoolId)
+      .filter(id => id))];
+
+    if (!schoolIds.length) {
+      return res.json({ documents: [] });
+    }
+
+    const documents = await prisma.schoolDocument.findMany({
+      where: {
+        schoolId: { in: schoolIds },
+        isActive: true,
+        publishedAt: { not: null },
+      },
+      include: {
+        school: {
+          select: {
+            id: true,
+            name: true,
+            nameEn: true,
+            nameRw: true,
+          },
+        },
+      },
+      orderBy: { publishedAt: 'desc' },
+    });
+
+    const formatted = documents.map(doc => ({
+      id: doc.id,
+      schoolId: doc.schoolId,
+      schoolName: doc.school.nameEn || doc.school.name,
+      title: doc.titleEn || doc.title,
+      titleEn: doc.titleEn,
+      titleRw: doc.titleRw,
+      documentType: doc.documentType,
+      description: doc.description,
+      fileUrl: doc.fileUrl,
+      academicYear: doc.academicYear,
+      publishedAt: doc.publishedAt,
+      dueDate: doc.dueDate,
+      amount: doc.amount ? Number(doc.amount) : null,
+      currency: doc.currency,
+    }));
+
+    res.json({ documents: formatted, count: formatted.length });
+  } catch (err) {
+    console.error('GET /parents/school-documents error:', err);
+    res.status(500).json({ error: 'Failed to fetch school documents' });
+  }
+});
+
 module.exports = router;
