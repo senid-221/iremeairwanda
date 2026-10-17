@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Navigation Test - IREME</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div id="component-spinner"></div>
+    <div id="component-navbar"></div>
+    
+    <div class="container py-5 mt-5">
+        <h1>Navigation Test Page</h1>
+        <p>If you can see the navigation dropdowns above (Students, Teachers, Headteacher, Parents), the system is working correctly.</p>
+        <div class="alert alert-success">
+            <strong>Server Status:</strong> Working correctly<br>
+            <strong>Timestamp:</strong> <span id="timestamp"></span>
+        </div>
+    </div>
+    
+    <div id="component-footer"></div>
+    
+    <script src="js/api-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+        document.getElementById('timestamp').textContent = new Date().toISOString();
+        IremeComponents.initPage('test-nav.html');
+    </script>
+</body>
+</html>
