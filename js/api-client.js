@@ -248,6 +248,44 @@ var IremeAPI = (function() {
       return this.get('/api/curriculum/stats');
     },
 
+    getResources: function(params) {
+      var qs = [];
+      if (params) {
+        if (params.category) qs.push('category=' + encodeURIComponent(params.category));
+        if (params.subject) qs.push('subject=' + encodeURIComponent(params.subject));
+        if (params.level) qs.push('level=' + encodeURIComponent(params.level));
+        if (params.search) qs.push('search=' + encodeURIComponent(params.search));
+        if (params.limit) qs.push('limit=' + params.limit);
+        if (params.offset) qs.push('offset=' + params.offset);
+      }
+      var query = qs.length ? '?' + qs.join('&') : '';
+      return this.get('/api/resources' + query);
+    },
+
+    getResource: function(resourceId) {
+      return this.get('/api/resources/' + encodeURIComponent(resourceId));
+    },
+
+    getResourceStats: function() {
+      return this.get('/api/resources/stats/overview');
+    },
+
+    createResource: function(data) {
+      return this.post('/api/resources', data);
+    },
+
+    updateResource: function(resourceId, data) {
+      return this.put('/api/resources/' + encodeURIComponent(resourceId), data);
+    },
+
+    deleteResource: function(resourceId) {
+      return this.delete('/api/resources/' + encodeURIComponent(resourceId));
+    },
+
+    recordResourceDownload: function(resourceId) {
+      return this.post('/api/resources/' + encodeURIComponent(resourceId) + '/download');
+    },
+
     createSubject: function(data) {
       return this.post('/api/curriculum/subjects', data);
     },
