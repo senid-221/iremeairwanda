@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>IREME - Learning Online</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="IREME Online Learning, Courses, Rwanda, E-Learning, Distance Education" name="keywords">
+    <meta content="Access online lessons and learning materials from anywhere. Track your progress and earn certificates." name="description">
+
+    <link href="img/ireme-icon.png" rel="icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+    <style>
+        .course-card { transition: all 0.3s; cursor: pointer; }
+        .course-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .course-progress { height: 6px; border-radius: 3px; }
+    </style>
+</head>
+
+<body>
+    <div id="component-spinner"></div>
+    <div id="component-navbar"></div>
+
+    <!-- Hero Start -->
+    <div class="container-fluid pt-5 bg-primary hero-header">
+        <div class="container pt-5">
+            <div class="row g-5 pt-5">
+                <div class="col-lg-6 align-self-center text-center text-lg-start mb-lg-5">
+                    <h1 class="display-4 text-white mb-4 animated slideInRight" data-i18n="onlineLearning.title">Learning Online</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center justify-content-lg-start mb-0">
+                            <li class="breadcrumb-item"><a class="text-white" href="index.html" data-i18n="breadcrumb.home">Home</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page" data-i18n="onlineLearning.title">Online Learning</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 align-self-end text-center text-lg-end">
+                    <img class="img-fluid" src="img/hero-img.png" alt="" style="max-height: 300px;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Hero End -->
+
+    <!-- Quick Links -->
+    <div class="container-fluid bg-light py-4">
+        <div class="container py-3">
+            <div class="row g-3 justify-content-center">
+                <div class="col-auto">
+                    <a href="video-lessons.html" class="btn btn-primary rounded-pill px-4 py-2">
+                        <i class="fa fa-video me-1"></i> AI Video Lessons
+                    </a>
+                </div>
+                <div class="col-auto">
+                    <a href="ai-tutor.html" class="btn btn-outline-primary rounded-pill px-4 py-2">
+                        <i class="fa fa-robot me-1"></i> Ireme AI Tutor
+                    </a>
+                </div>
+                <div class="col-auto">
+                    <a href="resources.html" class="btn btn-outline-primary rounded-pill px-4 py-2">
+                        <i class="fa fa-book me-1"></i> Resource Library
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Continue Learning Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <h2 class="mb-4" data-i18n="onlineLearning.continueLearning">Continue Learning</h2>
+            <div id="continue-section" class="row g-4">
+                <!-- Continue watching items loaded here -->
+            </div>
+            <div id="continue-empty" class="text-center py-4" style="display: none;">
+                <p class="text-muted" data-i18n="onlineLearning.noCourses">No courses in progress</p>
+            </div>
+        </div>
+    </div>
+    <!-- Continue Learning End -->
+
+    <!-- My Courses Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
+                <h1 class="display-6" data-i18n="onlineLearning.myCourses">My Courses</h1>
+                <p class="text-muted" data-i18n="onlineLearning.desc">Access online lessons and learning materials from anywhere</p>
+            </div>
+
+            <div id="courses-list" class="row g-4">
+                <!-- Courses loaded here -->
+            </div>
+
+            <div id="courses-empty" class="text-center py-5" style="display: none;">
+                <i class="fa fa-graduation-cap fa-3x text-muted mb-3"></i>
+                <h4 data-i18n="onlineLearning.noCourses">No courses available</h4>
+                <p class="text-muted" data-i18n="onlineLearning.noCoursesDesc">Courses will appear here based on your level and subjects</p>
+                <div class="d-flex gap-2 justify-content-center mt-3">
+                    <a href="video-lessons.html" class="btn btn-primary rounded-pill px-4">
+                        <i class="fa fa-video me-1"></i> Create Video Lesson
+                    </a>
+                    <a href="resources.html" class="btn btn-outline-primary rounded-pill px-4">
+                        <i class="fa fa-book me-1"></i> Browse Resources
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- My Courses End -->
+
+    <div id="component-footer"></div>
+
+    <div id="component-backtotop"></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/api-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+        IremeComponents.initPage('online-learning.html');
+        IremeAuth.requireAuth();
+
+        function loadCourses() {
+            IremeAPI.getVideoLessons().then(function(data) {
+                var lessons = data.lessons || [];
+                var completed = lessons.filter(function(l) { return l.status === 'completed'; });
+                var inProgress = lessons.filter(function(l) {
+                    return l.progress && l.progress.completionPercent > 5 && l.progress.completionPercent < 95;
+                });
+
+                displayContinueLearning(inProgress);
+                displayCourses(completed);
+            }).catch(function(err) {
+                console.error('Failed to load courses:', err);
+                displayContinueLearning([]);
+                displayCourses([]);
+            });
+        }
+
+        function displayContinueLearning(lessons) {
+            var container = document.getElementById('continue-section');
+            var emptyState = document.getElementById('continue-empty');
+
+            if (lessons.length === 0) {
+                container.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+
+            var html = lessons.slice(0, 3).map(function(lesson) {
+                var pct = lesson.progress ? lesson.progress.completionPercent || 0 : 0;
+                return '<div class="col-md-4 wow fadeInUp" data-wow-delay="0.1s">' +
+                    '<div class="course-card bg-white rounded shadow-sm p-4 h-100" onclick="window.location.href=\'video-lessons.html?lesson=' + lesson.id + '\'">' +
+                    '<div class="d-flex align-items-center mb-3">' +
+                    '<div class="flex-shrink-0 bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">' +
+                    '<i class="fa fa-play text-white"></i>' +
+                    '</div>' +
+                    '<div class="flex-grow-1 ms-3">' +
+                    '<h5 class="mb-0 text-truncate">' + (lesson.title || lesson.topicName || 'Lesson') + '</h5>' +
+                    '<small class="text-muted">' + (lesson.language === 'rw' ? 'Kinyarwanda' : 'English') + '</small>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="mb-2 d-flex justify-content-between">' +
+                    '<small class="text-muted" data-i18n="onlineLearning.progress">Progress</small>' +
+                    '<small class="fw-bold">' + pct + '%</small>' +
+                    '</div>' +
+                    '<div class="progress course-progress">' +
+                    '<div class="progress-bar bg-primary" style="width: ' + pct + '%"></div>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>';
+            }).join('');
+
+            container.innerHTML = html;
+        }
+
+        function displayCourses(lessons) {
+            var container = document.getElementById('courses-list');
+            var emptyState = document.getElementById('courses-empty');
+
+            if (lessons.length === 0) {
+                container.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+
+            var html = lessons.map(function(lesson) {
+                var pct = lesson.progress ? lesson.progress.completionPercent || 0 : 0;
+                var completed = pct >= 95;
+                var icon = completed ? 'fa-check-circle text-success' : 'fa-play-circle text-primary';
+
+                return '<div class="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.1s">' +
+                    '<div class="course-card bg-white rounded shadow-sm p-4 h-100" onclick="window.location.href=\'video-lessons.html?lesson=' + lesson.id + '\'">' +
+                    '<div class="d-flex align-items-center mb-3">' +
+                    '<div class="flex-shrink-0 bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">' +
+                    '<i class="fa ' + icon + ' fa-lg"></i>' +
+                    '</div>' +
+                    '<div class="flex-grow-1 ms-3">' +
+                    '<h5 class="mb-0 text-truncate">' + (lesson.title || lesson.topicName || 'Lesson') + '</h5>' +
+                    '<small class="text-muted">' + (lesson.topicName || '') + ' &bull; ' + lesson.durationMinutes + ' min</small>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="mb-2 d-flex justify-content-between">' +
+                    '<small class="text-muted">' + (completed ? '<i class="fa fa-certificate text-warning me-1"></i> ' + 'Completed' : 'In Progress') + '</small>' +
+                    '<small class="fw-bold">' + pct + '%</small>' +
+                    '</div>' +
+                    '<div class="progress course-progress">' +
+                    '<div class="progress-bar ' + (completed ? 'bg-success' : 'bg-primary') + '" style="width: ' + pct + '%"></div>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>';
+            }).join('');
+
+            container.innerHTML = html;
+        }
+
+        loadCourses();
+    </script>
+</body>
+
+</html>

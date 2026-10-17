@@ -118,6 +118,14 @@ model User {
   bookingNotifications BookingNotification[]
   savedTutors       TutorSave[]
 
+  schoolEvents      SchoolEvent[]
+  parentMeetings    ParentMeeting[]
+  teacherReportRequestsSent TeacherReportRequest[] @relation("ReportRequester")
+  teacherReportRequestsReceived TeacherReportRequest[] @relation("ReportRecipient")
+  parentMessagesSent ParentMessage[] @relation("MessageSender")
+  parentMessagesReceived ParentMessage[] @relation("MessageRecipient")
+  schoolFees        SchoolFee[]
+
   @@index([email])
   @@index([emailNormalized])
   @@index([role])
@@ -747,6 +755,10 @@ model School {
   currentStudents StudentProfile[] @relation("StudentCurrentSchool")
   currentTutors  TutorProfile[] @relation("TutorCurrentSchool")
   tutorAffiliations TutorSchoolAffiliation[]
+  schoolEvents   SchoolEvent[]
+  parentMeetings ParentMeeting[]
+  schoolFees     SchoolFee[]
+  teacherReportRequests TeacherReportRequest[]
 
   @@index([code])
   @@index([schoolType])
@@ -1009,6 +1021,7 @@ model Class {
   classMemberships ClassMembership[]
   teacherAssignments TeacherAssignment[]
   studentEnrollments StudentEnrollment[]
+  parentMeetings ParentMeeting[]
 
   @@index([schoolId])
   @@index([academicYearId])
@@ -3341,4 +3354,120 @@ model TutorSchoolAffiliation {
   @@unique([tutorProfileId, schoolId])
   @@index([tutorProfileId])
   @@index([schoolId])
+}
+
+// ============================================
+// SECTION 14: SCHOOL EVENTS, MEETINGS, AND COMMUNICATION
+// ============================================
+
+model SchoolEvent {
+  id          String   @id @default(uuid())
+  schoolId    String
+  title       String
+  description String?
+  eventType   String   @default("GENERAL")
+  startDate   DateTime
+  endDate     DateTime?
+  location    String?
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  school      School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  creator     User   @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@index([schoolId])
+  @@index([eventType])
+  @@index([startDate])
+}
+
+model ParentMeeting {
+  id          String   @id @default(uuid())
+  schoolId    String
+  title       String
+  description String?
+  meetingType String   @default("GENERAL")
+  classId     String?
+  scheduledAt DateTime
+  durationMinutes Int?
+  location    String?
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  school      School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  creator     User    @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  class       Class?  @relation(fields: [classId], references: [id])
+
+  @@index([schoolId])
+  @@index([meetingType])
+  @@index([scheduledAt])
+}
+
+model TeacherReportRequest {
+  id          String   @id @default(uuid())
+  schoolId    String
+  requestedBy String
+  teacherId   String
+  reportType  String
+  message     String?
+  status      String   @default("pending")
+  response    String?
+  respondedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  school      School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  requester   User   @relation("ReportRequester", fields: [requestedBy], references: [id], onDelete: Cascade)
+  teacher     User   @relation("ReportRecipient", fields: [teacherId], references: [id], onDelete: Cascade)
+
+  @@index([schoolId])
+  @@index([requestedBy])
+  @@index([teacherId])
+  @@index([status])
+}
+
+model ParentMessage {
+  id          String   @id @default(uuid())
+  senderId    String
+  recipientId String
+  subject     String
+  content     String
+  category    String   @default("general")
+  isRead      Boolean  @default(false)
+  readAt      DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  sender      User @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  recipient   User @relation("MessageRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@index([senderId])
+  @@index([recipientId])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+model SchoolFee {
+  id          String   @id @default(uuid())
+  schoolId    String
+  title       String
+  description String?
+  amount      Decimal  @db.Decimal(10, 2)
+  currency    String   @default("RWF")
+  feeType     String   @default("tuition")
+  term        String?
+  academicYearId String?
+  dueDate     DateTime?
+  isActive    Boolean  @default(true)
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  school      School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  creator     User   @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@index([schoolId])
+  @@index([feeType])
+  @@index([isActive])
 }

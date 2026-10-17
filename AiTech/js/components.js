@@ -252,8 +252,9 @@ const IremeComponents = {
                     <a class="btn btn-link" href="game-setup.html" data-i18n="footer.learningGame"></a>
                     <a class="btn btn-link" href="subscription.html" data-i18n="footer.plans"></a>
                     <a class="btn btn-link" href="contact.html" data-i18n="footer.contactUs"></a>
-                    <a class="btn btn-link" href="subscription.html" data-i18n="footer.privacy"></a>
-                    <a class="btn btn-link" href="subscription.html" data-i18n="footer.terms"></a>
+                    <a class="btn btn-link" href="privacy.html" data-i18n="footer.privacy"></a>
+                    <a class="btn btn-link" href="terms.html" data-i18n="footer.terms"></a>
+                    <a class="btn btn-link" href="career.html" data-i18n="footer.career"></a>
                 </div>
                 <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.7s">
                     <h5 class="text-white mb-4" data-i18n="footer.ourServices"></h5>
@@ -276,7 +277,7 @@ const IremeComponents = {
                             <a href="index.html" data-i18n="nav.home"></a>
                             <a href="subscription.html" data-i18n="footer.cookies"></a>
                             <a href="contact.html" data-i18n="footer.help"></a>
-                            <a href="ai-tutor.html" data-i18n="footer.faqs"></a>
+                            <a href="faqs.html" data-i18n="footer.faqs"></a>
                         </div>
                     </div>
                 </div>

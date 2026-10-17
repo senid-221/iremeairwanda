@@ -160,6 +160,16 @@ var IremeAPI = (function() {
       return this.get('/api/curriculum/subjects' + (levelId ? '?levelId=' + encodeURIComponent(levelId) : ''));
     },
 
+    getQuestions: function(params) {
+      var query = [];
+      if (params.subjectId) query.push('subjectId=' + encodeURIComponent(params.subjectId));
+      if (params.level) query.push('level=' + encodeURIComponent(params.level));
+      if (params.difficulty) query.push('difficulty=' + encodeURIComponent(params.difficulty));
+      if (params.limit) query.push('limit=' + params.limit);
+      var qs = query.length > 0 ? '?' + query.join('&') : '';
+      return this.get('/api/assessments/questions' + qs);
+    },
+
     requestVideoLesson: function(body) {
       return this.post('/api/video-lessons', body);
     },
@@ -336,6 +346,325 @@ var IremeAPI = (function() {
 
     getAssessmentHistory: function() {
       return this.get('/api/assessments/history');
+    },
+
+    getTutorProfile: function() {
+      return this.get('/api/tutors/profile');
+    },
+
+    saveTutorProfile: function(data) {
+      return this.post('/api/tutors/profile', data);
+    },
+
+    analyzeTutorCV: function() {
+      return this.post('/api/tutors/analyze-cv');
+    },
+
+    getTutorSkillAssessments: function() {
+      return this.get('/api/tutors/skill-assessments');
+    },
+
+    updateTutorSubjects: function(subjects) {
+      return this.post('/api/tutors/subjects', { subjects: subjects });
+    },
+
+    updateTutorAvailability: function(availability) {
+      return this.post('/api/tutors/availability', { availability: availability });
+    },
+
+    updateTutorServiceAreas: function(areas) {
+      return this.post('/api/tutors/service-areas', { areas: areas });
+    },
+
+    getTutorRecommendations: function(criteria) {
+      var params = [];
+      if (criteria.subjectIds && criteria.subjectIds.length > 0) {
+        params.push('subjectIds=' + criteria.subjectIds.join(','));
+      }
+      if (criteria.educationLevelId) {
+        params.push('educationLevelId=' + encodeURIComponent(criteria.educationLevelId));
+      }
+      if (criteria.province) {
+        params.push('province=' + encodeURIComponent(criteria.province));
+      }
+      if (criteria.district) {
+        params.push('district=' + encodeURIComponent(criteria.district));
+      }
+      if (criteria.sector) {
+        params.push('sector=' + encodeURIComponent(criteria.sector));
+      }
+      if (criteria.cell) {
+        params.push('cell=' + encodeURIComponent(criteria.cell));
+      }
+      if (criteria.village) {
+        params.push('village=' + encodeURIComponent(criteria.village));
+      }
+      if (criteria.lessonFormat) {
+        params.push('lessonFormat=' + encodeURIComponent(criteria.lessonFormat));
+      }
+      if (criteria.preferredDays && criteria.preferredDays.length > 0) {
+        params.push('preferredDays=' + criteria.preferredDays.join(','));
+      }
+      if (criteria.maxHourlyRate) {
+        params.push('maxHourlyRate=' + criteria.maxHourlyRate);
+      }
+      var qs = params.length > 0 ? '?' + params.join('&') : '';
+      return this.get('/api/tutors/recommendations' + qs);
+    },
+
+    getTutorPublicProfile: function(tutorId) {
+      return this.get('/api/tutors/public-profile/' + encodeURIComponent(tutorId));
+    },
+
+    saveTutor: function(tutorId) {
+      return this.post('/api/tutors/save', { tutorId: tutorId });
+    },
+
+    unsaveTutor: function(tutorId) {
+      return this.delete('/api/tutors/save/' + encodeURIComponent(tutorId));
+    },
+
+    getSavedTutors: function() {
+      return this.get('/api/tutors/saved');
+    },
+
+    checkBookingAvailability: function(tutorProfileId, date, startTime, endTime) {
+      return this.post('/api/tutors/bookings/check-availability', {
+        tutorProfileId: tutorProfileId,
+        date: date,
+        startTime: startTime,
+        endTime: endTime
+      });
+    },
+
+    createBooking: function(data) {
+      return this.post('/api/tutors/bookings', data);
+    },
+
+    getBookings: function() {
+      return this.get('/api/tutors/bookings');
+    },
+
+    getBookingNotifications: function() {
+      return this.get('/api/tutors/bookings/notifications');
+    },
+
+    getBooking: function(bookingId) {
+      return this.get('/api/tutors/bookings/' + encodeURIComponent(bookingId));
+    },
+
+    acceptBooking: function(bookingId) {
+      return this.post('/api/tutors/bookings/' + encodeURIComponent(bookingId) + '/accept');
+    },
+
+    declineBooking: function(bookingId, reason) {
+      return this.post('/api/tutors/bookings/' + encodeURIComponent(bookingId) + '/decline', { reason: reason });
+    },
+
+    cancelBooking: function(bookingId, reason) {
+      return this.post('/api/tutors/bookings/' + encodeURIComponent(bookingId) + '/cancel', { reason: reason });
+    },
+
+    completeBooking: function(bookingId) {
+      return this.post('/api/tutors/bookings/' + encodeURIComponent(bookingId) + '/complete');
+    },
+
+    rescheduleBooking: function(bookingId, date, startTime, endTime) {
+      return this.post('/api/tutors/bookings/' + encodeURIComponent(bookingId) + '/reschedule', {
+        date: date,
+        startTime: startTime,
+        endTime: endTime
+      });
+    },
+
+    saveQuizAttempt: function(data) {
+      return this.post('/api/assessments/quiz-attempt', data);
+    },
+
+    getStudentResults: function() {
+      return this.get('/api/assessments/my-results');
+    },
+
+    getNationalExams: function(params) {
+      var qs = '';
+      if (params) {
+        var parts = [];
+        if (params.level) parts.push('level=' + encodeURIComponent(params.level));
+        if (params.year) parts.push('year=' + encodeURIComponent(params.year));
+        if (params.subjectId) parts.push('subjectId=' + encodeURIComponent(params.subjectId));
+        if (parts.length) qs = '?' + parts.join('&');
+      }
+      return this.get('/api/assessments/national-exams' + qs);
+    },
+
+    getNationalExam: function(id) {
+      return this.get('/api/assessments/national-exams/' + encodeURIComponent(id));
+    },
+
+    getLessonPlans: function() {
+      return this.get('/api/teachers/lesson-plans');
+    },
+
+    createLessonPlan: function(data) {
+      return this.post('/api/teachers/lesson-plans', data);
+    },
+
+    updateLessonPlan: function(id, data) {
+      return this.patch('/api/teachers/lesson-plans/' + encodeURIComponent(id), data);
+    },
+
+    deleteLessonPlan: function(id) {
+      return this.delete('/api/teachers/lesson-plans/' + encodeURIComponent(id));
+    },
+
+    getTeacherJobs: function(params) {
+      var qs = '';
+      if (params) {
+        var parts = [];
+        if (params.search) parts.push('search=' + encodeURIComponent(params.search));
+        if (params.location) parts.push('location=' + encodeURIComponent(params.location));
+        if (params.type) parts.push('type=' + encodeURIComponent(params.type));
+        if (parts.length) qs = '?' + parts.join('&');
+      }
+      return this.get('/api/teachers/jobs' + qs);
+    },
+
+    getSaccoInfo: function() {
+      return this.get('/api/teachers/sacco');
+    },
+
+    submitStudentReport: function(data) {
+      return this.post('/api/teachers/student-reports', data);
+    },
+
+    getStudentReports: function() {
+      return this.get('/api/teachers/student-reports');
+    },
+
+    createTeacherExam: function(data) {
+      return this.post('/api/teachers/exams', data);
+    },
+
+    getTeacherExams: function() {
+      return this.get('/api/teachers/exams');
+    },
+
+    getMeetings: function() {
+      return this.get('/api/teachers/meetings');
+    },
+
+    createMeeting: function(data) {
+      return this.post('/api/teachers/meetings', data);
+    },
+
+    sendReportToParent: function(data) {
+      return this.post('/api/teachers/reports/parent', data);
+    },
+
+    sendReportToHead: function(data) {
+      return this.post('/api/teachers/reports/head', data);
+    },
+
+    getTeacherReports: function() {
+      return this.get('/api/teachers/reports');
+    },
+
+    registerSchool: function(data) {
+      return this.post('/api/schools/register', data);
+    },
+
+    getSchoolTeachers: function(schoolId) {
+      var id = schoolId || 'my-school';
+      return this.get('/api/schools/' + encodeURIComponent(id) + '/teachers');
+    },
+
+    registerTeacherAtSchool: function(schoolId, data) {
+      var id = schoolId || 'my-school';
+      return this.post('/api/schools/' + encodeURIComponent(id) + '/teachers', data);
+    },
+
+    getSchoolAbsentTeachers: function(schoolId) {
+      var id = schoolId || 'my-school';
+      return this.get('/api/schools/' + encodeURIComponent(id) + '/absent-teachers');
+    },
+
+    requestTeacherReport: function(data) {
+      return this.post('/api/schools/request-teacher-report', data);
+    },
+
+    createSchoolEvent: function(data) {
+      return this.post('/api/schools/events', data);
+    },
+
+    getSchoolEvents: function(schoolId) {
+      var id = schoolId || 'my-school';
+      return this.get('/api/schools/' + encodeURIComponent(id) + '/events');
+    },
+
+    deleteSchoolEvent: function(eventId) {
+      return this.delete('/api/schools/events/' + encodeURIComponent(eventId));
+    },
+
+    createParentMeeting: function(data) {
+      return this.post('/api/schools/parent-meetings', data);
+    },
+
+    getParentMeetings: function(schoolId) {
+      var id = schoolId || 'my-school';
+      return this.get('/api/schools/' + encodeURIComponent(id) + '/parent-meetings');
+    },
+
+    getSchoolStatistics: function(schoolId) {
+      var id = schoolId || 'my-school';
+      return this.get('/api/schools/' + encodeURIComponent(id) + '/statistics');
+    },
+
+    getSchoolClassReports: function(schoolId) {
+      var id = schoolId || 'my-school';
+      return this.get('/api/schools/' + encodeURIComponent(id) + '/class-reports');
+    },
+
+    getChildren: function() {
+      return this.get('/api/parents/children');
+    },
+
+    getChildProgress: function(childId) {
+      return this.get('/api/parents/children/' + encodeURIComponent(childId) + '/progress');
+    },
+
+    getChildGrades: function(childId) {
+      return this.get('/api/parents/children/' + encodeURIComponent(childId) + '/grades');
+    },
+
+    getSchoolNews: function(schoolId) {
+      var id = schoolId || 'my-school';
+      return this.get('/api/schools/' + encodeURIComponent(id) + '/news');
+    },
+
+    sendMessageToTeacher: function(data) {
+      return this.post('/api/parents/message-teacher', data);
+    },
+
+    getParentMessages: function() {
+      return this.get('/api/parents/messages');
+    },
+
+    getSchoolFees: function(schoolId) {
+      var id = schoolId || 'my-school';
+      return this.get('/api/schools/' + encodeURIComponent(id) + '/fees');
+    },
+
+    getPaymentHistory: function() {
+      return this.get('/api/parents/payments');
+    },
+
+    initiatePayment: function(data) {
+      return this.post('/api/parents/payments', data);
+    },
+
+    getParentCommunity: function(schoolId) {
+      var id = schoolId || 'my-school';
+      return this.get('/api/schools/' + encodeURIComponent(id) + '/community');
     },
   };
 })();

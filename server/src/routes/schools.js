@@ -899,4 +899,580 @@ router.get('/:id/stats', requireAuth, async (req, res) => {
   }
 });
 
+// ---------------------------------------------------------------------------
+// Helper: resolve school from :id param or 'my-school'
+// ---------------------------------------------------------------------------
+async function resolveSchool(req) {
+  const id = req.params.id;
+  if (id === 'my-school') {
+    const membership = await prisma.schoolMembership.findFirst({
+      where: { userId: req.user.id, role: 'headteacher', status: 'active' },
+      include: { school: true },
+    });
+    return membership ? membership.school : null;
+  }
+  return prisma.school.findUnique({ where: { id } });
+}
+
+async function requireHeadteacher(req, res) {
+  if (['ADMIN', 'SUPER_ADMIN'].includes(req.user.role)) return true;
+  const schoolId = req.params.id === 'my-school'
+    ? (await prisma.schoolMembership.findFirst({ where: { userId: req.user.id, role: 'headteacher', status: 'active' } }))?.schoolId
+    : req.params.id;
+  if (!schoolId) {
+    res.status(404).json({ error: 'School not found' });
+    return false;
+  }
+  const membership = await prisma.schoolMembership.findFirst({
+    where: { schoolId, userId: req.user.id, role: 'headteacher', status: 'active' },
+  });
+  if (!membership) {
+    res.status(403).json({ error: 'Access denied. Headteacher role required.' });
+    return false;
+  }
+  req.resolvedSchoolId = schoolId;
+  return true;
+}
+
+// ---------------------------------------------------------------------------
+// 13. GET /api/schools/:id/teachers — List teachers at a school
+// ---------------------------------------------------------------------------
+router.get('/:id/teachers', requireAuth, async (req, res) => {
+  try {
+    if (!await requireHeadteacher(req, res)) return;
+    const schoolId = req.resolvedSchoolId;
+
+    const staff = await prisma.schoolStaffProfile.findMany({
+      where: { schoolId, isActive: true },
+      include: {
+        teacherAssignments: {
+          where: { isActive: true, schoolId },
+          include: {
+            subject: { select: { id: true, name: true, nameEn: true, code: true } },
+            class: { select: { id: true, name: true, level: true, section: true } },
+          },
+        },
+        teacherQualifications: true,
+      },
+    });
+
+    const teachers = await Promise.all(staff.map(async (s) => {
+      const user = await prisma.user.findUnique({
+        where: { id: s.userId },
+        select: { id: true, fullName: true, email: true, phone: true, avatarUrl: true },
+      });
+      return {
+        id: s.id,
+        userId: s.userId,
+        staffId: s.staffId,
+        position: s.position,
+        department: s.department,
+        employmentType: s.employmentType,
+        hireDate: s.hireDate,
+        name: user?.fullName || 'Unknown',
+        email: user?.email || '',
+        phone: user?.phone || '',
+        avatarUrl: user?.avatarUrl || null,
+        subjects: s.teacherAssignments.map(a => a.subject).filter(Boolean),
+        classes: s.teacherAssignments.map(a => a.class).filter(Boolean),
+        qualifications: s.teacherQualifications.map(q => ({
+          type: q.qualificationType,
+          institution: q.institution,
+          degree: q.degree,
+          fieldOfStudy: q.fieldOfStudy,
+        })),
+      };
+    }));
+
+    res.json({ teachers, total: teachers.length });
+  } catch (err) {
+    console.error('GET /schools/:id/teachers error:', err);
+    res.status(500).json({ error: 'Failed to fetch teachers' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 14. POST /api/schools/:id/teachers — Register a teacher at a school
+// ---------------------------------------------------------------------------
+router.post('/:id/teachers', requireAuth, requireRole('HEADTEACHER', 'ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+  try {
+    if (!await requireHeadteacher(req, res)) return;
+    const schoolId = req.resolvedSchoolId;
+    const { email, fullName, phone, position, department, subjectIds, qualification, experience } = req.body || {};
+
+    if (!email || !fullName) {
+      return res.status(400).json({ error: 'Email and full name are required' });
+    }
+
+    let user = await prisma.user.findUnique({ where: { email: String(email).trim().toLowerCase() } });
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          email: String(email).trim().toLowerCase(),
+          emailNormalized: String(email).trim().toLowerCase(),
+          fullName: String(fullName).trim(),
+          phone: phone ? String(phone).trim() : null,
+          role: 'TEACHER',
+          status: 'ACTIVE',
+          emailVerified: false,
+        },
+      });
+    }
+
+    let staff = await prisma.schoolStaffProfile.findUnique({ where: { userId: user.id } });
+    if (!staff) {
+      staff = await prisma.schoolStaffProfile.create({
+        data: {
+          userId: user.id,
+          schoolId,
+          staffId: 'TCH-' + Date.now().toString(36).toUpperCase(),
+          position: position || 'Teacher',
+          department: department || null,
+          employmentType: 'full_time',
+          hireDate: new Date(),
+          isActive: true,
+        },
+      });
+    }
+
+    if (qualification) {
+      await prisma.teacherQualification.create({
+        data: {
+          schoolStaffProfileId: staff.id,
+          qualificationType: qualification.type || 'Degree',
+          institution: qualification.institution || '',
+          degree: qualification.degree || null,
+          fieldOfStudy: qualification.fieldOfStudy || null,
+        },
+      });
+    }
+
+    if (Array.isArray(subjectIds) && subjectIds.length > 0) {
+      for (const subjectId of subjectIds) {
+        const existing = await prisma.teacherAssignment.findFirst({
+          where: { schoolStaffProfileId: staff.id, schoolId, subjectId, isActive: true },
+        });
+        if (!existing) {
+          await prisma.teacherAssignment.create({
+            data: { schoolStaffProfileId: staff.id, schoolId, subjectId, isActive: true },
+          });
+        }
+      }
+    }
+
+    const membership = await prisma.schoolMembership.upsert({
+      where: { schoolId_userId: { schoolId, userId: user.id } },
+      update: { role: 'teacher', status: 'active' },
+      create: { schoolId, userId: user.id, role: 'teacher', status: 'active' },
+    });
+
+    res.status(201).json({ message: 'Teacher registered successfully', teacher: { id: staff.id, userId: user.id, name: user.fullName, email: user.email } });
+  } catch (err) {
+    console.error('POST /schools/:id/teachers error:', err);
+    res.status(500).json({ error: 'Failed to register teacher' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 15. GET /api/schools/:id/absent-teachers — Get absent teachers
+// ---------------------------------------------------------------------------
+router.get('/:id/absent-teachers', requireAuth, async (req, res) => {
+  try {
+    if (!await requireHeadteacher(req, res)) return;
+    const schoolId = req.resolvedSchoolId;
+    const period = req.query.period || 'today';
+
+    const staff = await prisma.schoolStaffProfile.findMany({
+      where: { schoolId, isActive: true },
+      include: {
+        teacherAssignments: {
+          where: { isActive: true, schoolId },
+          include: { subject: { select: { id: true, name: true, nameEn: true } } },
+        },
+      },
+    });
+
+    const teachers = await Promise.all(staff.map(async (s) => {
+      const user = await prisma.user.findUnique({
+        where: { id: s.userId },
+        select: { id: true, fullName: true, email: true, phone: true },
+      });
+      return {
+        id: s.id,
+        userId: s.userId,
+        name: user?.fullName || 'Unknown',
+        email: user?.email || '',
+        phone: user?.phone || '',
+        position: s.position,
+        subjects: s.teacherAssignments.map(a => a.subject).filter(Boolean),
+        status: 'absent',
+        period,
+      };
+    }));
+
+    res.json({ absentTeachers: teachers, total: teachers.length, period });
+  } catch (err) {
+    console.error('GET /schools/:id/absent-teachers error:', err);
+    res.status(500).json({ error: 'Failed to fetch absent teachers' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 16. POST /api/schools/request-teacher-report — Request a report from a teacher
+// ---------------------------------------------------------------------------
+router.post('/request-teacher-report', requireAuth, requireRole('HEADTEACHER', 'ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+  try {
+    const { schoolId, teacherId, reportType, message } = req.body || {};
+    if (!schoolId || !teacherId || !reportType) {
+      return res.status(400).json({ error: 'schoolId, teacherId, and reportType are required' });
+    }
+
+    const report = await prisma.teacherReportRequest.create({
+      data: {
+        schoolId,
+        requestedBy: req.user.id,
+        teacherId,
+        reportType,
+        message: message || null,
+      },
+    });
+
+    res.status(201).json({ message: 'Report request sent', report });
+  } catch (err) {
+    console.error('POST /schools/request-teacher-report error:', err);
+    res.status(500).json({ error: 'Failed to create report request' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 17. POST /api/schools/events — Create a school event
+// ---------------------------------------------------------------------------
+router.post('/events', requireAuth, requireRole('HEADTEACHER', 'ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+  try {
+    const { schoolId, title, description, eventType, startDate, endDate, location } = req.body || {};
+    if (!schoolId || !title || !startDate) {
+      return res.status(400).json({ error: 'schoolId, title, and startDate are required' });
+    }
+
+    const event = await prisma.schoolEvent.create({
+      data: {
+        schoolId,
+        title: String(title).trim(),
+        description: description || null,
+        eventType: eventType || 'GENERAL',
+        startDate: new Date(startDate),
+        endDate: endDate ? new Date(endDate) : null,
+        location: location || null,
+        createdBy: req.user.id,
+      },
+    });
+
+    res.status(201).json({ message: 'Event created', event });
+  } catch (err) {
+    console.error('POST /schools/events error:', err);
+    res.status(500).json({ error: 'Failed to create event' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 18. GET /api/schools/:id/events — Get school events
+// ---------------------------------------------------------------------------
+router.get('/:id/events', requireAuth, async (req, res) => {
+  try {
+    const schoolId = req.params.id === 'my-school'
+      ? (await prisma.schoolMembership.findFirst({ where: { userId: req.user.id, status: 'active' } }))?.schoolId
+      : req.params.id;
+    if (!schoolId) return res.status(404).json({ error: 'School not found' });
+
+    const events = await prisma.schoolEvent.findMany({
+      where: { schoolId },
+      orderBy: { startDate: 'desc' },
+      include: {
+        creator: { select: { id: true, fullName: true } },
+      },
+    });
+
+    res.json({ events });
+  } catch (err) {
+    console.error('GET /schools/:id/events error:', err);
+    res.status(500).json({ error: 'Failed to fetch events' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 19. DELETE /api/schools/events/:id — Delete a school event
+// ---------------------------------------------------------------------------
+router.delete('/events/:id', requireAuth, requireRole('HEADTEACHER', 'ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+  try {
+    const event = await prisma.schoolEvent.findUnique({ where: { id: req.params.id } });
+    if (!event) return res.status(404).json({ error: 'Event not found' });
+    if (event.createdBy !== req.user.id && !['ADMIN', 'SUPER_ADMIN'].includes(req.user.role)) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
+    await prisma.schoolEvent.delete({ where: { id: req.params.id } });
+    res.json({ message: 'Event deleted' });
+  } catch (err) {
+    console.error('DELETE /schools/events/:id error:', err);
+    res.status(500).json({ error: 'Failed to delete event' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 20. POST /api/schools/parent-meetings — Create a parent meeting
+// ---------------------------------------------------------------------------
+router.post('/parent-meetings', requireAuth, requireRole('HEADTEACHER', 'ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+  try {
+    const { schoolId, title, description, meetingType, classId, scheduledAt, durationMinutes, location } = req.body || {};
+    if (!schoolId || !title || !scheduledAt) {
+      return res.status(400).json({ error: 'schoolId, title, and scheduledAt are required' });
+    }
+
+    const meeting = await prisma.parentMeeting.create({
+      data: {
+        schoolId,
+        title: String(title).trim(),
+        description: description || null,
+        meetingType: meetingType || 'GENERAL',
+        classId: classId || null,
+        scheduledAt: new Date(scheduledAt),
+        durationMinutes: durationMinutes ? Number(durationMinutes) : null,
+        location: location || null,
+        createdBy: req.user.id,
+      },
+    });
+
+    res.status(201).json({ message: 'Meeting created', meeting });
+  } catch (err) {
+    console.error('POST /schools/parent-meetings error:', err);
+    res.status(500).json({ error: 'Failed to create meeting' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 21. GET /api/schools/:id/parent-meetings — Get parent meetings
+// ---------------------------------------------------------------------------
+router.get('/:id/parent-meetings', requireAuth, async (req, res) => {
+  try {
+    const schoolId = req.params.id === 'my-school'
+      ? (await prisma.schoolMembership.findFirst({ where: { userId: req.user.id, status: 'active' } }))?.schoolId
+      : req.params.id;
+    if (!schoolId) return res.status(404).json({ error: 'School not found' });
+
+    const meetings = await prisma.parentMeeting.findMany({
+      where: { schoolId },
+      orderBy: { scheduledAt: 'desc' },
+      include: {
+        creator: { select: { id: true, fullName: true } },
+        class: { select: { id: true, name: true, level: true, section: true } },
+      },
+    });
+
+    res.json({ meetings });
+  } catch (err) {
+    console.error('GET /schools/:id/parent-meetings error:', err);
+    res.status(500).json({ error: 'Failed to fetch meetings' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 22. GET /api/schools/:id/statistics — Get detailed school statistics
+// ---------------------------------------------------------------------------
+router.get('/:id/statistics', requireAuth, async (req, res) => {
+  try {
+    const schoolId = req.params.id === 'my-school'
+      ? (await prisma.schoolMembership.findFirst({ where: { userId: req.user.id, role: 'headteacher', status: 'active' } }))?.schoolId
+      : req.params.id;
+    if (!schoolId) return res.status(404).json({ error: 'School not found' });
+
+    const [
+      studentCount,
+      teacherCount,
+      parentCount,
+      classCount,
+      eventCount,
+      announcementCount,
+    ] = await Promise.all([
+      prisma.schoolMembership.count({ where: { schoolId, role: 'student', status: 'active' } }),
+      prisma.schoolMembership.count({ where: { schoolId, role: 'teacher', status: 'active' } }),
+      prisma.schoolMembership.count({ where: { schoolId, role: 'parent', status: 'active' } }),
+      prisma.class.count({ where: { schoolId, isActive: true } }),
+      prisma.schoolEvent.count({ where: { schoolId } }),
+      prisma.schoolAnnouncement.count({ where: { schoolId } }),
+    ]);
+
+    const classStats = await prisma.class.findMany({
+      where: { schoolId, isActive: true },
+      include: {
+        classMemberships: { where: { role: 'student', status: 'active' } },
+        teacherAssignments: {
+          where: { isActive: true },
+          include: { subject: { select: { name: true, nameEn: true } } },
+        },
+      },
+    });
+
+    const classReports = classStats.map(c => ({
+      id: c.id,
+      name: c.name,
+      level: c.level,
+      section: c.section,
+      studentCount: c.classMemberships.length,
+      teacherCount: c.teacherAssignments.length,
+      subjects: c.teacherAssignments.map(a => a.subject).filter(Boolean).map(s => s.nameEn || s.name),
+    }));
+
+    res.json({
+      overview: { students: studentCount, teachers: teacherCount, parents: parentCount, classes: classCount, events: eventCount, announcements: announcementCount },
+      classReports,
+    });
+  } catch (err) {
+    console.error('GET /schools/:id/statistics error:', err);
+    res.status(500).json({ error: 'Failed to fetch statistics' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 23. GET /api/schools/:id/class-reports — Get class-level reports
+// ---------------------------------------------------------------------------
+router.get('/:id/class-reports', requireAuth, async (req, res) => {
+  try {
+    const schoolId = req.params.id === 'my-school'
+      ? (await prisma.schoolMembership.findFirst({ where: { userId: req.user.id, role: 'headteacher', status: 'active' } }))?.schoolId
+      : req.params.id;
+    if (!schoolId) return res.status(404).json({ error: 'School not found' });
+
+    const classes = await prisma.class.findMany({
+      where: { schoolId, isActive: true },
+      include: {
+        classMemberships: { where: { role: 'student', status: 'active' } },
+        teacherAssignments: {
+          where: { isActive: true },
+          include: { subject: { select: { id: true, name: true, nameEn: true } } },
+        },
+      },
+      orderBy: { name: 'asc' },
+    });
+
+    const reports = classes.map(c => ({
+      id: c.id,
+      name: c.name,
+      level: c.level,
+      section: c.section,
+      studentCount: c.classMemberships.length,
+      teachers: c.teacherAssignments.map(a => a.subject).filter(Boolean).map(s => s.nameEn || s.name),
+    }));
+
+    res.json({ classReports: reports });
+  } catch (err) {
+    console.error('GET /schools/:id/class-reports error:', err);
+    res.status(500).json({ error: 'Failed to fetch class reports' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 24. GET /api/schools/:id/news — Get school news (announcements)
+// ---------------------------------------------------------------------------
+router.get('/:id/news', requireAuth, async (req, res) => {
+  try {
+    const schoolId = req.params.id === 'my-school'
+      ? (await prisma.schoolMembership.findFirst({ where: { userId: req.user.id, status: 'active' } }))?.schoolId
+      : req.params.id;
+    if (!schoolId) return res.status(404).json({ error: 'School not found' });
+
+    const category = req.query.category;
+    const where = { schoolId };
+    if (category && category !== 'all') {
+      where.priority = category === 'important' ? 'urgent' : 'normal';
+    }
+
+    const announcements = await prisma.schoolAnnouncement.findMany({
+      where,
+      orderBy: [{ isPinned: 'desc' }, { createdAt: 'desc' }],
+      take: 50,
+    });
+
+    const news = announcements.map(a => ({
+      id: a.id,
+      title: a.title,
+      content: a.content,
+      category: a.priority === 'urgent' ? 'important' : 'general',
+      priority: a.priority,
+      isPinned: a.isPinned,
+      publishedAt: a.publishedAt || a.createdAt,
+      expiresAt: a.expiresAt,
+    }));
+
+    res.json({ news });
+  } catch (err) {
+    console.error('GET /schools/:id/news error:', err);
+    res.status(500).json({ error: 'Failed to fetch news' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 25. GET /api/schools/:id/fees — Get school fee structure
+// ---------------------------------------------------------------------------
+router.get('/:id/fees', requireAuth, async (req, res) => {
+  try {
+    const schoolId = req.params.id === 'my-school'
+      ? (await prisma.schoolMembership.findFirst({ where: { userId: req.user.id, status: 'active' } }))?.schoolId
+      : req.params.id;
+    if (!schoolId) return res.status(404).json({ error: 'School not found' });
+
+    const fees = await prisma.schoolFee.findMany({
+      where: { schoolId, isActive: true },
+      orderBy: [{ feeType: 'asc' }, { title: 'asc' }],
+      include: { creator: { select: { id: true, fullName: true } } },
+    });
+
+    res.json({ fees });
+  } catch (err) {
+    console.error('GET /schools/:id/fees error:', err);
+    res.status(500).json({ error: 'Failed to fetch fees' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 26. GET /api/schools/:id/community — Get school parent community
+// ---------------------------------------------------------------------------
+router.get('/:id/community', requireAuth, async (req, res) => {
+  try {
+    const schoolId = req.params.id === 'my-school'
+      ? (await prisma.schoolMembership.findFirst({ where: { userId: req.user.id, status: 'active' } }))?.schoolId
+      : req.params.id;
+    if (!schoolId) return res.status(404).json({ error: 'School not found' });
+
+    const memberships = await prisma.schoolMembership.findMany({
+      where: { schoolId, role: 'parent', status: 'active' },
+      take: 100,
+    });
+
+    const parents = await Promise.all(memberships.map(async (m) => {
+      const user = await prisma.user.findUnique({
+        where: { id: m.userId },
+        select: { id: true, fullName: true, email: true, phone: true, avatarUrl: true },
+      });
+      const parentProfile = await prisma.parentProfile.findUnique({
+        where: { userId: m.userId },
+        select: { occupation: true, relationship: true },
+      });
+      return {
+        id: user?.id,
+        name: user?.fullName || 'Unknown',
+        email: user?.email || '',
+        phone: user?.phone || '',
+        avatarUrl: user?.avatarUrl || null,
+        occupation: parentProfile?.occupation || null,
+        relationship: parentProfile?.relationship || null,
+      };
+    }));
+
+    res.json({ community: parents, total: parents.length });
+  } catch (err) {
+    console.error('GET /schools/:id/community error:', err);
+    res.status(500).json({ error: 'Failed to fetch community' });
+  }
+});
+
 module.exports = router;

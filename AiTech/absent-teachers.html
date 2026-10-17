@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>IREME - Absent Teachers</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="img/ireme-icon.png" rel="icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div id="component-spinner"></div>
+    <div id="component-navbar"></div>
+
+    <!-- Hero Start -->
+    <div class="container-fluid pt-5 bg-primary hero-header">
+        <div class="container pt-5">
+            <div class="row g-5 pt-5">
+                <div class="col-lg-6 align-self-center text-center text-lg-start mb-lg-5">
+                    <h1 class="display-4 text-white mb-4 animated slideInRight" data-i18n="absentTeachers.title">Absent Teachers</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center justify-content-lg-start mb-0">
+                            <li class="breadcrumb-item"><a class="text-white" href="index.html" data-i18n="breadcrumb.home">Home</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page" data-i18n="absentTeachers.title">Absent Teachers</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 align-self-end text-center text-lg-end">
+                    <img class="img-fluid" src="img/hero-img.png" alt="" style="max-height: 300px;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Hero End -->
+
+    <!-- Period Tabs & Table Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <!-- Period Tabs -->
+            <div class="d-flex gap-2 mb-4 flex-wrap">
+                <button class="btn btn-primary rounded-pill px-4 py-2 active" data-period="today" data-i18n="absentTeachers.today">Today</button>
+                <button class="btn btn-outline-primary rounded-pill px-4 py-2" data-period="week" data-i18n="absentTeachers.thisWeek">This Week</button>
+                <button class="btn btn-outline-primary rounded-pill px-4 py-2" data-period="month" data-i18n="absentTeachers.thisMonth">This Month</button>
+            </div>
+
+            <!-- Summary Stats -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="bg-white rounded p-3 text-center shadow-sm">
+                        <h3 class="text-danger mb-0" id="stat-unexcused">0</h3>
+                        <small class="text-muted" data-i18n="absentTeachers.unexcused">Unexcused</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="bg-white rounded p-3 text-center shadow-sm">
+                        <h3 class="text-warning mb-0" id="stat-excused">0</h3>
+                        <small class="text-muted" data-i18n="absentTeachers.excused">Excused</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="bg-white rounded p-3 text-center shadow-sm">
+                        <h3 class="text-primary mb-0" id="stat-total">0</h3>
+                        <small class="text-muted">Total Absences</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Absence Table -->
+            <div class="bg-white rounded shadow-sm">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">Teacher</th>
+                                <th data-i18n="absentTeachers.date">Date</th>
+                                <th data-i18n="absentTeachers.reason">Reason</th>
+                                <th data-i18n="absentTeachers.status">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="absence-table-body">
+                            <tr><td colspan="4" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="absence-empty" class="text-center py-5" style="display:none">
+                <i class="fa fa-check-circle fa-3x text-success mb-3"></i>
+                <h4 data-i18n="absentTeachers.noAbsences">No absences recorded</h4>
+            </div>
+
+            <div class="mt-4 text-end">
+                <button class="btn btn-primary rounded-pill px-4 py-2" data-bs-toggle="modal" data-bs-target="#attendanceModal">
+                    <i class="fa fa-clipboard-check me-2"></i>
+                    <span data-i18n="absentTeachers.markAttendance">Mark Attendance</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Period Tabs & Table End -->
+
+    <!-- Mark Attendance Modal -->
+    <div class="modal fade" id="attendanceModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" data-i18n="absentTeachers.markAttendance">Mark Attendance</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small">Select teachers who are absent today and provide a reason.</p>
+                    <div id="attendance-teacher-list"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="save-attendance-btn">Save Attendance</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="component-footer"></div>
+    <div id="component-backtotop"></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/api-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+        IremeComponents.initPage('absent-teachers.html');
+        IremeAuth.requireAuth();
+
+        var currentPeriod = 'today';
+        var allAbsences = [];
+
+        function loadAbsences() {
+            IremeAPI.getSchoolAbsentTeachers().then(function(data) {
+                allAbsences = data.absences || [];
+                filterAndDisplay();
+            }).catch(function(err) {
+                console.error('Failed to load absences:', err);
+                document.getElementById('absence-table-body').innerHTML = '';
+                document.getElementById('absence-empty').style.display = 'block';
+            });
+        }
+
+        function filterAndDisplay() {
+            var now = new Date();
+            var filtered = allAbsences.filter(function(a) {
+                var date = new Date(a.date || a.createdAt);
+                if (currentPeriod === 'today') {
+                    return date.toDateString() === now.toDateString();
+                } else if (currentPeriod === 'week') {
+                    var weekAgo = new Date(now);
+                    weekAgo.setDate(weekAgo.getDate() - 7);
+                    return date >= weekAgo;
+                }
+                return true;
+            });
+
+            var excused = filtered.filter(function(a) { return a.excused; }).length;
+            var unexcused = filtered.length - excused;
+            document.getElementById('stat-excused').textContent = excused;
+            document.getElementById('stat-unexcused').textContent = unexcused;
+            document.getElementById('stat-total').textContent = filtered.length;
+
+            var tbody = document.getElementById('absence-table-body');
+            var emptyState = document.getElementById('absence-empty');
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            tbody.innerHTML = filtered.map(function(a) {
+                var teacherName = a.teacher ? (a.teacher.firstName + ' ' + a.teacher.lastName) : 'Unknown';
+                var statusBadge = a.excused
+                    ? '<span class="badge bg-warning">' + IremeI18n.t('absentTeachers.excused') + '</span>'
+                    : '<span class="badge bg-danger">' + IremeI18n.t('absentTeachers.unexcused') + '</span>';
+                var date = new Date(a.date || a.createdAt).toLocaleDateString();
+
+                return '<tr>' +
+                    '<td class="ps-4 fw-bold">' + teacherName + '</td>' +
+                    '<td>' + date + '</td>' +
+                    '<td>' + (a.reason || 'No reason provided') + '</td>' +
+                    '<td>' + statusBadge + '</td>' +
+                    '</tr>';
+            }).join('');
+        }
+
+        // Period tabs
+        document.querySelectorAll('[data-period]').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('[data-period]').forEach(function(b) {
+                    b.classList.remove('active');
+                    b.classList.remove('btn-primary');
+                    b.classList.add('btn-outline-primary');
+                });
+                this.classList.add('active');
+                this.classList.remove('btn-outline-primary');
+                this.classList.add('btn-primary');
+                currentPeriod = this.dataset.period;
+                filterAndDisplay();
+            });
+        });
+
+        loadAbsences();
+    </script>
+</body>
+</html>

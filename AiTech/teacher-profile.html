@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>IREME - Teacher Profile</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="img/ireme-icon.png" rel="icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div id="component-spinner"></div>
+    <div id="component-navbar"></div>
+
+    <!-- Hero Start -->
+    <div class="container-fluid pt-5 bg-primary hero-header">
+        <div class="container pt-5">
+            <div class="row g-5 pt-5">
+                <div class="col-lg-6 align-self-center text-center text-lg-start mb-lg-5">
+                    <h1 class="display-4 text-white mb-4 animated slideInRight">Teacher Profile</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center justify-content-lg-start mb-0">
+                            <li class="breadcrumb-item"><a class="text-white" href="index.html" data-i18n="breadcrumb.home">Home</a></li>
+                            <li class="breadcrumb-item"><a class="text-white" href="available-teachers.html">Available Teachers</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page">Profile</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 align-self-end text-center text-lg-end">
+                    <img class="img-fluid" src="img/hero-img.png" alt="" style="max-height: 300px;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Hero End -->
+
+    <!-- Content Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div id="profile-loading" class="text-center py-5">
+                <div class="spinner-border text-primary" style="width:3rem;height:3rem"></div>
+            </div>
+
+            <div id="profile-not-found" class="text-center py-5" style="display:none">
+                <i class="fa fa-user-slash fa-3x text-muted mb-3"></i>
+                <h4>Teacher not found</h4>
+                <p class="text-muted">The teacher profile you're looking for doesn't exist or has been removed.</p>
+                <a href="available-teachers.html" class="btn btn-primary rounded-pill px-4 py-2">
+                    <i class="fa fa-arrow-left me-2"></i>Back to Teachers
+                </a>
+            </div>
+
+            <div id="profile-content" style="display:none">
+                <div class="row g-4">
+                    <!-- Profile Card -->
+                    <div class="col-lg-4 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="bg-light rounded p-4 text-center">
+                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center text-white fw-bold mx-auto mb-3" style="width:100px;height:100px;font-size:36px" id="profile-avatar"></div>
+                            <h4 class="mb-1" id="profile-name"></h4>
+                            <span class="badge bg-success mb-3" id="profile-status">Active</span>
+                            <div id="profile-qualification" class="mb-2"></div>
+                            <div id="profile-experience" class="mb-3"></div>
+                            <hr>
+                            <div class="d-grid gap-2">
+                                <a href="#" id="profile-email-link" class="btn btn-primary rounded-pill py-2">
+                                    <i class="fa fa-envelope me-2"></i>Contact Teacher
+                                </a>
+                                <a href="available-teachers.html" class="btn btn-outline-primary rounded-pill py-2">
+                                    <i class="fa fa-arrow-left me-2"></i>Back to Teachers
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Details -->
+                    <div class="col-lg-8 wow fadeInUp" data-wow-delay="0.3s">
+                        <!-- Subjects -->
+                        <div class="bg-light rounded p-4 mb-4">
+                            <h5 class="mb-3"><i class="fa fa-book text-primary me-2"></i>Subjects</h5>
+                            <div id="profile-subjects" class="d-flex flex-wrap gap-2"></div>
+                        </div>
+
+                        <!-- About -->
+                        <div class="bg-light rounded p-4 mb-4">
+                            <h5 class="mb-3"><i class="fa fa-info-circle text-primary me-2"></i>About</h5>
+                            <div id="profile-about">
+                                <p class="text-muted mb-0">No additional information available.</p>
+                            </div>
+                        </div>
+
+                        <!-- Contact Info -->
+                        <div class="bg-light rounded p-4">
+                            <h5 class="mb-3"><i class="fa fa-address-card text-primary me-2"></i>Contact Information</h5>
+                            <div id="profile-contact"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Content End -->
+
+    <div id="component-footer"></div>
+    <div id="component-backtotop"></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/api-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+        IremeComponents.initPage('teacher-profile.html');
+        IremeAuth.requireAuth();
+
+        var params = new URLSearchParams(window.location.search);
+        var teacherId = params.get('id');
+
+        if (!teacherId) {
+            document.getElementById('profile-loading').style.display = 'none';
+            document.getElementById('profile-not-found').style.display = 'block';
+        } else {
+            IremeAPI.getSchoolTeachers().then(function(data) {
+                var teachers = data.teachers || [];
+                var teacher = teachers.find(function(t) { return t.id === teacherId; });
+
+                if (!teacher) {
+                    document.getElementById('profile-loading').style.display = 'none';
+                    document.getElementById('profile-not-found').style.display = 'block';
+                    return;
+                }
+
+                document.getElementById('profile-loading').style.display = 'none';
+                document.getElementById('profile-content').style.display = 'block';
+
+                var fullName = (teacher.firstName || '') + ' ' + (teacher.lastName || '');
+                var initials = (teacher.firstName || 'T')[0] + (teacher.lastName || '')[0];
+
+                document.getElementById('profile-avatar').textContent = initials.toUpperCase();
+                document.getElementById('profile-name').textContent = fullName.trim();
+
+                if (teacher.status === 'ON_LEAVE') {
+                    document.getElementById('profile-status').textContent = 'On Leave';
+                    document.getElementById('profile-status').className = 'badge bg-warning mb-3';
+                }
+
+                if (teacher.qualification) {
+                    document.getElementById('profile-qualification').innerHTML =
+                        '<i class="fa fa-graduation-cap text-primary me-1"></i><span class="text-muted">' + teacher.qualification + '</span>';
+                }
+
+                if (teacher.experience !== undefined && teacher.experience !== null) {
+                    document.getElementById('profile-experience').innerHTML =
+                        '<i class="fa fa-clock text-primary me-1"></i><span class="text-muted">' + teacher.experience + ' years experience</span>';
+                }
+
+                if (teacher.email) {
+                    document.getElementById('profile-email-link').href = 'mailto:' + teacher.email;
+                } else {
+                    document.getElementById('profile-email-link').style.display = 'none';
+                }
+
+                var subjects = teacher.subjects || [];
+                if (subjects.length > 0) {
+                    document.getElementById('profile-subjects').innerHTML = subjects.map(function(s) {
+                        var name = s.name || s.nameEn || s;
+                        return '<span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2">' + name + '</span>';
+                    }).join('');
+                } else {
+                    document.getElementById('profile-subjects').innerHTML = '<span class="text-muted">No subjects assigned</span>';
+                }
+
+                var aboutParts = [];
+                if (teacher.bio) aboutParts.push('<p>' + teacher.bio + '</p>');
+                if (teacher.specialization) aboutParts.push('<p><strong>Specialization:</strong> ' + teacher.specialization + '</p>');
+                if (aboutParts.length > 0) {
+                    document.getElementById('profile-about').innerHTML = aboutParts.join('');
+                }
+
+                var contactHtml = '';
+                if (teacher.email) contactHtml += '<p class="mb-2"><i class="fa fa-envelope text-primary me-2"></i><a href="mailto:' + teacher.email + '" class="text-decoration-none">' + teacher.email + '</a></p>';
+                if (teacher.phone) contactHtml += '<p class="mb-2"><i class="fa fa-phone text-primary me-2"></i><a href="tel:' + teacher.phone + '" class="text-decoration-none">' + teacher.phone + '</a></p>';
+                if (!contactHtml) contactHtml = '<p class="text-muted mb-0">No contact information available</p>';
+                document.getElementById('profile-contact').innerHTML = contactHtml;
+
+            }).catch(function(err) {
+                console.error('Failed to load teacher:', err);
+                document.getElementById('profile-loading').style.display = 'none';
+                document.getElementById('profile-not-found').style.display = 'block';
+            });
+        }
+    </script>
+</body>
+</html>

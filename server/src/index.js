@@ -28,6 +28,7 @@ const notificationRoutes = require('./routes/notifications');
 const jobsRoutes = require('./routes/jobs');
 const locationRoutes = require('./routes/locations');
 const tutorRoutes = require('./routes/tutors');
+const parentRoutes = require('./routes/parents');
 const { configurePassport } = require('./config/passport');
 const { SESSION_SECRET } = require('./config/secrets');
 
@@ -115,6 +116,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/jobs', jobsRoutes);
 app.use('/api/locations', locationRoutes);
 app.use('/api/tutors', tutorRoutes);
+app.use('/api/parents', parentRoutes);
 app.use('/api', healthRoutes);
 
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
