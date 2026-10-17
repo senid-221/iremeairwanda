@@ -48,6 +48,7 @@ var IremeAuth = (function () {
             role: user.role,
             status: user.status,
             avatarUrl: user.avatarUrl || null,
+            profileComplete: user.profileComplete || false,
             expiresAt: Date.now() + SESSION_DURATION,
         };
     }
@@ -77,9 +78,9 @@ var IremeAuth = (function () {
     var ROLES = {
         student:            { label: 'Student',              dashboard: 'student-dashboard.html',            canRegister: true  },
         teacher:            { label: 'Teacher',              dashboard: 'teacher-dashboard.html',            canRegister: true  },
-        parent:             { label: 'Parent/Guardian',      dashboard: 'parent-dashboard.html',             canRegister: true  },
+        parent:             { label: 'Parent',               dashboard: 'parent-dashboard.html',             canRegister: true  },
         school_admin:       { label: 'School Administrator', dashboard: 'school-dashboard.html',             canRegister: false },
-        headteacher:        { label: 'Head Teacher',         dashboard: 'school-dashboard.html',             canRegister: false },
+        headteacher:        { label: 'Headteacher',          dashboard: 'school-dashboard.html',             canRegister: true  },
         learner:            { label: 'TTC/TVET Learner',     dashboard: 'learner-dashboard.html',            canRegister: false },
         content_manager:    { label: 'Content Manager',      dashboard: 'content-manager-dashboard.html',    canRegister: false },
         curriculum_manager: { label: 'Curriculum Manager',   dashboard: 'curriculum-manager-dashboard.html', canRegister: false },
@@ -211,40 +212,39 @@ var IremeAuth = (function () {
 
         requireAuth: function (redirectUrl) {
             guardRequired = true;
-            this.verifySession();
-            if (!this.isLoggedIn()) {
-                window.location.href = redirectUrl || 'login.html';
-                return false;
-            }
-            return true;
+            var self = this;
+            this.verifySession().then(function () {
+                if (!self.isLoggedIn()) {
+                    window.location.href = redirectUrl || 'login.html';
+                }
+            });
+            return this.isLoggedIn();
         },
 
         requireRole: function (role) {
             guardRequired = true;
-            this.verifySession();
-            if (!this.isLoggedIn()) {
-                window.location.href = 'login.html';
-                return false;
-            }
-            if (!this.hasRole(role)) {
-                window.location.href = 'access-denied.html';
-                return false;
-            }
-            return true;
+            var self = this;
+            this.verifySession().then(function () {
+                if (!self.isLoggedIn()) {
+                    window.location.href = 'login.html';
+                } else if (!self.hasRole(role)) {
+                    window.location.href = 'access-denied.html';
+                }
+            });
+            return this.isLoggedIn() && this.hasRole(role);
         },
 
         requireAnyRole: function (roles) {
             guardRequired = true;
-            this.verifySession();
-            if (!this.isLoggedIn()) {
-                window.location.href = 'login.html';
-                return false;
-            }
-            if (!this.hasAnyRole(roles)) {
-                window.location.href = 'access-denied.html';
-                return false;
-            }
-            return true;
+            var self = this;
+            this.verifySession().then(function () {
+                if (!self.isLoggedIn()) {
+                    window.location.href = 'login.html';
+                } else if (!self.hasAnyRole(roles)) {
+                    window.location.href = 'access-denied.html';
+                }
+            });
+            return this.isLoggedIn() && this.hasAnyRole(roles);
         },
 
         /**
@@ -253,10 +253,10 @@ var IremeAuth = (function () {
          * local session when the server reports no authentication.
          */
         verifySession: function () {
+            var self = this;
             var client = api();
-            if (!client) return;
-            var hadSession = !!readSession();
-            client.getAuthStatus().then(function (status) {
+            if (!client) return Promise.resolve();
+            return client.getAuthStatus().then(function (status) {
                 if (status && status.authenticated && status.user) {
                     var existing = readSession();
                     var fresh = sessionFromUser({
@@ -265,6 +265,7 @@ var IremeAuth = (function () {
                         fullName: status.user.fullName,
                         role: status.user.role,
                         status: status.user.status,
+                        profileComplete: status.user.profileComplete || false,
                     });
                     if (existing && existing.email) fresh.email = existing.email;
                     if (existing && existing.avatarUrl) fresh.avatarUrl = existing.avatarUrl;
@@ -277,33 +278,57 @@ var IremeAuth = (function () {
                         clearSession();
                         window.location.href = 'account-pending.html';
                     }
-                } else if (hadSession) {
+                } else {
                     clearSession();
-                    if (guardRequired) {
-                        window.location.href = 'login.html';
-                    }
                 }
             }).catch(function () {
-                // Network/backend unavailable: keep the cached session for this
-                // page view instead of bouncing the user to login.
             });
         },
 
         updateProfile: function (updates) {
-            // Profile editing requires the profile endpoint (Phase 2).
-            return Promise.resolve({ success: false, error: 'Profile editing is not available yet.' });
+            var client = api();
+            if (!client) {
+                return Promise.resolve({ success: false, error: 'Authentication service unavailable.' });
+            }
+            return client.patch('/api/auth/profile', updates).then(function (res) {
+                var existing = readSession();
+                if (existing && res.user && res.user.fullName) {
+                    existing.name = res.user.fullName;
+                    existing.fullName = res.user.fullName;
+                    writeSession(existing);
+                }
+                return { success: true, user: res.user };
+            }).catch(function (err) {
+                return { success: false, error: friendlyError(err) };
+            });
         },
 
         changePassword: function (currentPassword, newPassword) {
-            return Promise.resolve({ success: false, error: 'Password change is not available yet.' });
+            return Promise.resolve({ success: false, error: 'Password change is currently unavailable. Please contact support.' });
         },
 
         requestPasswordReset: function (email) {
-            return Promise.resolve({ success: false, error: 'Password reset by email is not available yet. Please contact support.' });
+            var client = api();
+            if (!client) {
+                return Promise.resolve({ success: false, error: 'Authentication service unavailable.' });
+            }
+            return client.post('/api/auth/forgot-password', { email: email }).then(function (res) {
+                return { success: true, message: res.message || 'If that email is registered, a password reset link has been sent.' };
+            }).catch(function (err) {
+                return { success: false, error: friendlyError(err) };
+            });
         },
 
         resetPassword: function (token, newPassword) {
-            return Promise.resolve({ success: false, error: 'Password reset is not available yet.' });
+            var client = api();
+            if (!client) {
+                return Promise.resolve({ success: false, error: 'Authentication service unavailable.' });
+            }
+            return client.post('/api/auth/reset-password', { token: token, newPassword: newPassword }).then(function (res) {
+                return { success: true, message: res.message || 'Password has been reset successfully.' };
+            }).catch(function (err) {
+                return { success: false, error: friendlyError(err) };
+            });
         },
 
         getAllUsers: function (filters) {
@@ -353,7 +378,7 @@ var IremeAuth = (function () {
         },
 
         deleteUser: function (userId) {
-            return Promise.resolve({ success: false, error: 'User deletion is not available yet.' });
+            return Promise.resolve({ success: false, error: 'User deletion is currently unavailable. Please contact a super administrator.' });
         },
 
         getStats: function () {

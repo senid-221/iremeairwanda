@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>IREME - Test Your Skills</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="IREME Skills Assessment, Knowledge Test, Rwanda, Self-Assessment" name="keywords">
+    <meta content="Assess your knowledge and identify areas for improvement with skill-level assessments." name="description">
+
+    <link href="img/ireme-icon.png" rel="icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+    <style>
+        .skill-card { transition: all 0.3s; cursor: pointer; }
+        .skill-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .skill-level-bar { height: 8px; border-radius: 4px; }
+        .skill-option { transition: all 0.2s; cursor: pointer; }
+        .skill-option:hover { background-color: #f8f9fa; border-color: var(--primary); }
+        .skill-option.selected { background-color: var(--primary); color: white; border-color: var(--primary); }
+        .skill-option.correct { background-color: #12B981; color: white; border-color: #12B981; }
+        .skill-option.incorrect { background-color: #e35656; color: white; border-color: #e35656; }
+    </style>
+</head>
+
+<body>
+    <div id="component-spinner"></div>
+    <div id="component-navbar"></div>
+
+    <!-- Hero Start -->
+    <div class="container-fluid pt-5 bg-primary hero-header">
+        <div class="container pt-5">
+            <div class="row g-5 pt-5">
+                <div class="col-lg-6 align-self-center text-center text-lg-start mb-lg-5">
+                    <h1 class="display-4 text-white mb-4 animated slideInRight" data-i18n="testSkills.title">Test Your Skills</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center justify-content-lg-start mb-0">
+                            <li class="breadcrumb-item"><a class="text-white" href="index.html" data-i18n="breadcrumb.home">Home</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page" data-i18n="testSkills.title">Test Skills</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 align-self-end text-center text-lg-end">
+                    <img class="img-fluid" src="img/hero-img.png" alt="" style="max-height: 300px;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Hero End -->
+
+    <!-- Assessment Selection Start -->
+    <div class="container-xxl py-5" id="selection-view">
+        <div class="container">
+            <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
+                <h1 class="display-6" data-i18n="testSkills.assessments">Skill Assessments</h1>
+                <p class="text-muted" data-i18n="testSkills.desc">Assess your knowledge and identify areas for improvement</p>
+            </div>
+
+            <!-- Filters -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <select id="skill-level" class="form-select rounded-pill px-4 py-2">
+                        <option value="" data-i18n="quizzes.selectLevel">Select Level</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <select id="skill-subject" class="form-select rounded-pill px-4 py-2">
+                        <option value="" data-i18n="quizzes.selectSubject">Select Subject</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <select id="skill-difficulty" class="form-select rounded-pill px-4 py-2">
+                        <option value="" data-i18n="testSkills.skillLevel">Skill Level</option>
+                        <option value="beginner" data-i18n="testSkills.beginner">Beginner</option>
+                        <option value="intermediate" data-i18n="testSkills.intermediate">Intermediate</option>
+                        <option value="advanced" data-i18n="testSkills.advanced">Advanced</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="skill-list" class="row g-4">
+                <!-- Skill assessments loaded here -->
+            </div>
+
+            <div id="skill-empty" class="text-center py-5" style="display: none;">
+                <i class="fa fa-brain fa-3x text-muted mb-3"></i>
+                <h4 data-i18n="testSkills.noAssessments">No assessments available</h4>
+                <p class="text-muted" data-i18n="testSkills.noAssessmentsDesc">Skill assessments will be available soon</p>
+            </div>
+        </div>
+    </div>
+    <!-- Assessment Selection End -->
+
+    <!-- Assessment Taking Modal -->
+    <div class="modal fade" id="skillModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="skillModalTitle">Skill Assessment</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span id="skill-question-num">Question 1</span>
+                            <span class="badge bg-light text-dark" id="skill-difficulty-badge">Medium</span>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div id="skill-progress-bar" class="progress-bar bg-primary" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div id="skill-question" class="mb-4">
+                        <h5 id="skill-question-text"></h5>
+                    </div>
+                    <div id="skill-options" class="vstack gap-2"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="quizzes.cancel">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="skill-next-btn" data-i18n="quizzes.next">Next</button>
+                    <button type="button" class="btn btn-success" id="skill-submit-btn" style="display: none;" data-i18n="quizzes.submit">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skills Report Modal -->
+    <div class="modal fade" id="reportModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="fa fa-chart-bar me-2"></i> Skills Report</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <h2 id="report-score">0/0</h2>
+                        <p class="text-muted" id="report-percentage">0%</p>
+                        <span class="badge fs-6 px-3 py-2" id="report-level-badge">Beginner</span>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4 text-center">
+                            <div class="bg-light rounded p-3">
+                                <i class="fa fa-check-circle text-success fa-2x mb-2"></i>
+                                <h5 data-i18n="testSkills.strongAreas">Strong Areas</h5>
+                                <div id="report-strong"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="bg-light rounded p-3">
+                                <i class="fa fa-exclamation-triangle text-warning fa-2x mb-2"></i>
+                                <h5 data-i18n="testSkills.weakAreas">Areas to Improve</h5>
+                                <div id="report-weak"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="bg-light rounded p-3">
+                                <i class="fa fa-lightbulb text-info fa-2x mb-2"></i>
+                                <h5 data-i18n="testSkills.recommendations">Recommendations</h5>
+                                <div id="report-recommendations"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="report-details"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="quizzes.close">Close</button>
+                    <button type="button" class="btn btn-primary" id="report-retry-btn" data-i18n="quizzes.retry">Retry</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="component-footer"></div>
+
+    <div id="component-backtotop"></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/api-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+        IremeComponents.initPage('test-skills.html');
+        IremeAuth.requireAuth();
+
+        var skillState = {
+            questions: [],
+            currentQuestion: 0,
+            answers: [],
+            selectedSubject: null,
+            selectedDifficulty: null
+        };
+
+        function loadFilters() {
+            IremeAPI.getCurriculumLevels().then(function(data) {
+                var levels = data.levels || [];
+                var select = document.getElementById('skill-level');
+                levels.forEach(function(level) {
+                    var option = document.createElement('option');
+                    option.value = level.id;
+                    option.textContent = level.name;
+                    select.appendChild(option);
+                });
+            });
+
+            IremeAPI.getCurriculumSubjects().then(function(data) {
+                var subjects = data.subjects || [];
+                var select = document.getElementById('skill-subject');
+                subjects.forEach(function(subject) {
+                    var option = document.createElement('option');
+                    option.value = subject.id;
+                    option.textContent = subject.name || subject.nameEn;
+                    select.appendChild(option);
+                });
+            });
+        }
+
+        function loadAssessments() {
+            var level = document.getElementById('skill-level').value;
+            var subject = document.getElementById('skill-subject').value;
+            var difficulty = document.getElementById('skill-difficulty').value;
+
+            var params = { limit: 30 };
+            if (level) params.level = level;
+            if (subject) params.subjectId = subject;
+            if (difficulty) params.difficulty = difficulty;
+
+            IremeAPI.getQuestions(params).then(function(data) {
+                var questions = data.questions || [];
+                displayAssessments(questions);
+            }).catch(function(err) {
+                console.error('Failed to load assessments:', err);
+                displayAssessments([]);
+            });
+        }
+
+        function displayAssessments(questions) {
+            var container = document.getElementById('skill-list');
+            var emptyState = document.getElementById('skill-empty');
+
+            if (questions.length === 0) {
+                container.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+
+            var skillMap = {};
+            questions.forEach(function(q) {
+                var key = q.questionBank ? q.questionBank.subjectId : 'general';
+                if (!skillMap[key]) {
+                    skillMap[key] = {
+                        subject: q.questionBank ? q.questionBank.subjectId : 'General',
+                        subjectName: q.questionBank ? q.questionBank.name : 'General',
+                        count: 0,
+                        difficulties: {}
+                    };
+                }
+                skillMap[key].count++;
+                var diff = q.difficulty || 'medium';
+                skillMap[key].difficulties[diff] = (skillMap[key].difficulties[diff] || 0) + 1;
+            });
+
+            var html = Object.values(skillMap).map(function(skill) {
+                var diffBadges = Object.keys(skill.difficulties).map(function(d) {
+                    var color = d === 'easy' ? 'bg-success' : d === 'hard' ? 'bg-danger' : 'bg-warning';
+                    return '<span class="badge ' + color + ' me-1">' + d + ' (' + skill.difficulties[d] + ')</span>';
+                }).join('');
+
+                return '<div class="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.1s">' +
+                    '<div class="skill-card bg-white rounded shadow-sm p-4 h-100" onclick="startSkillAssessment(\'' + skill.subject + '\')">' +
+                    '<div class="d-flex align-items-center mb-3">' +
+                    '<div class="flex-shrink-0 bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">' +
+                    '<i class="fa fa-brain text-white"></i>' +
+                    '</div>' +
+                    '<div class="flex-grow-1 ms-3">' +
+                    '<h5 class="mb-0">' + skill.subjectName + '</h5>' +
+                    '<small class="text-muted">' + skill.count + ' questions</small>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="mb-2">' + diffBadges + '</div>' +
+                    '<button class="btn btn-sm btn-outline-primary rounded-pill mt-2">' +
+                    '<i class="fa fa-play me-1"></i> <span data-i18n="testSkills.startAssessment">Start Assessment</span>' +
+                    '</button>' +
+                    '</div>' +
+                    '</div>';
+            }).join('');
+
+            container.innerHTML = html;
+        }
+
+        function startSkillAssessment(subjectKey) {
+            var level = document.getElementById('skill-level').value;
+            var subject = document.getElementById('skill-subject').value;
+            var difficulty = document.getElementById('skill-difficulty').value;
+
+            var params = { limit: 15 };
+            if (level) params.level = level;
+            if (subject) params.subjectId = subject;
+            if (difficulty) params.difficulty = difficulty;
+
+            IremeAPI.getQuestions(params).then(function(data) {
+                var questions = data.questions || [];
+                if (questions.length === 0) {
+                    alert('No questions available for this selection');
+                    return;
+                }
+
+                skillState.questions = questions;
+                skillState.currentQuestion = 0;
+                skillState.answers = [];
+                skillState.selectedSubject = subjectKey;
+
+                showSkillQuestion();
+                var modal = new bootstrap.Modal(document.getElementById('skillModal'));
+                modal.show();
+            });
+        }
+
+        function showSkillQuestion() {
+            var q = skillState.questions[skillState.currentQuestion];
+            var total = skillState.questions.length;
+            var current = skillState.currentQuestion + 1;
+
+            document.getElementById('skill-question-num').textContent = 'Question ' + current + ' of ' + total;
+            document.getElementById('skill-progress-bar').style.width = ((current / total) * 100) + '%';
+            document.getElementById('skill-question-text').textContent = q.questionTextEn || q.questionText || q.questionTextRw;
+
+            var diff = q.difficulty || 'medium';
+            var diffBadge = document.getElementById('skill-difficulty-badge');
+            diffBadge.textContent = diff.charAt(0).toUpperCase() + diff.slice(1);
+            diffBadge.className = 'badge ' + (diff === 'easy' ? 'bg-success' : diff === 'hard' ? 'bg-danger' : 'bg-warning') + ' text-dark';
+
+            var optionsHtml = (q.questionOptions || []).map(function(opt, idx) {
+                return '<div class="skill-option border rounded p-3" onclick="selectSkillOption(' + idx + ')">' +
+                    '<strong>' + String.fromCharCode(65 + idx) + '.</strong> ' + (opt.optionTextEn || opt.optionText || opt.optionTextRw) +
+                    '</div>';
+            }).join('');
+
+            document.getElementById('skill-options').innerHTML = optionsHtml;
+            document.getElementById('skill-next-btn').style.display = current < total ? 'inline-block' : 'none';
+            document.getElementById('skill-submit-btn').style.display = current === total ? 'inline-block' : 'none';
+        }
+
+        function selectSkillOption(idx) {
+            skillState.answers[skillState.currentQuestion] = idx;
+            document.querySelectorAll('.skill-option').forEach(function(opt, i) {
+                opt.classList.toggle('selected', i === idx);
+            });
+        }
+
+        document.getElementById('skill-next-btn').addEventListener('click', function() {
+            if (skillState.answers[skillState.currentQuestion] === undefined) {
+                alert('Please select an answer');
+                return;
+            }
+            skillState.currentQuestion++;
+            showSkillQuestion();
+        });
+
+        document.getElementById('skill-submit-btn').addEventListener('click', function() {
+            if (skillState.answers[skillState.currentQuestion] === undefined) {
+                alert('Please select an answer');
+                return;
+            }
+            submitSkillAssessment();
+        });
+
+        function submitSkillAssessment() {
+            var correct = 0;
+            var total = skillState.questions.length;
+            var topicScores = {};
+
+            skillState.questions.forEach(function(q, idx) {
+                var userAnswer = skillState.answers[idx];
+                var correctAnswer = (q.questionOptions || []).findIndex(function(opt) { return opt.isCorrect; });
+                var isCorrect = userAnswer === correctAnswer;
+                if (isCorrect) correct++;
+
+                var topic = q.topic || (q.questionBank ? (q.questionBank.name || 'General') : 'General');
+                if (!topicScores[topic]) topicScores[topic] = { correct: 0, total: 0 };
+                topicScores[topic].total++;
+                if (isCorrect) topicScores[topic].correct++;
+            });
+
+            var percentage = Math.round((correct / total) * 100);
+            var level = percentage >= 80 ? 'Advanced' : percentage >= 50 ? 'Intermediate' : 'Beginner';
+            var levelColor = percentage >= 80 ? 'bg-success' : percentage >= 50 ? 'bg-warning text-dark' : 'bg-danger';
+
+            document.getElementById('report-score').textContent = correct + '/' + total;
+            document.getElementById('report-percentage').textContent = percentage + '%';
+            var levelBadge = document.getElementById('report-level-badge');
+            levelBadge.textContent = level;
+            levelBadge.className = 'badge fs-6 px-3 py-2 ' + levelColor;
+
+            var strongAreas = [];
+            var weakAreas = [];
+            Object.keys(topicScores).forEach(function(topic) {
+                var s = topicScores[topic];
+                var topicPct = Math.round((s.correct / s.total) * 100);
+                if (topicPct >= 70) strongAreas.push(topic);
+                else if (topicPct < 50) weakAreas.push(topic);
+            });
+
+            document.getElementById('report-strong').innerHTML = strongAreas.length > 0
+                ? strongAreas.map(function(a) { return '<small class="d-block text-success">' + a + '</small>'; }).join('')
+                : '<small class="text-muted">Keep practicing</small>';
+
+            document.getElementById('report-weak').innerHTML = weakAreas.length > 0
+                ? weakAreas.map(function(a) { return '<small class="d-block text-warning">' + a + '</small>'; }).join('')
+                : '<small class="text-muted">All areas looking good</small>';
+
+            var recommendation = percentage >= 80 ? 'You have a strong grasp. Try advanced topics!' :
+                percentage >= 50 ? 'Good progress. Focus on weak areas for improvement.' :
+                'Review the fundamentals and try again.';
+            document.getElementById('report-recommendations').innerHTML = '<small class="text-muted">' + recommendation + '</small>';
+
+            var detailsHtml = skillState.questions.map(function(q, idx) {
+                var userAnswer = skillState.answers[idx];
+                var correctAnswer = (q.questionOptions || []).findIndex(function(opt) { return opt.isCorrect; });
+                var isCorrect = userAnswer === correctAnswer;
+                var icon = isCorrect ? 'fa-check-circle text-success' : 'fa-times-circle text-danger';
+
+                return '<div class="mb-2 p-2 border rounded">' +
+                    '<div class="d-flex align-items-start">' +
+                    '<i class="fa ' + icon + ' me-2 mt-1"></i>' +
+                    '<div><small><strong>Q' + (idx + 1) + ':</strong> ' + (q.questionTextEn || q.questionText || '').substring(0, 100) +
+                    ' | Your answer: ' + (userAnswer >= 0 ? String.fromCharCode(65 + userAnswer) : '-') +
+                    ' | Correct: ' + String.fromCharCode(65 + correctAnswer) + '</small></div>' +
+                    '</div></div>';
+            }).join('');
+
+            document.getElementById('report-details').innerHTML = detailsHtml;
+
+            bootstrap.Modal.getInstance(document.getElementById('skillModal')).hide();
+            var reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
+            reportModal.show();
+
+            if (IremeAuth.isLoggedIn()) {
+                IremeAPI.saveQuizAttempt({
+                    subjectId: skillState.selectedSubject,
+                    score: correct,
+                    total: total,
+                    percentage: percentage,
+                    type: 'skill-assessment'
+                }).catch(function() {});
+            }
+        }
+
+        document.getElementById('report-retry-btn').addEventListener('click', function() {
+            bootstrap.Modal.getInstance(document.getElementById('reportModal')).hide();
+            startSkillAssessment(skillState.selectedSubject);
+        });
+
+        document.getElementById('skill-level').addEventListener('change', loadAssessments);
+        document.getElementById('skill-subject').addEventListener('change', loadAssessments);
+        document.getElementById('skill-difficulty').addEventListener('change', loadAssessments);
+
+        loadFilters();
+        loadAssessments();
+    </script>
+</body>
+
+</html>

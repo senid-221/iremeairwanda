@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>IREME - Report to Parent</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="img/ireme-icon.png" rel="icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div id="component-spinner"></div>
+    <div id="component-navbar"></div>
+
+    <div class="container-fluid pt-5 bg-primary hero-header">
+        <div class="container pt-5">
+            <div class="row g-5 pt-5">
+                <div class="col-lg-6 align-self-center text-center text-lg-start mb-lg-5">
+                    <h1 class="display-4 text-white mb-4 animated slideInRight" data-i18n="reportParent.title">Report to Parent</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center justify-content-lg-start mb-0">
+                            <li class="breadcrumb-item"><a class="text-white" href="index.html" data-i18n="breadcrumb.home">Home</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page" data-i18n="reportParent.title">Report to Parent</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 align-self-end text-center text-lg-end">
+                    <img class="img-fluid" src="img/hero-img.png" alt="" style="max-height: 300px;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-7">
+                    <div class="bg-light rounded p-4">
+                        <h4 class="mb-4"><i class="fa fa-user-friends text-primary me-2"></i><span data-i18n="reportParent.desc">Communicate student updates to parents</span></h4>
+                        <form id="parent-report-form">
+                            <div class="mb-3">
+                                <label class="form-label" data-i18n="reportParent.selectStudent">Select Student</label>
+                                <input type="text" id="pr-student" class="form-control" placeholder="Search student..." required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" data-i18n="reportParent.category">Category</label>
+                                <select id="pr-category" class="form-select" required>
+                                    <option value="behavior" data-i18n="reportParent.behavior">Behavior</option>
+                                    <option value="academics" data-i18n="reportParent.academics">Academics</option>
+                                    <option value="attendance" data-i18n="reportParent.attendance">Attendance</option>
+                                    <option value="skills" data-i18n="reportParent.skills">Skills</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" data-i18n="reportParent.message">Message</label>
+                                <textarea id="pr-message" class="form-control" rows="5" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Urgency</label>
+                                <select id="pr-urgency" class="form-select">
+                                    <option value="normal">Normal</option>
+                                    <option value="important">Important</option>
+                                    <option value="urgent">Urgent</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary rounded-pill px-4"><i class="fa fa-paper-plane me-1"></i> <span data-i18n="reportParent.send">Send Report</span></button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="bg-light rounded p-4">
+                        <h4 class="mb-3" data-i18n="reportParent.recent">Recent Reports</h4>
+                        <div id="parent-reports-list"></div>
+                        <div id="parent-reports-empty" class="text-center py-3">
+                            <p class="text-muted" data-i18n="reportParent.noReports">No reports sent yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="component-footer"></div>
+    <div id="component-backtotop"></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/api-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+        IremeComponents.initPage('report-to-parent.html');
+        IremeAuth.requireRole('teacher');
+
+        document.getElementById('parent-report-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var data = {
+                studentName: document.getElementById('pr-student').value,
+                category: document.getElementById('pr-category').value,
+                message: document.getElementById('pr-message').value,
+                urgency: document.getElementById('pr-urgency').value,
+                type: 'parent'
+            };
+            IremeAPI.sendReportToParent(data).then(function() {
+                alert('Report sent to parent successfully');
+                document.getElementById('parent-report-form').reset();
+                loadRecent();
+            }).catch(function(e) { alert('Error: ' + (e.message || 'Could not send report')); });
+        });
+
+        function loadRecent() {
+            IremeAPI.getTeacherReports().then(function(data) {
+                var reports = (data.reports || []).filter(function(r) { return r.type === 'parent'; });
+                if (reports.length === 0) return;
+                document.getElementById('parent-reports-empty').style.display = 'none';
+                document.getElementById('parent-reports-list').innerHTML = reports.slice(0, 5).map(function(r) {
+                    var date = r.createdAt ? new Date(r.createdAt).toLocaleDateString() : '';
+                    var catColor = r.category === 'behavior' ? 'bg-warning text-dark' : r.category === 'academics' ? 'bg-primary' : 'bg-info';
+                    return '<div class="border-bottom py-2 mb-2"><div class="d-flex justify-content-between">' +
+                        '<strong>' + (r.studentName || 'Student') + '</strong><span class="badge ' + catColor + '">' + (r.category || '') + '</span></div>' +
+                        '<small class="text-muted">' + date + '</small>' +
+                        '<p class="small mb-0 mt-1">' + (r.message || '').substring(0, 80) + '</p></div>';
+                }).join('');
+            }).catch(function() {});
+        }
+
+        loadRecent();
+    </script>
+</body>
+</html>

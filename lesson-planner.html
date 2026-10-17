@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>IREME - Lesson Planner</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="img/ireme-icon.png" rel="icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <style>
+        .plan-card { transition: all 0.3s; }
+        .plan-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
+    </style>
+</head>
+<body>
+    <div id="component-spinner"></div>
+    <div id="component-navbar"></div>
+
+    <div class="container-fluid pt-5 bg-primary hero-header">
+        <div class="container pt-5">
+            <div class="row g-5 pt-5">
+                <div class="col-lg-6 align-self-center text-center text-lg-start mb-lg-5">
+                    <h1 class="display-4 text-white mb-4 animated slideInRight" data-i18n="lessonPlanner.title">Lesson Planner</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center justify-content-lg-start mb-0">
+                            <li class="breadcrumb-item"><a class="text-white" href="index.html" data-i18n="breadcrumb.home">Home</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page" data-i18n="lessonPlanner.title">Lesson Planner</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 align-self-end text-center text-lg-end">
+                    <img class="img-fluid" src="img/hero-img.png" alt="" style="max-height: 300px;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 data-i18n="lessonPlanner.myPlans">My Lesson Plans</h2>
+                        <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#createPlanModal">
+                            <i class="fa fa-plus me-1"></i> <span data-i18n="lessonPlanner.createPlan">Create Lesson Plan</span>
+                        </button>
+                    </div>
+                    <div id="plans-list" class="row g-4"></div>
+                    <div id="plans-empty" class="text-center py-5" style="display:none;">
+                        <i class="fa fa-calendar-check fa-3x text-muted mb-3"></i>
+                        <h4 data-i18n="lessonPlanner.noPlans">No lesson plans yet</h4>
+                        <p class="text-muted" data-i18n="lessonPlanner.noPlansDesc">Create your first lesson plan to get started</p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="bg-light rounded p-4">
+                        <h5 class="mb-3">Quick Actions</h5>
+                        <div class="d-grid gap-2">
+                            <a href="prepare-exam.html" class="btn btn-outline-primary rounded-pill py-2"><i class="fa fa-pencil-alt me-2"></i>Prepare Exam</a>
+                            <a href="stream-lesson.html" class="btn btn-outline-primary rounded-pill py-2"><i class="fa fa-video me-2"></i>Stream Lesson</a>
+                            <a href="student-report.html" class="btn btn-outline-primary rounded-pill py-2"><i class="fa fa-file-signature me-2"></i>Student Report</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="createPlanModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" data-i18n="lessonPlanner.createPlan">Create Lesson Plan</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="plan-form">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label" data-i18n="lessonPlanner.subject">Subject</label>
+                                <select id="plan-subject" class="form-select" required></select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" data-i18n="lessonPlanner.level">Level</label>
+                                <select id="plan-level" class="form-select" required></select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" data-i18n="lessonPlanner.topic">Topic</label>
+                                <input type="text" id="plan-topic" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" data-i18n="lessonPlanner.date">Date</label>
+                                <input type="date" id="plan-date" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" data-i18n="lessonPlanner.duration">Duration (minutes)</label>
+                                <input type="number" id="plan-duration" class="form-control" value="40" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" data-i18n="lessonPlanner.objectives">Learning Objectives</label>
+                                <textarea id="plan-objectives" class="form-control" rows="3" required></textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" data-i18n="lessonPlanner.activities">Activities</label>
+                                <textarea id="plan-activities" class="form-control" rows="3"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" data-i18n="lessonPlanner.resources">Resources Needed</label>
+                                <textarea id="plan-resources" class="form-control" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="save-plan-btn" data-i18n="lessonPlanner.save">Save Plan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="component-footer"></div>
+    <div id="component-backtotop"></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/api-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+        IremeComponents.initPage('lesson-planner.html');
+        IremeAuth.requireRole('teacher');
+
+        function loadPlans() {
+            IremeAPI.getLessonPlans().then(function(data) {
+                var plans = data.plans || [];
+                displayPlans(plans);
+            }).catch(function() { displayPlans([]); });
+        }
+
+        function displayPlans(plans) {
+            var container = document.getElementById('plans-list');
+            var empty = document.getElementById('plans-empty');
+            if (plans.length === 0) { container.innerHTML = ''; empty.style.display = 'block'; return; }
+            empty.style.display = 'none';
+            container.innerHTML = plans.map(function(p) {
+                var statusClass = p.status === 'published' ? 'bg-success' : 'bg-warning text-dark';
+                var statusText = p.status === 'published' ? 'Published' : 'Draft';
+                return '<div class="col-md-6"><div class="plan-card bg-white rounded shadow-sm p-4 h-100">' +
+                    '<div class="d-flex justify-content-between mb-2"><h5 class="mb-0">' + (p.topic || p.title || 'Lesson') + '</h5>' +
+                    '<span class="badge ' + statusClass + '">' + statusText + '</span></div>' +
+                    '<p class="text-muted small mb-2"><i class="fa fa-book me-1"></i>' + (p.subjectName || '') + ' | <i class="fa fa-graduation-cap me-1"></i>' + (p.levelName || '') + '</p>' +
+                    '<p class="text-muted small mb-2"><i class="fa fa-calendar me-1"></i>' + (p.date ? new Date(p.date).toLocaleDateString() : '') + ' | <i class="fa fa-clock me-1"></i>' + (p.durationMinutes || 40) + ' min</p>' +
+                    '<p class="small mb-0">' + (p.objectives || '').substring(0, 120) + '</p>' +
+                    '</div></div>';
+            }).join('');
+        }
+
+        document.getElementById('save-plan-btn').addEventListener('click', function() {
+            var data = {
+                subjectId: document.getElementById('plan-subject').value,
+                educationLevelId: document.getElementById('plan-level').value,
+                topic: document.getElementById('plan-topic').value,
+                date: document.getElementById('plan-date').value,
+                durationMinutes: parseInt(document.getElementById('plan-duration').value),
+                objectives: document.getElementById('plan-objectives').value,
+                activities: document.getElementById('plan-activities').value,
+                resources: document.getElementById('plan-resources').value,
+                status: 'draft'
+            };
+            IremeAPI.createLessonPlan(data).then(function() {
+                bootstrap.Modal.getInstance(document.getElementById('createPlanModal')).hide();
+                loadPlans();
+            }).catch(function(e) { alert('Error: ' + (e.message || 'Could not save plan')); });
+        });
+
+        IremeAPI.getCurriculumSubjects().then(function(data) {
+            var sel = document.getElementById('plan-subject');
+            (data.subjects || []).forEach(function(s) {
+                var o = document.createElement('option'); o.value = s.id; o.textContent = s.name || s.nameEn; sel.appendChild(o);
+            });
+        });
+        IremeAPI.getCurriculumLevels().then(function(data) {
+            var sel = document.getElementById('plan-level');
+            (data.levels || []).forEach(function(l) {
+                var o = document.createElement('option'); o.value = l.id; o.textContent = l.name; sel.appendChild(o);
+            });
+        });
+
+        loadPlans();
+    </script>
+</body>
+</html>

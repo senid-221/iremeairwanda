@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>IREME - Register School</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="img/ireme-icon.png" rel="icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div id="component-spinner"></div>
+    <div id="component-navbar"></div>
+
+    <!-- Hero Start -->
+    <div class="container-fluid pt-5 bg-primary hero-header">
+        <div class="container pt-5">
+            <div class="row g-5 pt-5">
+                <div class="col-lg-6 align-self-center text-center text-lg-start mb-lg-5">
+                    <h1 class="display-4 text-white mb-4 animated slideInRight" data-i18n="registerSchool.title">Register Your School</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center justify-content-lg-start mb-0">
+                            <li class="breadcrumb-item"><a class="text-white" href="index.html" data-i18n="breadcrumb.home">Home</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page" data-i18n="registerSchool.title">Register School</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 align-self-end text-center text-lg-end">
+                    <img class="img-fluid" src="img/hero-img.png" alt="" style="max-height: 300px;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Hero End -->
+
+    <!-- Registration Form Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="row g-4 justify-content-center">
+                <div class="col-lg-8 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="bg-light rounded p-4 p-lg-5">
+                        <div class="text-center mb-4">
+                            <div class="service-icon btn-square rounded-circle mb-3 mx-auto" style="background-color: var(--primary); color: #fff; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fa fa-school fa-lg"></i>
+                            </div>
+                            <h4 class="mb-1" data-i18n="registerSchool.title">Register Your School</h4>
+                            <p class="text-muted" data-i18n="registerSchool.desc">Register your school on the IREME platform to manage teachers, students, and school activities</p>
+                        </div>
+
+                        <form id="school-form">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label fw-bold" data-i18n="registerSchool.schoolName">School Name</label>
+                                    <input type="text" id="school-name" class="form-control form-control-lg" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold" data-i18n="registerSchool.schoolCode">School Code (if available)</label>
+                                    <input type="text" id="school-code" class="form-control">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold" data-i18n="registerSchool.schoolType">School Type</label>
+                                    <select id="school-type" class="form-select" required>
+                                        <option value="" data-i18n="registerSchool.selectType">Select Type</option>
+                                        <option value="PRIMARY" data-i18n="registerSchool.primary">Primary</option>
+                                        <option value="SECONDARY" data-i18n="registerSchool.secondary">Secondary</option>
+                                        <option value="TVET" data-i18n="registerSchool.tvet">TVET</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold" data-i18n="registerSchool.province">Province</label>
+                                    <select id="province" class="form-select" required>
+                                        <option value="">Select Province</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold" data-i18n="registerSchool.district">District</label>
+                                    <select id="district" class="form-select" required disabled>
+                                        <option value="">Select District</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold" data-i18n="registerSchool.sector">Sector</label>
+                                    <select id="sector" class="form-select" required disabled>
+                                        <option value="">Select Sector</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold" data-i18n="registerSchool.cell">Cell</label>
+                                    <select id="cell" class="form-select" disabled>
+                                        <option value="">Select Cell</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-bold" data-i18n="registerSchool.village">Village</label>
+                                    <select id="village" class="form-select" disabled>
+                                        <option value="">Select Village</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold" data-i18n="registerSchool.phone">School Phone Number</label>
+                                    <input type="tel" id="school-phone" class="form-control" placeholder="+250">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold" data-i18n="registerSchool.email">School Email</label>
+                                    <input type="email" id="school-email" class="form-control">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-bold" data-i18n="registerSchool.headteacherName">Headteacher Name</label>
+                                    <input type="text" id="headteacher-name" class="form-control form-control-lg" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-bold" data-i18n="registerSchool.enrollment">Student Enrollment</label>
+                                    <input type="number" id="enrollment" class="form-control" min="1">
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary w-100 py-3">
+                                        <i class="fa fa-check me-2"></i>
+                                        <span data-i18n="registerSchool.submit">Register School</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        <div id="form-error" class="alert alert-danger mt-3" style="display:none"></div>
+                        <div id="form-success" class="alert alert-success mt-3" style="display:none"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Registration Form End -->
+
+    <div id="component-footer"></div>
+    <div id="component-backtotop"></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/api-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/rwanda-locations.js"></script>
+    <script>
+        IremeComponents.initPage('register-school.html');
+        IremeAuth.requireAuth();
+
+        // Initialize location dropdowns
+        if (typeof RwandaLocations !== 'undefined') {
+            RwandaLocations.init({
+                province: 'province',
+                district: 'district',
+                sector: 'sector',
+                cell: 'cell',
+                village: 'village'
+            });
+        }
+
+        document.getElementById('school-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var errorDiv = document.getElementById('form-error');
+            var successDiv = document.getElementById('form-success');
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+
+            var data = {
+                name: document.getElementById('school-name').value,
+                code: document.getElementById('school-code').value || null,
+                type: document.getElementById('school-type').value,
+                province: document.getElementById('province').value,
+                district: document.getElementById('district').value,
+                sector: document.getElementById('sector').value,
+                cell: document.getElementById('cell').value || null,
+                village: document.getElementById('village').value || null,
+                phone: document.getElementById('school-phone').value || null,
+                email: document.getElementById('school-email').value || null,
+                headteacherName: document.getElementById('headteacher-name').value,
+                enrollment: parseInt(document.getElementById('enrollment').value) || null
+            };
+
+            IremeAPI.registerSchool(data).then(function(result) {
+                successDiv.textContent = IremeI18n.t('registerSchool.success');
+                successDiv.style.display = 'block';
+                document.getElementById('school-form').reset();
+                window.scrollTo(0, 0);
+            }).catch(function(err) {
+                errorDiv.textContent = err.message || 'Failed to register school';
+                errorDiv.style.display = 'block';
+                window.scrollTo(0, 0);
+            });
+        });
+    </script>
+</body>
+</html>

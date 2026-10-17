@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>IREME - Prepare Exam</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="img/ireme-icon.png" rel="icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <style>
+        .exam-card { transition: all 0.3s; }
+        .exam-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
+    </style>
+</head>
+<body>
+    <div id="component-spinner"></div>
+    <div id="component-navbar"></div>
+
+    <div class="container-fluid pt-5 bg-primary hero-header">
+        <div class="container pt-5">
+            <div class="row g-5 pt-5">
+                <div class="col-lg-6 align-self-center text-center text-lg-start mb-lg-5">
+                    <h1 class="display-4 text-white mb-4 animated slideInRight" data-i18n="prepareExam.title">Prepare Quiz / Exam</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center justify-content-lg-start mb-0">
+                            <li class="breadcrumb-item"><a class="text-white" href="index.html" data-i18n="breadcrumb.home">Home</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page" data-i18n="prepareExam.title">Prepare Exam</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 align-self-end text-center text-lg-end">
+                    <img class="img-fluid" src="img/hero-img.png" alt="" style="max-height: 300px;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 data-i18n="prepareExam.myExams">My Exams</h2>
+                        <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#createExamModal">
+                            <i class="fa fa-plus me-1"></i> <span data-i18n="prepareExam.createExam">Create New Exam</span>
+                        </button>
+                    </div>
+                    <div id="exams-list" class="row g-4"></div>
+                    <div id="exams-empty" class="text-center py-5" style="display:none;">
+                        <i class="fa fa-pencil-alt fa-3x text-muted mb-3"></i>
+                        <h4 data-i18n="prepareExam.noExams">No exams created yet</h4>
+                        <p class="text-muted" data-i18n="prepareExam.noExamsDesc">Create your first exam to get started</p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="bg-light rounded p-4 mb-4">
+                        <h5 class="mb-3">Quick Actions</h5>
+                        <div class="d-grid gap-2">
+                            <a href="lesson-planner.html" class="btn btn-outline-primary rounded-pill py-2"><i class="fa fa-calendar-check me-2"></i>Lesson Planner</a>
+                            <a href="quizzes.html" class="btn btn-outline-primary rounded-pill py-2"><i class="fa fa-question-circle me-2"></i>Question Bank</a>
+                        </div>
+                    </div>
+                    <div class="bg-light rounded p-4">
+                        <h5 class="mb-3">Tips</h5>
+                        <ul class="small mb-0" style="padding-left:18px;line-height:2">
+                            <li>Align questions with curriculum objectives</li>
+                            <li>Mix difficulty levels for balanced assessment</li>
+                            <li>Set appropriate time limits</li>
+                            <li>Review before publishing</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="createExamModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" data-i18n="prepareExam.createExam">Create New Exam</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="exam-form">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label" data-i18n="prepareExam.examTitle">Exam Title</label>
+                                <input type="text" id="exam-title" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" data-i18n="lessonPlanner.subject">Subject</label>
+                                <select id="exam-subject" class="form-select" required></select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" data-i18n="lessonPlanner.level">Level</label>
+                                <select id="exam-level" class="form-select" required></select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" data-i18n="prepareExam.timeLimit">Time Limit (minutes)</label>
+                                <input type="number" id="exam-time" class="form-control" value="30" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" data-i18n="prepareExam.passingScore">Passing Score (%)</label>
+                                <input type="number" id="exam-passing" class="form-control" value="50" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Description</label>
+                                <textarea id="exam-desc" class="form-control" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-outline-primary" id="save-draft-btn" data-i18n="prepareExam.saveDraft">Save as Draft</button>
+                    <button type="button" class="btn btn-primary" id="publish-exam-btn" data-i18n="prepareExam.publish">Publish Exam</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="component-footer"></div>
+    <div id="component-backtotop"></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/api-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+        IremeComponents.initPage('prepare-exam.html');
+        IremeAuth.requireRole('teacher');
+
+        function loadExams() {
+            IremeAPI.getTeacherExams().then(function(data) {
+                displayExams(data.exams || []);
+            }).catch(function() { displayExams([]); });
+        }
+
+        function displayExams(exams) {
+            var container = document.getElementById('exams-list');
+            var empty = document.getElementById('exams-empty');
+            if (exams.length === 0) { container.innerHTML = ''; empty.style.display = 'block'; return; }
+            empty.style.display = 'none';
+            container.innerHTML = exams.map(function(e) {
+                var statusClass = e.status === 'published' ? 'bg-success' : 'bg-warning text-dark';
+                var statusText = e.status === 'published' ? 'Published' : 'Draft';
+                return '<div class="col-md-6"><div class="exam-card bg-white rounded shadow-sm p-4 h-100">' +
+                    '<div class="d-flex justify-content-between mb-2"><h5 class="mb-0">' + (e.title || 'Exam') + '</h5>' +
+                    '<span class="badge ' + statusClass + '">' + statusText + '</span></div>' +
+                    '<p class="text-muted small mb-2"><i class="fa fa-book me-1"></i>' + (e.subjectName || '') + ' | <i class="fa fa-clock me-1"></i>' + (e.timeLimitMinutes || 30) + ' min</p>' +
+                    '<p class="small text-muted mb-0">' + (e.description || '').substring(0, 100) + '</p>' +
+                    '</div></div>';
+            }).join('');
+        }
+
+        function saveExam(status) {
+            var data = {
+                title: document.getElementById('exam-title').value,
+                subjectId: document.getElementById('exam-subject').value,
+                educationLevelId: document.getElementById('exam-level').value,
+                timeLimitMinutes: parseInt(document.getElementById('exam-time').value),
+                passingScore: parseInt(document.getElementById('exam-passing').value),
+                description: document.getElementById('exam-desc').value,
+                status: status
+            };
+            IremeAPI.createTeacherExam(data).then(function() {
+                bootstrap.Modal.getInstance(document.getElementById('createExamModal')).hide();
+                document.getElementById('exam-form').reset();
+                loadExams();
+            }).catch(function(e) { alert('Error: ' + (e.message || 'Could not save exam')); });
+        }
+
+        document.getElementById('save-draft-btn').addEventListener('click', function() { saveExam('draft'); });
+        document.getElementById('publish-exam-btn').addEventListener('click', function() { saveExam('published'); });
+
+        IremeAPI.getCurriculumSubjects().then(function(data) {
+            var sel = document.getElementById('exam-subject');
+            (data.subjects || []).forEach(function(s) { var o = document.createElement('option'); o.value = s.id; o.textContent = s.name || s.nameEn; sel.appendChild(o); });
+        });
+        IremeAPI.getCurriculumLevels().then(function(data) {
+            var sel = document.getElementById('exam-level');
+            (data.levels || []).forEach(function(l) { var o = document.createElement('option'); o.value = l.id; o.textContent = l.name; sel.appendChild(o); });
+        });
+
+        loadExams();
+    </script>
+</body>
+</html>
