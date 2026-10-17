@@ -1,5 +1,5 @@
 {
-  "buildCommand": "ls -la && echo 'AiTech directory contents:' && ls AiTech/",
+  "buildCommand": "echo 'Static frontend - no build step required'",
   "outputDirectory": "AiTech",
   "cleanUrls": true,
   "headers": [
