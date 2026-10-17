@@ -1324,6 +1324,18 @@ const translations = {
         "parentDocs.noDocumentsDesc": "Nta nyandiko z'ishuri zihari muri iki gihe.",
         "parentDocs.loading": "Gutegereza...",
 
+        // Video Lessons
+        "lessons.badge": "Amasomo",
+        "lessons.title": "Amasomo y'Icyiciro Cyawe",
+        "lessons.desc": "Reba amasomo ahuye n'icyiciro cyawe, isomo, n'umutwe.",
+        "lessons.selectLevel": "Hitamo Icyiciro",
+        "lessons.selectSubject": "Hitamo Isomo",
+        "lessons.selectGrade": "Hitamo Umwaka",
+        "lessons.search": "Shakisha isomo...",
+        "lessons.noLessons": "Nta masomo ari hano",
+        "lessons.noLessonsDesc": "Gerageza guhindura ibyo ushakisha cyangwa icyiciro.",
+        "lessons.loading": "Gutegereza...",
+
         // Hero - index
         "hero.badge": "IREME",
         "hero.title": "Kwiga Neza ku Rwanda Rwiza",
