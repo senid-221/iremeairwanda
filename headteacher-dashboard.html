@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Headteacher Dashboard - IREME Rwanda</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/dashboard.css" rel="stylesheet">
+</head>
+<body class="dashboard-body">
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <i class="fas fa-school"></i> IREME
+            </div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-menu-item">
+                    <a href="headteacher-dashboard.html" class="sidebar-menu-link active">
+                        <i class="fas fa-home"></i>
+                        <span data-i18n="dashboard.overview">Overview</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="register-school.html" class="sidebar-menu-link">
+                        <i class="fas fa-school"></i>
+                        <span data-i18n="nav.headteacher.registerSchool">School Profile</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="register-teacher.html" class="sidebar-menu-link">
+                        <i class="fas fa-user-plus"></i>
+                        <span data-i18n="nav.headteacher.registerTeacher">Register Teacher</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="ask-teacher-report.html" class="sidebar-menu-link">
+                        <i class="fas fa-file-alt"></i>
+                        <span data-i18n="nav.headteacher.askReport">Request Report</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="available-teachers.html" class="sidebar-menu-link">
+                        <i class="fas fa-users"></i>
+                        <span data-i18n="nav.headteacher.availableTeachers">Available Teachers</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="absent-teachers.html" class="sidebar-menu-link">
+                        <i class="fas fa-user-times"></i>
+                        <span data-i18n="nav.headteacher.absentTeachers">Absent Teachers</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="school-events.html" class="sidebar-menu-link">
+                        <i class="fas fa-calendar"></i>
+                        <span data-i18n="nav.headteacher.events">School Events</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="parent-meetings.html" class="sidebar-menu-link">
+                        <i class="fas fa-handshake"></i>
+                        <span data-i18n="nav.headteacher.parentMeetings">Parent Meetings</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="school-statistics.html" class="sidebar-menu-link">
+                        <i class="fas fa-chart-bar"></i>
+                        <span data-i18n="nav.headteacher.statistics">Statistics</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <!-- Top Bar -->
+            <div class="dashboard-topbar">
+                <div class="dashboard-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search teachers, students..." data-i18n-placeholder="dashboard.searchPlaceholder">
+                </div>
+                <div class="dashboard-topbar-actions">
+                    <button class="dashboard-icon-btn" title="Messages">
+                        <i class="fas fa-envelope"></i>
+                        <span class="badge"></span>
+                    </button>
+                    <button class="dashboard-icon-btn" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge"></span>
+                    </button>
+                    <div class="dashboard-avatar" id="user-avatar">H</div>
+                </div>
+            </div>
+
+            <!-- Welcome Section -->
+            <div class="welcome-section">
+                <h1 class="welcome-title" id="welcome-message">Welcome back!</h1>
+                <p class="welcome-subtitle" id="school-info">Loading school information...</p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="dashboard-grid dashboard-grid-4" id="stats-grid">
+                <div class="dashboard-card stat-card">
+                    <div class="stat-card-icon">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div class="stat-card-value" id="stat-students">-</div>
+                    <div class="stat-card-label" data-i18n="dashboard.totalStudents">Total Students</div>
+                    <div class="stat-card-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span data-i18n="dashboard.enrolled">Enrolled</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-card stat-card">
+                    <div class="stat-card-icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <div class="stat-card-value" id="stat-teachers">-</div>
+                    <div class="stat-card-label" data-i18n="dashboard.totalTeachers">Total Teachers</div>
+                    <div class="stat-card-change positive">
+                        <i class="fas fa-check"></i>
+                        <span data-i18n="dashboard.active">Active</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-card stat-card">
+                    <div class="stat-card-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="stat-card-value" id="stat-attendance">-</div>
+                    <div class="stat-card-label" data-i18n="dashboard.todayAttendance">Today's Attendance</div>
+                    <div class="stat-card-change positive">
+                        <i class="fas fa-percentage"></i>
+                        <span data-i18n="dashboard.present">Present</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-card stat-card">
+                    <div class="stat-card-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-card-value" id="stat-absent">-</div>
+                    <div class="stat-card-label" data-i18n="dashboard.absentToday">Absent Today</div>
+                    <div class="stat-card-change negative">
+                        <i class="fas fa-arrow-down"></i>
+                        <span data-i18n="dashboard.needsAttention">Needs Attention</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Grid -->
+            <div class="dashboard-grid dashboard-grid-2" style="margin-top: 20px;">
+                <!-- Teacher Attendance -->
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <div>
+                            <h2 class="dashboard-card-title" data-i18n="dashboard.teacherAttendance">Teacher Attendance</h2>
+                            <p class="dashboard-card-subtitle" data-i18n="dashboard.todayStatus">Today's status</p>
+                        </div>
+                        <a href="absent-teachers.html" class="btn-fernly-outline" style="padding: 8px 16px; font-size: 12px;">
+                            <span data-i18n="dashboard.viewAll">View All</span>
+                        </a>
+                    </div>
+                    <ul class="dashboard-list" id="teacher-attendance-list">
+                        <li class="dashboard-list-item">
+                            <div>
+                                <div class="dashboard-list-item-title" data-i18n="dashboard.loading">Loading...</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Pending Report Requests -->
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <div>
+                            <h2 class="dashboard-card-title" data-i18n="dashboard.reportRequests">Report Requests</h2>
+                            <p class="dashboard-card-subtitle" data-i18n="dashboard.pendingSubmissions">Pending submissions</p>
+                        </div>
+                        <a href="ask-teacher-report.html" class="btn-fernly-outline" style="padding: 8px 16px; font-size: 12px;">
+                            <span data-i18n="dashboard.viewAll">View All</span>
+                        </a>
+                    </div>
+                    <ul class="dashboard-list" id="report-requests-list">
+                        <li class="dashboard-list-item">
+                            <div>
+                                <div class="dashboard-list-item-title" data-i18n="dashboard.loading">Loading...</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Upcoming Events -->
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <div>
+                            <h2 class="dashboard-card-title" data-i18n="dashboard.schoolEvents">School Events</h2>
+                            <p class="dashboard-card-subtitle" data-i18n="dashboard.upcomingActivities">Upcoming activities</p>
+                        </div>
+                        <a href="school-events.html" class="btn-fernly-outline" style="padding: 8px 16px; font-size: 12px;">
+                            <span data-i18n="dashboard.viewAll">View All</span>
+                        </a>
+                    </div>
+                    <ul class="dashboard-list" id="school-events-list">
+                        <li class="dashboard-list-item">
+                            <div>
+                                <div class="dashboard-list-item-title" data-i18n="dashboard.loading">Loading...</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Parent Meetings -->
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <div>
+                            <h2 class="dashboard-card-title" data-i18n="dashboard.parentMeetings">Parent Meetings</h2>
+                            <p class="dashboard-card-subtitle" data-i18n="dashboard.scheduledMeetings">Scheduled meetings</p>
+                        </div>
+                        <a href="parent-meetings.html" class="btn-fernly-outline" style="padding: 8px 16px; font-size: 12px;">
+                            <span data-i18n="dashboard.viewAll">View All</span>
+                        </a>
+                    </div>
+                    <ul class="dashboard-list" id="parent-meetings-list">
+                        <li class="dashboard-list-item">
+                            <div>
+                                <div class="dashboard-list-item-title" data-i18n="dashboard.loading">Loading...</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Class Performance Overview -->
+            <div class="dashboard-card" style="margin-top: 20px;">
+                <div class="dashboard-card-header">
+                    <h2 class="dashboard-card-title" data-i18n="dashboard.classPerformance">Class Performance Overview</h2>
+                </div>
+                <div id="class-performance-list">
+                    <div class="dashboard-list-item">
+                        <div style="width: 100%;">
+                            <div class="dashboard-list-item-title" data-i18n="dashboard.loading">Loading...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="dashboard-card" style="margin-top: 20px;">
+                <div class="dashboard-card-header">
+                    <h2 class="dashboard-card-title" data-i18n="dashboard.quickActions">Quick Actions</h2>
+                </div>
+                <div class="dashboard-grid dashboard-grid-4">
+                    <a href="register-teacher.html" class="btn-fernly" style="justify-content: center;">
+                        <i class="fas fa-user-plus"></i>
+                        <span data-i18n="dashboard.registerTeacher">Register Teacher</span>
+                    </a>
+                    <a href="ask-teacher-report.html" class="btn-fernly-outline" style="justify-content: center;">
+                        <i class="fas fa-file-alt"></i>
+                        <span data-i18n="dashboard.requestReport">Request Report</span>
+                    </a>
+                    <a href="school-events.html" class="btn-fernly-outline" style="justify-content: center;">
+                        <i class="fas fa-calendar-plus"></i>
+                        <span data-i18n="dashboard.addEvent">Add Event</span>
+                    </a>
+                    <a href="parent-meetings.html" class="btn-fernly-outline" style="justify-content: center;">
+                        <i class="fas fa-handshake"></i>
+                        <span data-i18n="dashboard.scheduleMeeting">Schedule Meeting</span>
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/i18n.js"></script>
+    <script src="js/api-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // Check authentication
+        if (!IremeAuth.isAuthenticated()) {
+            window.location.href = 'login.html';
+        }
+
+        // Load headteacher dashboard data
+        async function loadHeadteacherDashboard() {
+            try {
+                const user = IremeAuth.getCurrentUser();
+                const token = IremeAuth.getToken();
+
+                // Update welcome message
+                const welcomeMsg = document.getElementById('welcome-message');
+                const schoolInfo = document.getElementById('school-info');
+                const avatar = document.getElementById('user-avatar');
+
+                if (user) {
+                    welcomeMsg.textContent = `Welcome back, ${user.firstName || user.email}!`;
+                    avatar.textContent = (user.firstName || user.email)[0].toUpperCase();
+                }
+
+                // Fetch school profile
+                const schoolRes = await IremeApi.getSchoolProfile();
+                if (schoolRes && schoolRes.school) {
+                    schoolInfo.textContent = `${schoolRes.school.name} • ${schoolRes.school.district || ''}`;
+                }
+
+                // Fetch dashboard stats
+                const statsRes = await IremeApi.getHeadteacherDashboardStats();
+                if (statsRes) {
+                    document.getElementById('stat-students').textContent = statsRes.totalStudents || 0;
+                    document.getElementById('stat-teachers').textContent = statsRes.totalTeachers || 0;
+                    document.getElementById('stat-attendance').textContent = statsRes.attendanceRate || '0%';
+                    document.getElementById('stat-absent').textContent = statsRes.absentToday || 0;
+                }
+
+                // Fetch teacher attendance
+                const attendanceRes = await IremeApi.getTeacherAttendance();
+                const attendanceList = document.getElementById('teacher-attendance-list');
+                if (attendanceRes && attendanceRes.teachers && attendanceRes.teachers.length > 0) {
+                    attendanceList.innerHTML = attendanceRes.teachers.slice(0, 5).map(teacher => `
+                        <li class="dashboard-list-item">
+                            <div>
+                                <div class="dashboard-list-item-title">${teacher.name}</div>
+                                <div class="dashboard-list-item-subtitle">${teacher.subject || ''}</div>
+                            </div>
+                            <span class="badge-fernly ${teacher.status === 'present' ? 'badge-fernly-success' : 'badge-fernly-danger'}">${teacher.status || 'Unknown'}</span>
+                        </li>
+                    `).join('');
+                } else {
+                    attendanceList.innerHTML = '<li class="dashboard-list-item"><div class="empty-state-text">No attendance data</div></li>';
+                }
+
+                // Fetch report requests
+                const reportsRes = await IremeApi.getPendingReportRequests(5);
+                const reportsList = document.getElementById('report-requests-list');
+                if (reportsRes && reportsRes.requests && reportsRes.requests.length > 0) {
+                    reportsList.innerHTML = reportsRes.requests.map(req => `
+                        <li class="dashboard-list-item">
+                            <div>
+                                <div class="dashboard-list-item-title">${req.teacherName}</div>
+                                <div class="dashboard-list-item-subtitle">${req.type} • Due: ${req.dueDate ? new Date(req.dueDate).toLocaleDateString() : ''}</div>
+                            </div>
+                            <span class="badge-fernly ${req.status === 'completed' ? 'badge-fernly-success' : 'badge-fernly-warning'}">${req.status || 'Pending'}</span>
+                        </li>
+                    `).join('');
+                } else {
+                    reportsList.innerHTML = '<li class="dashboard-list-item"><div class="empty-state-text">No pending requests</div></li>';
+                }
+
+                // Fetch school events
+                const eventsRes = await IremeApi.getSchoolEvents(5);
+                const eventsList = document.getElementById('school-events-list');
+                if (eventsRes && eventsRes.events && eventsRes.events.length > 0) {
+                    eventsList.innerHTML = eventsRes.events.map(event => `
+                        <li class="dashboard-list-item">
+                            <div>
+                                <div class="dashboard-list-item-title">${event.title}</div>
+                                <div class="dashboard-list-item-subtitle">${event.date ? new Date(event.date).toLocaleDateString() : ''} • ${event.location || ''}</div>
+                            </div>
+                            <span class="badge-fernly badge-fernly-info">${event.type || 'Event'}</span>
+                        </li>
+                    `).join('');
+                } else {
+                    eventsList.innerHTML = '<li class="dashboard-list-item"><div class="empty-state-text">No upcoming events</div></li>';
+                }
+
+                // Fetch parent meetings
+                const meetingsRes = await IremeApi.getParentMeetings(5);
+                const meetingsList = document.getElementById('parent-meetings-list');
+                if (meetingsRes && meetingsRes.meetings && meetingsRes.meetings.length > 0) {
+                    meetingsList.innerHTML = meetingsRes.meetings.map(meeting => `
+                        <li class="dashboard-list-item">
+                            <div>
+                                <div class="dashboard-list-item-title">${meeting.title}</div>
+                                <div class="dashboard-list-item-subtitle">${meeting.date ? new Date(meeting.date).toLocaleDateString() : ''} • ${meeting.time || ''}</div>
+                            </div>
+                            <span class="badge-fernly badge-fernly-success">Scheduled</span>
+                        </li>
+                    `).join('');
+                } else {
+                    meetingsList.innerHTML = '<li class="dashboard-list-item"><div class="empty-state-text">No scheduled meetings</div></li>';
+                }
+
+                // Fetch class performance
+                const performanceRes = await IremeApi.getClassPerformance();
+                const performanceList = document.getElementById('class-performance-list');
+                if (performanceRes && performanceRes.classes && performanceRes.classes.length > 0) {
+                    performanceList.innerHTML = performanceRes.classes.map(cls => `
+                        <div class="dashboard-list-item">
+                            <div style="width: 100%;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <div class="dashboard-list-item-title">${cls.name}</div>
+                                    <div class="dashboard-list-item-subtitle">Avg: ${cls.averageGrade}%</div>
+                                </div>
+                                <div class="progress-fernly">
+                                    <div class="progress-fernly-bar" style="width: ${cls.averageGrade}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    performanceList.innerHTML = '<div class="dashboard-list-item"><div class="empty-state-text">No performance data</div></div>';
+                }
+
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            IremeI18n.init();
+            loadHeadteacherDashboard();
+        });
+    </script>
+</body>
+</html>

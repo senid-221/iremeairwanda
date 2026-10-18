@@ -2,222 +2,388 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>IREME - Teacher Dashboard</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <link href="img/ireme-icon.png" rel="icon">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Teacher Dashboard - IREME Rwanda</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
+    <link href="css/dashboard.css" rel="stylesheet">
 </head>
-<body>
-    <div id="component-spinner"></div>
-    <div id="component-navbar"></div>
+<body class="dashboard-body">
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <i class="fas fa-chalkboard-teacher"></i> IREME
+            </div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-menu-item">
+                    <a href="teacher-dashboard.html" class="sidebar-menu-link active">
+                        <i class="fas fa-home"></i>
+                        <span data-i18n="dashboard.overview">Overview</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="lesson-planner.html" class="sidebar-menu-link">
+                        <i class="fas fa-book"></i>
+                        <span data-i18n="nav.teacher.lessonPlanner">Lesson Planner</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="stream-lesson.html" class="sidebar-menu-link">
+                        <i class="fas fa-broadcast-tower"></i>
+                        <span data-i18n="nav.teacher.streamLesson">Stream Lesson</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="teacher-jobs.html" class="sidebar-menu-link">
+                        <i class="fas fa-briefcase"></i>
+                        <span data-i18n="nav.teacher.jobs">Find Jobs</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="umwarimu-sacco.html" class="sidebar-menu-link">
+                        <i class="fas fa-piggy-bank"></i>
+                        <span data-i18n="nav.teacher.sacco">SACCO</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="student-report.html" class="sidebar-menu-link">
+                        <i class="fas fa-user-graduate"></i>
+                        <span data-i18n="nav.teacher.studentReport">Student Report</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="prepare-exam.html" class="sidebar-menu-link">
+                        <i class="fas fa-file-alt"></i>
+                        <span data-i18n="nav.teacher.prepareExam">Prepare Exam</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="staff-meeting.html" class="sidebar-menu-link">
+                        <i class="fas fa-users"></i>
+                        <span data-i18n="nav.teacher.staffMeeting">Staff Meeting</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="report-to-parent.html" class="sidebar-menu-link">
+                        <i class="fas fa-envelope"></i>
+                        <span data-i18n="nav.teacher.reportParent">Report to Parent</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="report-to-head.html" class="sidebar-menu-link">
+                        <i class="fas fa-chart-bar"></i>
+                        <span data-i18n="nav.teacher.reportHead">Report to Head</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
 
-    <div class="container-fluid pt-5 bg-primary hero-header">
-        <div class="container pt-5">
-            <div class="row g-5 pt-5">
-                <div class="col-lg-6 align-self-center text-center text-lg-start mb-lg-5">
-                    <h1 class="display-4 text-white mb-4 animated slideInRight" data-i18n="dashboard.welcome">Welcome back</h1>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb justify-content-center justify-content-lg-start mb-0">
-                            <li class="breadcrumb-item"><a class="text-white" href="index.html" data-i18n="breadcrumb.home">Home</a></li>
-                            <li class="breadcrumb-item text-white active">Teacher Dashboard</li>
-                        </ol>
-                    </nav>
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <!-- Top Bar -->
+            <div class="dashboard-topbar">
+                <div class="dashboard-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search students, lessons..." data-i18n-placeholder="dashboard.searchPlaceholder">
                 </div>
-                <div class="col-lg-6 align-self-end text-center text-lg-end">
-                    <img class="img-fluid" src="img/hero-img.png" alt="" style="max-height: 300px;">
+                <div class="dashboard-topbar-actions">
+                    <button class="dashboard-icon-btn" title="Messages">
+                        <i class="fas fa-envelope"></i>
+                        <span class="badge"></span>
+                    </button>
+                    <button class="dashboard-icon-btn" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge"></span>
+                    </button>
+                    <div class="dashboard-avatar" id="user-avatar">T</div>
                 </div>
             </div>
-        </div>
+
+            <!-- Welcome Section -->
+            <div class="welcome-section">
+                <h1 class="welcome-title" id="welcome-message">Welcome back!</h1>
+                <p class="welcome-subtitle" id="teacher-info">Loading your profile...</p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="dashboard-grid dashboard-grid-4" id="stats-grid">
+                <div class="dashboard-card stat-card">
+                    <div class="stat-card-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-card-value" id="stat-students">-</div>
+                    <div class="stat-card-label" data-i18n="dashboard.totalStudents">Total Students</div>
+                    <div class="stat-card-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span data-i18n="dashboard.acrossClasses">Across Classes</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-card stat-card">
+                    <div class="stat-card-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div class="stat-card-value" id="stat-lessons">-</div>
+                    <div class="stat-card-label" data-i18n="dashboard.activeLessons">Active Lessons</div>
+                    <div class="stat-card-change positive">
+                        <i class="fas fa-check"></i>
+                        <span data-i18n="dashboard.thisWeek">This Week</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-card stat-card">
+                    <div class="stat-card-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="stat-card-value" id="stat-reports">-</div>
+                    <div class="stat-card-label" data-i18n="dashboard.pendingReports">Pending Reports</div>
+                    <div class="stat-card-change positive">
+                        <i class="fas fa-clock"></i>
+                        <span data-i18n="dashboard.awaitingReview">Awaiting Review</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-card stat-card">
+                    <div class="stat-card-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-card-value" id="stat-exams">-</div>
+                    <div class="stat-card-label" data-i18n="dashboard.upcomingExams">Upcoming Exams</div>
+                    <div class="stat-card-change positive">
+                        <i class="fas fa-calendar"></i>
+                        <span data-i18n="dashboard.scheduled">Scheduled</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Grid -->
+            <div class="dashboard-grid dashboard-grid-2" style="margin-top: 20px;">
+                <!-- Today's Schedule -->
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <div>
+                            <h2 class="dashboard-card-title" data-i18n="dashboard.todaySchedule">Today's Schedule</h2>
+                            <p class="dashboard-card-subtitle" data-i18n="dashboard.yourClasses">Your classes today</p>
+                        </div>
+                    </div>
+                    <ul class="dashboard-list" id="today-schedule-list">
+                        <li class="dashboard-list-item">
+                            <div>
+                                <div class="dashboard-list-item-title" data-i18n="dashboard.loading">Loading...</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Recent Lesson Plans -->
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <div>
+                            <h2 class="dashboard-card-title" data-i18n="dashboard.recentLessons">Recent Lesson Plans</h2>
+                            <p class="dashboard-card-subtitle" data-i18n="dashboard.publishedLessons">Recently published</p>
+                        </div>
+                        <a href="lesson-planner.html" class="btn-fernly-outline" style="padding: 8px 16px; font-size: 12px;">
+                            <span data-i18n="dashboard.viewAll">View All</span>
+                        </a>
+                    </div>
+                    <ul class="dashboard-list" id="recent-lessons-list">
+                        <li class="dashboard-list-item">
+                            <div>
+                                <div class="dashboard-list-item-title" data-i18n="dashboard.loading">Loading...</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Student Reports Pending -->
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <div>
+                            <h2 class="dashboard-card-title" data-i18n="dashboard.studentReports">Student Reports</h2>
+                            <p class="dashboard-card-subtitle" data-i18n="dashboard.reportsToComplete">Reports to complete</p>
+                        </div>
+                        <a href="student-report.html" class="btn-fernly-outline" style="padding: 8px 16px; font-size: 12px;">
+                            <span data-i18n="dashboard.viewAll">View All</span>
+                        </a>
+                    </div>
+                    <ul class="dashboard-list" id="student-reports-list">
+                        <li class="dashboard-list-item">
+                            <div>
+                                <div class="dashboard-list-item-title" data-i18n="dashboard.loading">Loading...</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Parent Communications -->
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <div>
+                            <h2 class="dashboard-card-title" data-i18n="dashboard.parentMessages">Parent Messages</h2>
+                            <p class="dashboard-card-subtitle" data-i18n="dashboard.recentCommunications">Recent communications</p>
+                        </div>
+                        <a href="report-to-parent.html" class="btn-fernly-outline" style="padding: 8px 16px; font-size: 12px;">
+                            <span data-i18n="dashboard.viewAll">View All</span>
+                        </a>
+                    </div>
+                    <ul class="dashboard-list" id="parent-messages-list">
+                        <li class="dashboard-list-item">
+                            <div>
+                                <div class="dashboard-list-item-title" data-i18n="dashboard.loading">Loading...</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="dashboard-card" style="margin-top: 20px;">
+                <div class="dashboard-card-header">
+                    <h2 class="dashboard-card-title" data-i18n="dashboard.quickActions">Quick Actions</h2>
+                </div>
+                <div class="dashboard-grid dashboard-grid-4">
+                    <a href="lesson-planner.html" class="btn-fernly" style="justify-content: center;">
+                        <i class="fas fa-plus"></i>
+                        <span data-i18n="dashboard.createLesson">Create Lesson</span>
+                    </a>
+                    <a href="prepare-exam.html" class="btn-fernly-outline" style="justify-content: center;">
+                        <i class="fas fa-file-alt"></i>
+                        <span data-i18n="dashboard.prepareExam">Prepare Exam</span>
+                    </a>
+                    <a href="student-report.html" class="btn-fernly-outline" style="justify-content: center;">
+                        <i class="fas fa-user-graduate"></i>
+                        <span data-i18n="dashboard.writeReport">Write Report</span>
+                    </a>
+                    <a href="report-to-parent.html" class="btn-fernly-outline" style="justify-content: center;">
+                        <i class="fas fa-envelope"></i>
+                        <span data-i18n="dashboard.contactParent">Contact Parent</span>
+                    </a>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <div class="container-fluid py-5">
-        <div class="container">
-            <div class="row g-4 mb-5">
-                <div class="col-md-3 wow fadeIn" data-wow-delay="0.1s">
-                    <div class="service-item rounded text-center p-4">
-                        <i class="fa fa-users fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold">45</h3>
-                        <p class="mb-0" data-i18n="dashboard.myStudents">My Students</p>
-                    </div>
-                </div>
-                <div class="col-md-3 wow fadeIn" data-wow-delay="0.2s">
-                    <div class="service-item rounded text-center p-4">
-                        <i class="fa fa-book fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold">8</h3>
-                        <p class="mb-0" data-i18n="dashboard.lessons">Lessons</p>
-                    </div>
-                </div>
-                <div class="col-md-3 wow fadeIn" data-wow-delay="0.3s">
-                    <div class="service-item rounded text-center p-4">
-                        <i class="fa fa-clipboard-check fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold">5</h3>
-                        <p class="mb-0" data-i18n="dashboard.assessments">Assessments</p>
-                    </div>
-                </div>
-                <div class="col-md-3 wow fadeIn" data-wow-delay="0.4s">
-                    <div class="service-item rounded text-center p-4">
-                        <i class="fa fa-chart-bar fa-2x text-primary mb-3"></i>
-                        <h3 class="fw-bold">3</h3>
-                        <p class="mb-0" data-i18n="dashboard.reports">Reports</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row g-4">
-                <div class="col-lg-8 wow fadeIn" data-wow-delay="0.1s">
-                    <div class="bg-light rounded p-4">
-                        <h4 class="mb-4" data-i18n="dashboard.myClasses">My Classes</h4>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="service-item rounded p-3">
-                                    <h6 class="mb-1">P5 - Mathematics</h6>
-                                    <small class="text-muted">22 students • 8 lessons</small>
-                                    <div class="progress mt-2" style="height: 6px;"><div class="progress-bar bg-primary" style="width: 75%"></div></div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="service-item rounded p-3">
-                                    <h6 class="mb-1">P5 - Science</h6>
-                                    <small class="text-muted">22 students • 6 lessons</small>
-                                    <div class="progress mt-2" style="height: 6px;"><div class="progress-bar bg-primary" style="width: 60%"></div></div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="service-item rounded p-3">
-                                    <h6 class="mb-1">P6 - Mathematics</h6>
-                                    <small class="text-muted">23 students • 10 lessons</small>
-                                    <div class="progress mt-2" style="height: 6px;"><div class="progress-bar bg-primary" style="width: 85%"></div></div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="service-item rounded p-3">
-                                    <h6 class="mb-1">P6 - Science</h6>
-                                    <small class="text-muted">23 students • 5 lessons</small>
-                                    <div class="progress mt-2" style="height: 6px;"><div class="progress-bar bg-primary" style="width: 45%"></div></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 wow fadeIn" data-wow-delay="0.3s">
-                    <div class="bg-light rounded p-4">
-                        <h4 class="mb-4">Quick Actions</h4>
-                        <div class="d-grid gap-3">
-                            <a href="lesson-planner.html" class="btn btn-primary rounded-pill py-3" data-i18n="dashboard.createLesson">Create Lesson</a>
-                            <a href="prepare-exam.html" class="btn btn-outline-primary rounded-pill py-3" data-i18n="dashboard.createQuiz">Create Quiz</a>
-                            <a href="student-report.html" class="btn btn-outline-primary rounded-pill py-3" data-i18n="dashboard.viewReports">View Reports</a>
-                            <a href="ai-tutor.html" class="btn btn-outline-primary rounded-pill py-3" data-i18n="dashboard.aiAssistant">Ask Ireme AI</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row mt-4">
-                <div class="col-12 wow fadeIn" data-wow-delay="0.1s">
-                    <div class="bg-light rounded p-4">
-                        <h4 class="mb-4" data-i18n="dashboard.recentActivity">Recent Activity</h4>
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead>
-                                    <tr><th>Activity</th><th>Class</th><th>Status</th><th>Date</th></tr>
-                                </thead>
-                                <tbody>
-                                    <tr><td>Math Quiz - Fractions graded</td><td>P5 Math</td><td><span class="badge bg-success" data-i18n="dashboard.completed">Completed</span></td><td>2026-10-14</td></tr>
-                                    <tr><td>Science Lesson Plan created</td><td>P5 Science</td><td><span class="badge bg-success" data-i18n="dashboard.completed">Completed</span></td><td>2026-10-13</td></tr>
-                                    <tr><td>Student progress report</td><td>P6 Math</td><td><span class="badge bg-info">Generated</span></td><td>2026-10-12</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="component-footer"></div>
-    <div id="component-backtotop"></div>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js?v=2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js?v=2"></script>
-    <script src="lib/wow/wow.min.js?v=2"></script>
-    <script src="lib/easing/easing.min.js?v=2"></script>
-    <script src="lib/waypoints/waypoints.min.js?v=2"></script>
-    <script src="js/main.js?v=2"></script>
-    <script src="js/i18n.js?v=2"></script>
-    <script src="js/config.js?v=2"></script>
-    <script src="js/api-client.js?v=2"></script>
-    <script src="js/auth.js?v=2"></script>
-    <script src="js/components.js?v=2"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/api-client.js"></script>
+    <script src="js/auth.js"></script>
     <script>
-        IremeComponents.initPage('teacher-dashboard.html');
-        if (!IremeAuth.requireRole('teacher')) { throw new Error('Access denied'); }
-
-        function loadTeacherDashboard() {
-            IremeApi.getDashboard('teacher')
-                .then(function(data) {
-                    if (!data.user) return;
-
-                    // Update welcome
-                    var user = IremeAuth.currentUser();
-                    if (user) {
-                        var welcomeEl = document.querySelector('[data-i18n="dashboard.welcome"]');
-                        if (welcomeEl) welcomeEl.textContent = 'Welcome back, ' + user.name + '!';
-                    }
-
-                    // Update stats
-                    var studentCount = data.studentCount || 0;
-                    var assignmentCount = data.assignments ? data.assignments.length : 0;
-                    var classCount = data.classes ? data.classes.length : 0;
-
-                    var statCards = document.querySelectorAll('.col-md-3 .fw-bold');
-                    if (statCards.length >= 4) {
-                        statCards[0].textContent = studentCount;
-                        statCards[1].textContent = assignmentCount;
-                    }
-
-                    // Update classes list
-                    var classesContainer = document.querySelector('.col-lg-8 .row.g-3');
-                    if (classesContainer && data.assignments && data.assignments.length > 0) {
-                        classesContainer.innerHTML = data.assignments.slice(0, 6).map(function(a) {
-                            var className = a.class ? (a.class.name || a.class.level + '-' + a.class.section) : 'N/A';
-                            var subjectName = a.subject ? (a.subject.nameEn || a.subject.name) : 'N/A';
-                            return '<div class="col-md-6">' +
-                                '<div class="service-item rounded p-3">' +
-                                '<h6 class="mb-1">' + className + ' - ' + subjectName + '</h6>' +
-                                '<small class="text-muted">' + studentCount + ' students</small>' +
-                                '</div>' +
-                                '</div>';
-                        }).join('');
-                    }
-
-                    // Update recent activity
-                    var activityTable = document.querySelector('.table-responsive tbody');
-                    if (activityTable && data.recentActivity && data.recentActivity.length > 0) {
-                        activityTable.innerHTML = data.recentActivity.slice(0, 5).map(function(activity) {
-                            var date = new Date(activity.createdAt).toLocaleDateString();
-                            return '<tr>' +
-                                '<td>' + activity.activityTitle + '</td>' +
-                                '<td>-</td>' +
-                                '<td><span class="badge bg-success">Completed</span></td>' +
-                                '<td>' + date + '</td>' +
-                                '</tr>';
-                        }).join('');
-                    }
-                })
-                .catch(function(err) {
-                    console.error('Teacher dashboard error:', err);
-                });
+        // Check authentication
+        if (!IremeAuth.isAuthenticated()) {
+            window.location.href = 'login.html';
         }
 
-        loadTeacherDashboard();
+        // Load teacher dashboard data
+        async function loadTeacherDashboard() {
+            try {
+                const user = IremeAuth.getCurrentUser();
+                const token = IremeAuth.getToken();
+
+                // Update welcome message
+                const welcomeMsg = document.getElementById('welcome-message');
+                const teacherInfo = document.getElementById('teacher-info');
+                const avatar = document.getElementById('user-avatar');
+
+                if (user) {
+                    welcomeMsg.textContent = `Welcome back, ${user.firstName || user.email}!`;
+                    avatar.textContent = (user.firstName || user.email)[0].toUpperCase();
+                }
+
+                // Fetch teacher profile
+                const profileRes = await IremeApi.getTeacherProfile();
+                if (profileRes && profileRes.profile) {
+                    const profile = profileRes.profile;
+                    teacherInfo.textContent = `${profile.subjects?.join(', ') || 'Teacher'} • ${profile.school?.name || ''}`;
+                }
+
+                // Fetch dashboard stats
+                const statsRes = await IremeApi.getTeacherDashboardStats();
+                if (statsRes) {
+                    document.getElementById('stat-students').textContent = statsRes.totalStudents || 0;
+                    document.getElementById('stat-lessons').textContent = statsRes.activeLessons || 0;
+                    document.getElementById('stat-reports').textContent = statsRes.pendingReports || 0;
+                    document.getElementById('stat-exams').textContent = statsRes.upcomingExams || 0;
+                }
+
+                // Fetch today's schedule
+                const scheduleRes = await IremeApi.getTeacherSchedule();
+                const scheduleList = document.getElementById('today-schedule-list');
+                if (scheduleRes && scheduleRes.classes && scheduleRes.classes.length > 0) {
+                    scheduleList.innerHTML = scheduleRes.classes.map(cls => `
+                        <li class="dashboard-list-item">
+                            <div>
+                                <div class="dashboard-list-item-title">${cls.subject} - ${cls.class}</div>
+                                <div class="dashboard-list-item-subtitle">${cls.time} • ${cls.room || ''}</div>
+                            </div>
+                            <span class="badge-fernly badge-fernly-success">${cls.status || 'Scheduled'}</span>
+                        </li>
+                    `).join('');
+                } else {
+                    scheduleList.innerHTML = '<li class="dashboard-list-item"><div class="empty-state-text">No classes today</div></li>';
+                }
+
+                // Fetch recent lessons
+                const lessonsRes = await IremeApi.getTeacherLessons(5);
+                const lessonsList = document.getElementById('recent-lessons-list');
+                if (lessonsRes && lessonsRes.lessons && lessonsRes.lessons.length > 0) {
+                    lessonsList.innerHTML = lessonsRes.lessons.map(lesson => `
+                        <li class="dashboard-list-item">
+                            <div>
+                                <div class="dashboard-list-item-title">${lesson.title}</div>
+                                <div class="dashboard-list-item-subtitle">${lesson.subject} • ${lesson.date ? new Date(lesson.date).toLocaleDateString() : ''}</div>
+                            </div>
+                            <span class="badge-fernly badge-fernly-success">Published</span>
+                        </li>
+                    `).join('');
+                } else {
+                    lessonsList.innerHTML = '<li class="dashboard-list-item"><div class="empty-state-text">No recent lessons</div></li>';
+                }
+
+                // Fetch student reports
+                const reportsRes = await IremeApi.getPendingStudentReports(5);
+                const reportsList = document.getElementById('student-reports-list');
+                if (reportsRes && reportsRes.reports && reportsRes.reports.length > 0) {
+                    reportsList.innerHTML = reportsRes.reports.map(report => `
+                        <li class="dashboard-list-item">
+                            <div>
+                                <div class="dashboard-list-item-title">${report.studentName}</div>
+                                <div class="dashboard-list-item-subtitle">${report.subject} • Due: ${report.dueDate ? new Date(report.dueDate).toLocaleDateString() : ''}</div>
+                            </div>
+                            <a href="student-report.html" class="btn-fernly-outline" style="padding: 6px 12px; font-size: 11px;">Complete</a>
+                        </li>
+                    `).join('');
+                } else {
+                    reportsList.innerHTML = '<li class="dashboard-list-item"><div class="empty-state-text">No pending reports</div></li>';
+                }
+
+                // Fetch parent messages
+                const messagesRes = await IremeApi.getTeacherParentMessages(5);
+                const messagesList = document.getElementById('parent-messages-list');
+                if (messagesRes && messagesRes.messages && messagesRes.messages.length > 0) {
+                    messagesList.innerHTML = messagesRes.messages.map(msg => `
+                        <li class="dashboard-list-item">
+                            <div>
+                                <div class="dashboard-list-item-title">${msg.parentName}</div>
+                                <div class="dashboard-list-item-subtitle">${msg.subject} • ${msg.date ? new Date(msg.date).toLocaleDateString() : ''}</div>
+                            </div>
+                            <span class="badge-fernly ${msg.read ? 'badge-fernly-success' : 'badge-fernly-warning'}">${msg.read ? 'Read' : 'Unread'}</span>
+                        </li>
+                    `).join('');
+                } else {
+                    messagesList.innerHTML = '<li class="dashboard-list-item"><div class="empty-state-text">No messages</div></li>';
+                }
+
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            IremeI18n.init();
+            loadTeacherDashboard();
+        });
     </script>
 </body>
 </html>
