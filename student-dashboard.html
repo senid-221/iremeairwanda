@@ -280,11 +280,10 @@
             window.location.href = 'login.html';
         }
 
-        // Load student dashboard data
+        // Load student dashboard data from real backend
         async function loadStudentDashboard() {
             try {
                 const user = IremeAuth.getCurrentUser();
-                const token = IremeAuth.getToken();
 
                 // Update welcome message
                 const welcomeMsg = document.getElementById('welcome-message');
@@ -296,37 +295,37 @@
                     avatar.textContent = (user.firstName || user.email)[0].toUpperCase();
                 }
 
-                // Fetch student profile
-                const profileRes = await IremeApi.getStudentProfile();
-                if (profileRes && profileRes.profile) {
-                    const profile = profileRes.profile;
-                    const enrollment = profileRes.enrollment;
+                // Fetch real dashboard data from backend
+                const dashboardData = await IremeApi.getDashboard('student');
 
-                    if (enrollment) {
-                        studentInfo.textContent = `${enrollment.educationLevel?.name || ''} • ${enrollment.school?.name || ''}`;
-                    } else if (profile.currentEducationLevel) {
-                        studentInfo.textContent = `${profile.currentEducationLevel.name}`;
-                    }
+                if (!dashboardData) {
+                    studentInfo.textContent = 'No data available';
+                    return;
                 }
 
-                // Fetch dashboard stats
-                const statsRes = await IremeApi.getStudentDashboardStats();
-                if (statsRes) {
-                    document.getElementById('stat-subjects').textContent = statsRes.enrolledSubjects || 0;
-                    document.getElementById('stat-upcoming').textContent = statsRes.upcomingExams || 0;
-                    document.getElementById('stat-avg-grade').textContent = statsRes.averageGrade || '-';
-                    document.getElementById('stat-completion').textContent = statsRes.completionRate || '0%';
+                // Update profile info
+                if (dashboardData.profile) {
+                    const level = dashboardData.profile.educationLevel?.name || dashboardData.profile.educationLevel?.nameEn || '';
+                    const school = dashboardData.profile.school?.name || dashboardData.profile.school?.nameEn || '';
+                    studentInfo.textContent = `${level}${school ? ' • ' + school : ''}`;
                 }
 
-                // Fetch upcoming exams
-                const examsRes = await IremeApi.getUpcomingExams(5);
+                // Update stats from real data
+                const stats = dashboardData.stats || {};
+                document.getElementById('stat-subjects').textContent = stats.subjectCount || dashboardData.subjects?.length || 0;
+                document.getElementById('stat-upcoming').textContent = stats.upcomingAssessments || 0;
+                document.getElementById('stat-avg-grade').textContent = stats.averageGrade ? stats.averageGrade.toFixed(1) + '%' : '-';
+                document.getElementById('stat-completion').textContent = stats.completionRate ? stats.completionRate.toFixed(0) + '%' : '0%';
+
+                // Update upcoming exams/assessments
                 const examsList = document.getElementById('upcoming-exams-list');
-                if (examsRes && examsRes.exams && examsRes.exams.length > 0) {
-                    examsList.innerHTML = examsRes.exams.map(exam => `
+                const assessments = dashboardData.upcomingAssessments || [];
+                if (assessments.length > 0) {
+                    examsList.innerHTML = assessments.slice(0, 5).map(exam => `
                         <li class="dashboard-list-item">
                             <div>
-                                <div class="dashboard-list-item-title">${exam.subject || exam.title}</div>
-                                <div class="dashboard-list-item-subtitle">${exam.date ? new Date(exam.date).toLocaleDateString() : ''}</div>
+                                <div class="dashboard-list-item-title">${exam.subject?.name || exam.subject?.nameEn || exam.title || 'Assessment'}</div>
+                                <div class="dashboard-list-item-subtitle">${exam.scheduledAt ? new Date(exam.scheduledAt).toLocaleDateString() : exam.date || ''}</div>
                             </div>
                             <span class="badge-fernly badge-fernly-info">${exam.type || 'Exam'}</span>
                         </li>
@@ -335,53 +334,57 @@
                     examsList.innerHTML = '<li class="dashboard-list-item"><div class="empty-state-text">No upcoming exams</div></li>';
                 }
 
-                // Fetch recent grades
-                const gradesRes = await IremeApi.getRecentGrades(5);
+                // Update recent grades/assessments
                 const gradesList = document.getElementById('recent-grades-list');
-                if (gradesRes && gradesRes.grades && gradesRes.grades.length > 0) {
-                    gradesList.innerHTML = gradesRes.grades.map(grade => `
+                const grades = dashboardData.recentGrades || dashboardData.completedAssessments || [];
+                if (grades.length > 0) {
+                    gradesList.innerHTML = grades.slice(0, 5).map(grade => {
+                        const score = grade.score || grade.percentage || 0;
+                        return `
                         <li class="dashboard-list-item">
                             <div>
-                                <div class="dashboard-list-item-title">${grade.subject}</div>
-                                <div class="dashboard-list-item-subtitle">${grade.assessment || 'Assessment'}</div>
+                                <div class="dashboard-list-item-title">${grade.subject?.name || grade.subject?.nameEn || grade.subject || 'Subject'}</div>
+                                <div class="dashboard-list-item-subtitle">${grade.assessment?.title || grade.assessment || 'Assessment'}</div>
                             </div>
-                            <span class="badge-fernly ${grade.score >= 70 ? 'badge-fernly-success' : grade.score >= 50 ? 'badge-fernly-warning' : 'badge-fernly-danger'}">${grade.score}%</span>
+                            <span class="badge-fernly ${score >= 70 ? 'badge-fernly-success' : score >= 50 ? 'badge-fernly-warning' : 'badge-fernly-danger'}">${score}%</span>
                         </li>
-                    `).join('');
+                    `}).join('');
                 } else {
                     gradesList.innerHTML = '<li class="dashboard-list-item"><div class="empty-state-text">No recent grades</div></li>';
                 }
 
-                // Fetch learning progress
-                const progressRes = await IremeApi.getLearningProgress();
+                // Update learning progress by subject
                 const progressList = document.getElementById('learning-progress-list');
-                if (progressRes && progressRes.subjects && progressRes.subjects.length > 0) {
-                    progressList.innerHTML = progressRes.subjects.map(subject => `
+                const subjects = dashboardData.subjects || [];
+                if (subjects.length > 0) {
+                    progressList.innerHTML = subjects.slice(0, 6).map(subject => {
+                        const progress = subject.progress || subject.mastery || 0;
+                        return `
                         <div class="dashboard-list-item">
                             <div style="width: 100%;">
                                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                    <div class="dashboard-list-item-title">${subject.name}</div>
-                                    <div class="dashboard-list-item-subtitle">${subject.progress}%</div>
+                                    <div class="dashboard-list-item-title">${subject.name || subject.nameEn || 'Subject'}</div>
+                                    <div class="dashboard-list-item-subtitle">${progress}%</div>
                                 </div>
                                 <div class="progress-fernly">
-                                    <div class="progress-fernly-bar" style="width: ${subject.progress}%"></div>
+                                    <div class="progress-fernly-bar" style="width: ${progress}%"></div>
                                 </div>
                             </div>
                         </div>
-                    `).join('');
+                    `}).join('');
                 } else {
                     progressList.innerHTML = '<div class="dashboard-list-item"><div class="empty-state-text">No progress data yet</div></div>';
                 }
 
-                // Fetch recommended lessons
-                const lessonsRes = await IremeApi.getRecommendedLessons(5);
+                // Update recommended lessons
                 const lessonsList = document.getElementById('recommended-lessons-list');
-                if (lessonsRes && lessonsRes.lessons && lessonsRes.lessons.length > 0) {
-                    lessonsList.innerHTML = lessonsRes.lessons.map(lesson => `
+                const lessons = dashboardData.recommendedLessons || dashboardData.recentLessons || [];
+                if (lessons.length > 0) {
+                    lessonsList.innerHTML = lessons.slice(0, 5).map(lesson => `
                         <li class="dashboard-list-item">
                             <div>
-                                <div class="dashboard-list-item-title">${lesson.title}</div>
-                                <div class="dashboard-list-item-subtitle">${lesson.subject} • ${lesson.duration || ''}</div>
+                                <div class="dashboard-list-item-title">${lesson.title || 'Lesson'}</div>
+                                <div class="dashboard-list-item-subtitle">${lesson.subject?.name || lesson.subject?.nameEn || ''}${lesson.duration ? ' • ' + lesson.duration : ''}</div>
                             </div>
                             <a href="video-lessons.html" class="btn-fernly-outline" style="padding: 6px 12px; font-size: 11px;">Watch</a>
                         </li>
@@ -392,6 +395,7 @@
 
             } catch (error) {
                 console.error('Error loading dashboard:', error);
+                document.getElementById('student-info').textContent = 'Error loading data';
             }
         }
 
