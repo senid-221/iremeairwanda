@@ -253,6 +253,9 @@
                             <div class="section-label" data-i18n="designer.history">HISTORY</div>
                             <div class="section-title" style="font-size:20px;" data-i18n="designer.recentDesigns">Recent Designs</div>
                         </div>
+                        <button class="btn btn-sm btn-outline-danger" style="border-radius:8px;font-size:12px;" onclick="clearHistory()" id="btn-clear-history" style="display:none;">
+                            <i class="fa fa-trash-alt me-1"></i><span data-i18n="designer.clearHistory">Clear History</span>
+                        </button>
                     </div>
                     <div id="history-list" class="d-flex flex-column gap-2"></div>
                     <div id="history-empty" class="text-center py-4" style="display:none;">
@@ -387,11 +390,14 @@
         renderHistory: function() {
             var container = document.getElementById('history-list');
             var emptyEl = document.getElementById('history-empty');
+            var clearBtn = document.getElementById('btn-clear-history');
             if (this.history.length === 0) {
                 container.innerHTML = '';
                 emptyEl.style.display = '';
+                if (clearBtn) clearBtn.style.display = 'none';
                 return;
             }
+            if (clearBtn) clearBtn.style.display = '';
             emptyEl.style.display = 'none';
             container.innerHTML = this.history.slice(0, 5).map(function(h) {
                 return '<div class="history-item" onclick="loadHistory(\'' + h.id + '\')">' +
@@ -615,6 +621,12 @@
             document.getElementById('designer-prompt').value = entry.prompt;
             enableExportButtons();
         }
+    }
+
+    function clearHistory() {
+        IremeDesigner.history = [];
+        try { localStorage.removeItem('ireme-design-history'); } catch(e) {}
+        IremeDesigner.renderHistory();
     }
 
     function downloadDesign() {
