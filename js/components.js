@@ -12,6 +12,7 @@ const IremeComponents = {
                 { href: 'ai-tutor.html', key: 'nav.student.ai' },
                 { href: 'resources.html', key: 'nav.student.books' },
                 { href: 'game-setup.html', key: 'nav.student.game' },
+                { href: 'ai-designer.html', key: 'nav.student.designer' },
                 { href: 'check-results.html', key: 'nav.student.results' },
                 { href: 'online-learning.html', key: 'nav.student.onlineLearning' },
                 { href: 'test-skills.html', key: 'nav.student.testSkills' },
@@ -247,6 +248,7 @@ const IremeComponents = {
                     <a class="btn btn-link" href="about.html" data-i18n="footer.aboutUs"></a>
                     <a class="btn btn-link" href="service.html" data-i18n="footer.ourServices"></a>
                     <a class="btn btn-link" href="game-setup.html" data-i18n="footer.learningGame"></a>
+                    <a class="btn btn-link" href="ai-designer.html" data-i18n="footer.aiDesigner"></a>
                     <a class="btn btn-link" href="subscription.html" data-i18n="footer.plans"></a>
                     <a class="btn btn-link" href="contact.html" data-i18n="footer.contactUs"></a>
                     <a class="btn btn-link" href="privacy.html" data-i18n="footer.privacy"></a>

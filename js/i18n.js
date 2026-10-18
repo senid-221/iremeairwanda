@@ -20,6 +20,7 @@ const translations = {
         "nav.student.ai": "AI Assistant",
         "nav.student.books": "Books",
         "nav.student.game": "Learning Game",
+        "nav.student.designer": "AI Designer",
         "nav.student.results": "Results",
         "nav.student.onlineLearning": "Online Learning",
         "nav.student.testSkills": "Test Skills",
@@ -184,6 +185,7 @@ const translations = {
 
         // Footer extras
         "footer.learningGame": "Learning Game",
+        "footer.aiDesigner": "AI Web Designer",
         "footer.plans": "Plans & Pricing",
 
         // Homepage sections
@@ -403,6 +405,40 @@ const translations = {
         "aiTutor.askAboutResource": "Ask about a resource",
         "aiTutor.sourceCitation": "Source",
         "aiTutor.availableLanguages": "Available in English and Kinyarwanda",
+
+        // AI Web Designer
+        "designer.label": "AI-POWERED DESIGN",
+        "designer.title": "Design Websites with AI",
+        "designer.subtitle": "Describe what you want and get a professional, ready-to-use website in seconds. No coding required.",
+        "designer.promptLabel": "DESCRIBE YOUR WEBSITE",
+        "designer.promptPlaceholder": "e.g. A modern school website with hero section, about us, programs, and contact form...",
+        "designer.generate": "Generate Design",
+        "designer.chipSchool": "School",
+        "designer.chipPortfolio": "Portfolio",
+        "designer.chipShop": "Shop",
+        "designer.chipBlog": "Blog",
+        "designer.templates": "TEMPLATES",
+        "designer.startFrom": "Start from a template",
+        "designer.preview": "PREVIEW",
+        "designer.livePreview": "Live Preview",
+        "designer.ready": "Ready",
+        "designer.noPreview": "No design yet",
+        "designer.noPreviewDesc": "Describe your website above or choose a template to get started.",
+        "designer.generating": "Generating your design...",
+        "designer.generatingSub": "This usually takes 10-20 seconds",
+        "designer.customize": "CUSTOMIZE",
+        "designer.makeItYours": "Make it yours",
+        "designer.colorScheme": "Color Scheme",
+        "designer.fontStyle": "Font Style",
+        "designer.layout": "Layout",
+        "designer.readyExport": "Ready to use your design?",
+        "designer.exportDesc": "Download as HTML, deploy to Vercel, or save to your projects.",
+        "designer.download": "Download HTML",
+        "designer.save": "Save Project",
+        "designer.deploy": "Deploy Live",
+        "designer.history": "HISTORY",
+        "designer.recentDesigns": "Recent Designs",
+        "designer.noHistory": "No designs yet. Generate your first one above!",
 
         // Schools Directory
         "schools.title": "Rwanda Schools Directory",
@@ -1254,6 +1290,7 @@ const translations = {
         "nav.student.ai": "Umufasha AI",
         "nav.student.books": "Ibitabo",
         "nav.student.game": "Imikino",
+        "nav.student.designer": "AI Umubaji",
         "nav.student.results": "Amanota",
         "nav.student.onlineLearning": "Kwiga ku Murongo",
         "nav.student.testSkills": "Suzuma Ubumenyi",
@@ -1463,6 +1500,7 @@ const translations = {
 
         // Footer extras
         "footer.learningGame": "Umukino wo Kwiga",
+        "footer.aiDesigner": "AI Umubaji w'Imbuga",
         "footer.plans": "Gahunda n'Ibiciro",
 
         // Homepage sections
@@ -1682,6 +1720,40 @@ const translations = {
         "aiTutor.askAboutResource": "Baza ku gikoresho",
         "aiTutor.sourceCitation": "Inkomoko",
         "aiTutor.availableLanguages": "Iboneka mu Cyongereza n'Ikinyarwanda",
+
+        // AI Web Designer
+        "designer.label": "IKORANABUHANGA RY'AI",
+        "designer.title": "Gukora Imbuga na AI",
+        "designer.subtitle": "Sobanura icyo ushaka ubone urubuga rw'umwuga mu masegonda. Nta coding ikenewe.",
+        "designer.promptLabel": "SOBANURA URUBUGA RWAWE",
+        "designer.promptPlaceholder": "urugero: Urubuga rw'ishuri rufite hero, ibyerekeye, gahunda, na formulaire yo guhamagara...",
+        "designer.generate": "Kora Igishushanyo",
+        "designer.chipSchool": "Ishuri",
+        "designer.chipPortfolio": "Portfolio",
+        "designer.chipShop": "Iduka",
+        "designer.chipBlog": "Blog",
+        "designer.templates": "INGERO",
+        "designer.startFrom": "Tangira uhereye ku ngero",
+        "designer.preview": "REBA",
+        "designer.livePreview": "Reba mu Gihe Nyacyo",
+        "designer.ready": "Byiteguye",
+        "designer.noPreview": "Nta gishushanyo kiraboneka",
+        "designer.noPreviewDesc": "Sobanura urubuga ruri hejuru cyangwa hitamo ingero kugira ngo utangire.",
+        "designer.generating": "Gukora igishushanyo cyawe...",
+        "designer.generatingSub": "Bisanzwe bifata amasegonda 10-20",
+        "designer.customize": "HINDURA",
+        "designer.makeItYours": "Kigire icyawe",
+        "designer.colorScheme": "Amabara",
+        "designer.fontStyle": "Umusaruro w'Imyandikire",
+        "designer.layout": "Imiterere",
+        "designer.readyExport": "Witeguye gukoresha igishushanyo cyawe?",
+        "designer.exportDesc": "Kuramo nka HTML, shyira kuri Vercel, cyangwa bika mu mishinga yawe.",
+        "designer.download": "Kuramo HTML",
+        "designer.save": "Bika Umushinga",
+        "designer.deploy": "Shyira ku Murongo",
+        "designer.history": "AMATEKA",
+        "designer.recentDesigns": "Ibishushanyo Biheruka",
+        "designer.noHistory": "Nta bishushanyo biraboneka. Kora icyawe cya mbere hejuru!",
 
         // Schools Directory
         "schools.title": "Urutonde rw'Amashuri y'u Rwanda",

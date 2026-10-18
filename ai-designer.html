@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>IREME - AI Web Designer</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta name="description" content="Design beautiful websites with AI. Describe what you want and get instant professional designs.">
+    <link href="img/ireme-icon.png" rel="icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <style>
+        .designer-hero { background: linear-gradient(135deg, var(--dark) 0%, #1a2555 50%, var(--primary) 100%); position: relative; overflow: hidden; }
+        .designer-hero::before { content: ''; position: absolute; top: -50%; right: -20%; width: 600px; height: 600px; background: radial-gradient(circle, rgba(19,99,198,0.15) 0%, transparent 70%); border-radius: 50%; }
+        .designer-hero::after { content: ''; position: absolute; bottom: -30%; left: -10%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(0,120,90,0.1) 0%, transparent 70%); border-radius: 50%; }
+
+        .prompt-box { background: rgba(255,255,255,0.06); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 28px; position: relative; z-index: 2; }
+        .prompt-textarea { background: rgba(255,255,255,0.08) !important; border: 1px solid rgba(255,255,255,0.15) !important; color: #fff !important; border-radius: 14px !important; padding: 16px 20px !important; font-size: 15px; resize: none; min-height: 100px; transition: all 0.3s; }
+        .prompt-textarea:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(19,99,198,0.2) !important; background: rgba(255,255,255,0.1) !important; }
+        .prompt-textarea::placeholder { color: rgba(255,255,255,0.4) !important; }
+
+        .prompt-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
+        .prompt-chip { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.7); border-radius: 100px; padding: 6px 16px; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+        .prompt-chip:hover { background: rgba(255,255,255,0.15); color: #fff; }
+        .btn-generate { background: linear-gradient(135deg, var(--primary), #0d4fa3); border: none; color: #fff; border-radius: 12px; padding: 12px 32px; font-weight: 600; font-size: 15px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(19,99,198,0.3); }
+        .btn-generate:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(19,99,198,0.4); background: linear-gradient(135deg, #0d4fa3, var(--primary)); color: #fff; }
+        .btn-generate:disabled { opacity: 0.6; transform: none; cursor: not-allowed; }
+
+        .section-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--primary); margin-bottom: 8px; }
+        .section-title { font-size: 28px; font-weight: 700; color: var(--dark); margin-bottom: 6px; }
+        .section-desc { color: #6B7A99; font-size: 14px; }
+
+        .template-card { background: #fff; border: 1px solid #E8ECF4; border-radius: 16px; overflow: hidden; transition: all 0.3s; cursor: pointer; position: relative; }
+        .template-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(20,24,62,0.1); border-color: var(--primary); }
+        .template-card.selected { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(19,99,198,0.15); }
+        .template-card.selected::after { content: '\f00c'; font-family: 'Font Awesome 5 Free'; font-weight: 900; position: absolute; top: 12px; right: 12px; background: var(--primary); color: #fff; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; z-index: 5; }
+        .template-preview { height: 160px; background: linear-gradient(135deg, #f0f4ff, #e8f5e9); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        .template-preview-inner { width: 85%; height: 80%; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); overflow: hidden; }
+        .template-preview-bar { height: 18px; background: var(--dark); display: flex; align-items: center; padding: 0 8px; gap: 4px; }
+        .template-preview-dot { width: 5px; height: 5px; border-radius: 50%; }
+        .template-preview-dot.r { background: #ff5f57; }
+        .template-preview-dot.y { background: #febc2e; }
+        .template-preview-dot.g { background: #28c840; }
+        .template-preview-body { padding: 8px; }
+        .template-preview-line { height: 4px; border-radius: 2px; margin-bottom: 4px; }
+        .template-info { padding: 14px 16px; }
+        .template-name { font-weight: 600; font-size: 14px; color: var(--dark); margin-bottom: 2px; }
+        .template-tag { font-size: 11px; color: #6B7A99; }
+
+        .preview-panel { background: #fff; border: 1px solid #E8ECF4; border-radius: 20px; overflow: hidden; min-height: 480px; position: relative; }
+        .preview-toolbar { background: #F8FAFD; border-bottom: 1px solid #E8ECF4; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; }
+        .preview-toolbar-left { display: flex; gap: 8px; align-items: center; }
+        .preview-device-btn { background: none; border: 1px solid #E8ECF4; border-radius: 8px; padding: 6px 12px; font-size: 13px; color: #6B7A99; cursor: pointer; transition: all 0.2s; }
+        .preview-device-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .preview-device-btn:hover:not(.active) { border-color: var(--primary); color: var(--primary); }
+        .preview-canvas { padding: 24px; display: flex; justify-content: center; align-items: flex-start; min-height: 400px; background: #FAFBFE; }
+        .preview-frame { background: #fff; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); width: 100%; max-width: 100%; overflow: hidden; transition: max-width 0.4s ease; }
+        .preview-frame.tablet { max-width: 768px; }
+        .preview-frame.mobile { max-width: 375px; }
+        .preview-frame-bar { height: 32px; background: #F0F2F5; display: flex; align-items: center; padding: 0 12px; gap: 6px; border-bottom: 1px solid #E8ECF4; }
+        .preview-frame-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .preview-frame-content { min-height: 340px; padding: 0; }
+
+        .preview-placeholder { text-align: center; padding: 60px 20px; }
+        .preview-placeholder i { font-size: 48px; color: #D1D5DB; margin-bottom: 16px; }
+        .preview-placeholder h5 { color: #6B7A99; font-weight: 500; font-size: 16px; }
+        .preview-placeholder p { color: #9CA3AF; font-size: 13px; }
+
+        .custom-panel { background: #fff; border: 1px solid #E8ECF4; border-radius: 16px; padding: 20px; }
+        .custom-group { margin-bottom: 18px; }
+        .custom-group:last-child { margin-bottom: 0; }
+        .custom-label { font-size: 12px; font-weight: 600; color: var(--dark); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+        .custom-label i { color: var(--primary); font-size: 11px; }
+
+        .color-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+        .color-swatch { width: 32px; height: 32px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; position: relative; }
+        .color-swatch:hover { transform: scale(1.1); }
+        .color-swatch.active { border-color: var(--dark); box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--primary); }
+
+        .style-option { background: #F8FAFD; border: 1px solid #E8ECF4; border-radius: 10px; padding: 10px 14px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+        .style-option:hover { border-color: var(--primary); background: #F0F4FF; }
+        .style-option.active { border-color: var(--primary); background: rgba(19,99,198,0.06); }
+        .style-option-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        .style-option-text { font-size: 13px; font-weight: 500; color: var(--dark); }
+
+        .export-bar { background: linear-gradient(135deg, #F8FAFD, #F0F4FF); border: 1px solid #E8ECF4; border-radius: 16px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+        .export-btn { border-radius: 10px; padding: 10px 20px; font-size: 13px; font-weight: 600; transition: all 0.2s; }
+
+        .generating-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; border-radius: 20px; }
+        .generating-spinner { width: 48px; height: 48px; border: 3px solid #E8ECF4; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .generating-text { margin-top: 16px; font-weight: 600; color: var(--dark); font-size: 15px; }
+        .generating-sub { color: #6B7A99; font-size: 12px; margin-top: 4px; }
+
+        .history-item { background: #fff; border: 1px solid #E8ECF4; border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; transition: all 0.2s; cursor: pointer; }
+        .history-item:hover { border-color: var(--primary); box-shadow: 0 4px 12px rgba(20,24,62,0.06); }
+        .history-thumb { width: 48px; height: 48px; border-radius: 10px; background: linear-gradient(135deg, #f0f4ff, #e8f5e9); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .history-thumb i { font-size: 18px; color: var(--primary); }
+        .history-info { flex: 1; min-width: 0; }
+        .history-title { font-weight: 600; font-size: 13px; color: var(--dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .history-meta { font-size: 11px; color: #6B7A99; }
+
+        @media (max-width: 991px) {
+            .prompt-box { padding: 20px; }
+            .section-title { font-size: 22px; }
+            .export-bar { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <div id="component-spinner"></div>
+    <div id="component-navbar"></div>
+
+    <div class="designer-hero">
+        <div class="container py-5" style="position:relative;z-index:2;">
+            <div class="row align-items-center py-5">
+                <div class="col-lg-7 mx-auto text-center">
+                    <span class="section-label text-white-50" data-i18n="designer.label">AI-POWERED DESIGN</span>
+                    <h1 class="display-5 text-white fw-bold mb-3" data-i18n="designer.title">Design Websites with AI</h1>
+                    <p class="text-white-50 mb-4 mx-auto" style="max-width:520px;font-size:15px;" data-i18n="designer.subtitle">Describe what you want and get a professional, ready-to-use website in seconds. No coding required.</p>
+
+                    <div class="prompt-box text-start">
+                        <label class="text-white-50 mb-2" style="font-size:12px;font-weight:600;letter-spacing:1px;" data-i18n="designer.promptLabel">DESCRIBE YOUR WEBSITE</label>
+                        <textarea id="designer-prompt" class="form-control prompt-textarea" rows="3" data-i18n-placeholder="designer.promptPlaceholder" placeholder="e.g. A modern school website with hero section, about us, programs, and contact form. Use blue and white colors..."></textarea>
+                        <div class="prompt-actions">
+                            <button class="btn-generate" id="btn-generate" onclick="generateDesign()">
+                                <i class="fa fa-magic me-2"></i><span data-i18n="designer.generate">Generate Design</span>
+                            </button>
+                            <div class="d-flex gap-2 flex-wrap ms-auto">
+                                <span class="prompt-chip" onclick="setPrompt('school')"><i class="fa fa-school me-1"></i><span data-i18n="designer.chipSchool">School</span></span>
+                                <span class="prompt-chip" onclick="setPrompt('portfolio')"><i class="fa fa-user me-1"></i><span data-i18n="designer.chipPortfolio">Portfolio</span></span>
+                                <span class="prompt-chip" onclick="setPrompt('ecommerce')"><i class="fa fa-store me-1"></i><span data-i18n="designer.chipShop">Shop</span></span>
+                                <span class="prompt-chip" onclick="setPrompt('blog')"><i class="fa fa-newspaper me-1"></i><span data-i18n="designer.chipBlog">Blog</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid bg-light py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <div class="mb-4">
+                        <div class="section-label" data-i18n="designer.templates">TEMPLATES</div>
+                        <div class="section-title" style="font-size:20px;" data-i18n="designer.startFrom">Start from a template</div>
+                    </div>
+                    <div id="template-list" class="d-flex flex-column gap-3"></div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="section-label" data-i18n="designer.preview">PREVIEW</div>
+                            <div class="section-title" style="font-size:20px;" data-i18n="designer.livePreview">Live Preview</div>
+                        </div>
+                        <div class="d-flex gap-1">
+                            <button class="preview-device-btn active" onclick="setDevice('desktop', this)" title="Desktop"><i class="fa fa-desktop"></i></button>
+                            <button class="preview-device-btn" onclick="setDevice('tablet', this)" title="Tablet"><i class="fa fa-tablet-alt"></i></button>
+                            <button class="preview-device-btn" onclick="setDevice('mobile', this)" title="Mobile"><i class="fa fa-mobile-alt"></i></button>
+                        </div>
+                    </div>
+                    <div class="preview-panel" id="preview-panel">
+                        <div class="preview-toolbar">
+                            <div class="preview-toolbar-left">
+                                <span style="font-size:12px;color:#6B7A99;"><i class="fa fa-circle text-success me-1" style="font-size:6px;"></i> <span data-i18n="designer.ready">Ready</span></span>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-light border" style="border-radius:8px;font-size:11px;" onclick="regenerateDesign()" title="Regenerate"><i class="fa fa-redo"></i></button>
+                                <button class="btn btn-sm btn-light border" style="border-radius:8px;font-size:11px;" onclick="toggleFullscreen()" title="Fullscreen"><i class="fa fa-expand"></i></button>
+                            </div>
+                        </div>
+                        <div class="preview-canvas" id="preview-canvas">
+                            <div class="preview-placeholder" id="preview-placeholder">
+                                <i class="fa fa-palette d-block"></i>
+                                <h5 data-i18n="designer.noPreview">No design yet</h5>
+                                <p data-i18n="designer.noPreviewDesc">Describe your website above or choose a template to get started.</p>
+                            </div>
+                            <div class="preview-frame" id="preview-frame" style="display:none;">
+                                <div class="preview-frame-bar">
+                                    <span class="preview-frame-dot" style="background:#ff5f57;"></span>
+                                    <span class="preview-frame-dot" style="background:#febc2e;"></span>
+                                    <span class="preview-frame-dot" style="background:#28c840;"></span>
+                                    <span style="flex:1;text-align:center;font-size:10px;color:#9CA3AF;" id="preview-url">yoursite.ireme.rw</span>
+                                </div>
+                                <div class="preview-frame-content" id="preview-content"></div>
+                            </div>
+                        </div>
+                        <div class="generating-overlay" id="generating-overlay" style="display:none;">
+                            <div class="generating-spinner"></div>
+                            <div class="generating-text" data-i18n="designer.generating">Generating your design...</div>
+                            <div class="generating-sub" data-i18n="designer.generatingSub">This usually takes 10-20 seconds</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3">
+                    <div class="mb-4">
+                        <div class="section-label" data-i18n="designer.customize">CUSTOMIZE</div>
+                        <div class="section-title" style="font-size:20px;" data-i18n="designer.makeItYours">Make it yours</div>
+                    </div>
+
+                    <div class="custom-panel">
+                        <div class="custom-group">
+                            <div class="custom-label"><i class="fa fa-paint-brush"></i> <span data-i18n="designer.colorScheme">Color Scheme</span></div>
+                            <div class="color-grid" id="color-grid"></div>
+                        </div>
+                        <div class="custom-group">
+                            <div class="custom-label"><i class="fa fa-font"></i> <span data-i18n="designer.fontStyle">Font Style</span></div>
+                            <div id="font-options"></div>
+                        </div>
+                        <div class="custom-group">
+                            <div class="custom-label"><i class="fa fa-th-large"></i> <span data-i18n="designer.layout">Layout</span></div>
+                            <div id="layout-options"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="export-bar">
+                        <div>
+                            <strong style="color:var(--dark);font-size:15px;" data-i18n="designer.readyExport">Ready to use your design?</strong>
+                            <p class="mb-0" style="font-size:13px;color:#6B7A99;" data-i18n="designer.exportDesc">Download as HTML, deploy to Vercel, or save to your projects.</p>
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button class="btn btn-outline-secondary export-btn" onclick="downloadDesign()" id="btn-download" disabled>
+                                <i class="fa fa-download me-2"></i><span data-i18n="designer.download">Download HTML</span>
+                            </button>
+                            <button class="btn btn-outline-primary export-btn" onclick="saveDesign()" id="btn-save" disabled>
+                                <i class="fa fa-bookmark me-2"></i><span data-i18n="designer.save">Save Project</span>
+                            </button>
+                            <button class="btn btn-primary export-btn" onclick="deployDesign()" id="btn-deploy" disabled>
+                                <i class="fa fa-rocket me-2"></i><span data-i18n="designer.deploy">Deploy Live</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="section-label" data-i18n="designer.history">HISTORY</div>
+                            <div class="section-title" style="font-size:20px;" data-i18n="designer.recentDesigns">Recent Designs</div>
+                        </div>
+                    </div>
+                    <div id="history-list" class="d-flex flex-column gap-2"></div>
+                    <div id="history-empty" class="text-center py-4" style="display:none;">
+                        <p style="color:#9CA3AF;font-size:13px;" data-i18n="designer.noHistory">No designs yet. Generate your first one above!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="component-footer"></div>
+    <div id="component-backtotop"></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js?v=2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js?v=2"></script>
+    <script src="lib/wow/wow.min.js?v=2"></script>
+    <script src="lib/easing/easing.min.js?v=2"></script>
+    <script src="lib/waypoints/waypoints.min.js?v=2"></script>
+    <script src="js/main.js?v=2"></script>
+    <script src="js/i18n.js?v=2"></script>
+    <script src="js/config.js?v=2"></script>
+    <script src="js/api-client.js?v=2"></script>
+    <script src="js/auth.js?v=2"></script>
+    <script src="js/components.js?v=2"></script>
+    <script>
+    IremeComponents.initPage('ai-designer.html');
+
+    var IremeDesigner = {
+        currentDesign: null,
+        selectedTemplate: null,
+        selectedColor: '#1363C6',
+        selectedFont: 'modern',
+        selectedLayout: 'standard',
+        history: [],
+
+        colorSchemes: [
+            { name: 'Ocean Blue', primary: '#1363C6', secondary: '#15ACE1', bg: '#F4F7FE' },
+            { name: 'Forest Green', primary: '#00785a', secondary: '#12b981', bg: '#f0faf5' },
+            { name: 'Sunset Orange', primary: '#e35656', secondary: '#f4a926', bg: '#fff5f5' },
+            { name: 'Royal Purple', primary: '#6c5ce7', secondary: '#a29bfe', bg: '#f5f3ff' },
+            { name: 'Dark Navy', primary: '#14183E', secondary: '#1363C6', bg: '#f8f9fa' },
+            { name: 'Coral Pink', primary: '#e17055', secondary: '#fab1a0', bg: '#fff8f5' },
+            { name: 'Teal', primary: '#00b894', secondary: '#55efc4', bg: '#f0fffa' },
+            { name: 'Charcoal', primary: '#2d3436', secondary: '#636e72', bg: '#f5f6fa' },
+        ],
+
+        fonts: [
+            { id: 'modern', label: 'Modern', desc: 'Open Sans + Ubuntu', icon: 'fa-font' },
+            { id: 'elegant', label: 'Elegant', desc: 'Playfair + Lato', icon: 'fa-pen-nib' },
+            { id: 'clean', label: 'Clean', desc: 'Inter + system', icon: 'fa-align-left' },
+            { id: 'bold', label: 'Bold', desc: 'Poppins + Roboto', icon: 'fa-bold' },
+        ],
+
+        layouts: [
+            { id: 'standard', label: 'Standard', desc: 'Hero + sections', icon: 'fa-columns' },
+            { id: 'minimal', label: 'Minimal', desc: 'Clean & simple', icon: 'fa-minus' },
+            { id: 'creative', label: 'Creative', desc: 'Unique layouts', icon: 'fa-star' },
+            { id: 'business', label: 'Business', desc: 'Professional', icon: 'fa-briefcase' },
+        ],
+
+        templates: [
+            { id: 'school', name: 'School Website', tag: 'Education', icon: 'fa-school', color: '#1363C6',
+              prompt: 'A professional school website with hero banner, about section, academic programs, admissions info, news/events, and contact form' },
+            { id: 'portfolio', name: 'Personal Portfolio', tag: 'Career', icon: 'fa-user-tie', color: '#6c5ce7',
+              prompt: 'A modern personal portfolio with hero intro, skills section, project gallery, experience timeline, and contact' },
+            { id: 'ecommerce', name: 'Online Shop', tag: 'Business', icon: 'fa-store', color: '#e35656',
+              prompt: 'An e-commerce website with product showcase, categories, featured items, shopping cart, and checkout flow' },
+            { id: 'blog', name: 'Blog & News', tag: 'Content', icon: 'fa-newspaper', color: '#00785a',
+              prompt: 'A clean blog website with featured posts, categories sidebar, article layout, and newsletter signup' },
+            { id: 'restaurant', name: 'Restaurant', tag: 'Hospitality', icon: 'fa-utensils', color: '#e17055',
+              prompt: 'A restaurant website with menu showcase, reservation form, gallery, location map, and opening hours' },
+            { id: 'dashboard', name: 'Admin Dashboard', tag: 'SaaS', icon: 'fa-tachometer-alt', color: '#14183E',
+              prompt: 'An admin dashboard with sidebar navigation, stats cards, data tables, charts, and user management' },
+        ],
+
+        init: function() {
+            try {
+                var saved = localStorage.getItem('ireme-design-history');
+                if (saved) this.history = JSON.parse(saved);
+            } catch(e) {}
+            this.renderTemplates();
+            this.renderColorSchemes();
+            this.renderFontOptions();
+            this.renderLayoutOptions();
+            this.renderHistory();
+        },
+
+        renderTemplates: function() {
+            var container = document.getElementById('template-list');
+            container.innerHTML = this.templates.map(function(t) {
+                return '<div class="template-card" data-id="' + t.id + '" onclick="IremeDesigner.selectTemplate(\'' + t.id + '\')">' +
+                    '<div class="template-preview" style="background:linear-gradient(135deg, ' + t.color + '11, ' + t.color + '22);">' +
+                    '<div class="template-preview-inner">' +
+                    '<div class="template-preview-bar"><span class="template-preview-dot r"></span><span class="template-preview-dot y"></span><span class="template-preview-dot g"></span></div>' +
+                    '<div class="template-preview-body">' +
+                    '<div class="template-preview-line" style="width:60%;background:' + t.color + ';height:6px;"></div>' +
+                    '<div class="template-preview-line" style="width:80%;background:#E8ECF4;"></div>' +
+                    '<div class="template-preview-line" style="width:45%;background:#E8ECF4;"></div>' +
+                    '<div style="display:flex;gap:4px;margin-top:6px;">' +
+                    '<div style="flex:1;height:24px;background:' + t.color + '22;border-radius:3px;"></div>' +
+                    '<div style="flex:1;height:24px;background:#F0F2F5;border-radius:3px;"></div>' +
+                    '</div></div></div></div>' +
+                    '<div class="template-info"><div class="template-name">' + t.name + '</div><div class="template-tag"><i class="fa ' + t.icon + ' me-1"></i>' + t.tag + '</div></div></div>';
+            }).join('');
+        },
+
+        renderColorSchemes: function() {
+            var container = document.getElementById('color-grid');
+            container.innerHTML = this.colorSchemes.map(function(c, i) {
+                return '<div class="color-swatch' + (i === 0 ? ' active' : '') + '" style="background:' + c.primary + ';" title="' + c.name + '" onclick="IremeDesigner.selectColor(' + i + ', this)"></div>';
+            }).join('');
+        },
+
+        renderFontOptions: function() {
+            var container = document.getElementById('font-options');
+            container.innerHTML = this.fonts.map(function(f, i) {
+                return '<div class="style-option' + (i === 0 ? ' active' : '') + '" data-font="' + f.id + '" onclick="IremeDesigner.selectFont(\'' + f.id + '\', this)">' +
+                    '<div class="style-option-icon" style="background:rgba(19,99,198,0.08);color:var(--primary);"><i class="fa ' + f.icon + '"></i></div>' +
+                    '<div><div class="style-option-text">' + f.label + '</div><div style="font-size:11px;color:#6B7A99;">' + f.desc + '</div></div></div>';
+            }).join('');
+        },
+
+        renderLayoutOptions: function() {
+            var container = document.getElementById('layout-options');
+            container.innerHTML = this.layouts.map(function(l, i) {
+                return '<div class="style-option' + (i === 0 ? ' active' : '') + '" data-layout="' + l.id + '" onclick="IremeDesigner.selectLayout(\'' + l.id + '\', this)">' +
+                    '<div class="style-option-icon" style="background:rgba(0,120,90,0.08);color:#00785a;"><i class="fa ' + l.icon + '"></i></div>' +
+                    '<div><div class="style-option-text">' + l.label + '</div><div style="font-size:11px;color:#6B7A99;">' + l.desc + '</div></div></div>';
+            }).join('');
+        },
+
+        renderHistory: function() {
+            var container = document.getElementById('history-list');
+            var emptyEl = document.getElementById('history-empty');
+            if (this.history.length === 0) {
+                container.innerHTML = '';
+                emptyEl.style.display = '';
+                return;
+            }
+            emptyEl.style.display = 'none';
+            container.innerHTML = this.history.slice(0, 5).map(function(h) {
+                return '<div class="history-item" onclick="loadHistory(\'' + h.id + '\')">' +
+                    '<div class="history-thumb"><i class="fa ' + (h.icon || 'fa-palette') + '"></i></div>' +
+                    '<div class="history-info"><div class="history-title">' + (h.prompt || 'Untitled design').substring(0, 50) + '</div>' +
+                    '<div class="history-meta">' + h.date + ' &middot; ' + (h.template || 'Custom') + '</div></div>' +
+                    '<i class="fa fa-chevron-right" style="color:#D1D5DB;font-size:11px;"></i></div>';
+            }).join('');
+        },
+
+        selectTemplate: function(id) {
+            this.selectedTemplate = id;
+            var tmpl = this.templates.find(function(t) { return t.id === id; });
+            if (tmpl) {
+                document.getElementById('designer-prompt').value = tmpl.prompt;
+            }
+            document.querySelectorAll('.template-card').forEach(function(el) {
+                el.classList.toggle('selected', el.getAttribute('data-id') === id);
+            });
+        },
+
+        selectColor: function(index, el) {
+            this.selectedColor = this.colorSchemes[index].primary;
+            document.querySelectorAll('.color-swatch').forEach(function(s) { s.classList.remove('active'); });
+            el.classList.add('active');
+            if (this.currentDesign) this.applyDesign(this.currentDesign);
+        },
+
+        selectFont: function(id, el) {
+            this.selectedFont = id;
+            document.querySelectorAll('#font-options .style-option').forEach(function(s) { s.classList.remove('active'); });
+            el.classList.add('active');
+        },
+
+        selectLayout: function(id, el) {
+            this.selectedLayout = id;
+            document.querySelectorAll('#layout-options .style-option').forEach(function(s) { s.classList.remove('active'); });
+            el.classList.add('active');
+        },
+
+        setDevice: function(device, btn) {
+            document.querySelectorAll('.preview-device-btn').forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            var frame = document.getElementById('preview-frame');
+            frame.classList.remove('tablet', 'mobile');
+            if (device !== 'desktop') frame.classList.add(device);
+        },
+    };
+
+    function setPrompt(type) {
+        var prompts = {
+            school: 'A modern school website with hero section, academic programs, admissions info, faculty highlights, news & events, and contact form. Use blue and white colors.',
+            portfolio: 'A sleek personal portfolio with hero introduction, skills & expertise grid, project showcase gallery, work experience timeline, and contact section.',
+            ecommerce: 'An online store with featured products carousel, category browsing, product cards with prices, shopping cart, and secure checkout flow.',
+            blog: 'A clean blog platform with featured article hero, post grid with thumbnails, category sidebar, search, and newsletter subscription.'
+        };
+        document.getElementById('designer-prompt').value = prompts[type] || '';
+    }
+
+    function generateDesign() {
+        var prompt = document.getElementById('designer-prompt').value.trim();
+        if (!prompt) { document.getElementById('designer-prompt').focus(); return; }
+
+        var overlay = document.getElementById('generating-overlay');
+        var btn = document.getElementById('btn-generate');
+        overlay.style.display = '';
+        btn.disabled = true;
+
+        var useApi = typeof IremeApi !== 'undefined' && IremeApi.generateWebDesign;
+        if (useApi) {
+            IremeApi.generateWebDesign({
+                prompt: prompt,
+                template: IremeDesigner.selectedTemplate,
+                colorScheme: IremeDesigner.selectedColor,
+                fontStyle: IremeDesigner.selectedFont,
+                layout: IremeDesigner.selectedLayout,
+            }).then(function(data) {
+                overlay.style.display = 'none';
+                btn.disabled = false;
+                if (data && data.html) {
+                    showGeneratedDesign(data.html, prompt);
+                } else {
+                    showLocalDesign(prompt);
+                }
+            }).catch(function() {
+                overlay.style.display = 'none';
+                btn.disabled = false;
+                showLocalDesign(prompt);
+            });
+        } else {
+            setTimeout(function() {
+                overlay.style.display = 'none';
+                btn.disabled = false;
+                showLocalDesign(prompt);
+            }, 2000);
+        }
+    }
+
+    function regenerateDesign() {
+        var prompt = document.getElementById('designer-prompt').value.trim();
+        if (prompt) generateDesign();
+    }
+
+    function showGeneratedDesign(html, prompt) {
+        IremeDesigner.currentDesign = html;
+        document.getElementById('preview-placeholder').style.display = 'none';
+        document.getElementById('preview-frame').style.display = '';
+        document.getElementById('preview-content').innerHTML = html;
+        enableExportButtons();
+        addToHistory(prompt);
+    }
+
+    function showLocalDesign(prompt) {
+        var color = IremeDesigner.selectedColor;
+        var layout = IremeDesigner.selectedLayout;
+        var isSchool = /school|education|academic|learning/i.test(prompt);
+        var isPortfolio = /portfolio|personal|resume|cv/i.test(prompt);
+        var isShop = /shop|store|ecommerce|product/i.test(prompt);
+        var isBlog = /blog|news|article|post/i.test(prompt);
+
+        var html = buildDesignHTML(prompt, color, layout, { isSchool: isSchool, isPortfolio: isPortfolio, isShop: isShop, isBlog: isBlog });
+        showGeneratedDesign(html, prompt);
+    }
+
+    function buildDesignHTML(prompt, color, layout, flags) {
+        var lightBg = color + '0a';
+        var nav = '<div style="background:' + color + ';padding:14px 24px;display:flex;align-items:center;justify-content:space-between;">' +
+            '<div style="font-weight:700;color:#fff;font-size:16px;">MySite</div>' +
+            '<div style="display:flex;gap:20px;">' +
+            '<span style="color:rgba(255,255,255,0.8);font-size:13px;">Home</span>' +
+            '<span style="color:rgba(255,255,255,0.8);font-size:13px;">About</span>' +
+            '<span style="color:rgba(255,255,255,0.8);font-size:13px;">Services</span>' +
+            '<span style="color:rgba(255,255,255,0.8);font-size:13px;">Contact</span></div></div>';
+
+        var hero = '<div style="background:linear-gradient(135deg,' + color + ',' + color + 'cc);padding:48px 32px;text-align:center;">' +
+            '<h1 style="color:#fff;font-size:28px;font-weight:700;margin:0 0 12px;">' + getHeroTitle(flags) + '</h1>' +
+            '<p style="color:rgba(255,255,255,0.8);font-size:14px;max-width:400px;margin:0 auto 20px;">' + getHeroSubtitle(flags) + '</p>' +
+            '<div style="display:inline-block;background:#fff;color:' + color + 'padding:10px 28px;border-radius:100px;font-weight:600;font-size:13px;">Get Started</div></div>';
+
+        var features = '<div style="padding:32px 24px;">' +
+            '<h3 style="text-align:center;font-size:18px;font-weight:700;color:#14183E;margin-bottom:20px;">' + getFeaturesTitle(flags) + '</h3>' +
+            '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">' +
+            getFeatureCards(flags, color) + '</div></div>';
+
+        var cta = '<div style="background:' + lightBg + ';padding:28px 24px;text-align:center;margin:0 24px 24px;border-radius:12px;">' +
+            '<h4 style="font-size:16px;font-weight:700;color:#14183E;margin:0 0 8px;">Ready to get started?</h4>' +
+            '<p style="font-size:12px;color:#6B7A99;margin:0 0 14px;">Join thousands of satisfied users today.</p>' +
+            '<div style="display:inline-block;background:' + color + ';color:#fff;padding:8px 24px;border-radius:100px;font-size:12px;font-weight:600;">Learn More</div></div>';
+
+        var footer = '<div style="background:#14183E;padding:20px 24px;text-align:center;">' +
+            '<p style="color:rgba(255,255,255,0.5);font-size:11px;margin:0;">&copy; 2026 MySite. Built with IREME AI Designer.</p></div>';
+
+        return nav + hero + features + cta + footer;
+    }
+
+    function getHeroTitle(f) {
+        if (f.isSchool) return 'Welcome to Our School';
+        if (f.isPortfolio) return 'Hi, I\'m a Creative Developer';
+        if (f.isShop) return 'Discover Amazing Products';
+        if (f.isBlog) return 'Stories & Insights';
+        return 'Build Something Amazing';
+    }
+    function getHeroSubtitle(f) {
+        if (f.isSchool) return 'Empowering students through quality education and innovative learning experiences.';
+        if (f.isPortfolio) return 'I design and build beautiful digital experiences that make a difference.';
+        if (f.isShop) return 'Curated collection of premium products delivered to your doorstep.';
+        if (f.isBlog) return 'Exploring ideas, sharing knowledge, and inspiring the next generation.';
+        return 'Create professional websites in minutes with our AI-powered platform.';
+    }
+    function getFeaturesTitle(f) {
+        if (f.isSchool) return 'Our Programs';
+        if (f.isPortfolio) return 'What I Do';
+        if (f.isShop) return 'Featured Products';
+        if (f.isBlog) return 'Latest Articles';
+        return 'Key Features';
+    }
+    function getFeatureCards(f, color) {
+        var cards;
+        if (f.isSchool) cards = [{i:'fa-graduation-cap',t:'Academics',d:'K-12 curriculum'},{i:'fa-flask',t:'Sciences',d:'Modern labs'},{i:'fa-futbol',t:'Sports',d:'Full athletics'}];
+        else if (f.isPortfolio) cards = [{i:'fa-code',t:'Development',d:'Full-stack apps'},{i:'fa-paint-brush',t:'Design',d:'UI/UX design'},{i:'fa-mobile-alt',t:'Mobile',d:'iOS & Android'}];
+        else if (f.isShop) cards = [{i:'fa-star',t:'Best Sellers',d:'Top rated'},{i:'fa-tag',t:'Deals',d:'Save more'},{i:'fa-truck',t:'Fast Delivery',d:'Next day'}];
+        else if (f.isBlog) cards = [{i:'fa-lightbulb',t:'Ideas',d:'Fresh perspectives'},{i:'fa-chart-line',t:'Growth',d:'Scale smarter'},{i:'fa-users',t:'Community',d:'Join us'}];
+        else cards = [{i:'fa-bolt',t:'Fast',d:'Lightning speed'},{i:'fa-shield-alt',t:'Secure',d:'Enterprise grade'},{i:'fa-cogs',t:'Flexible',d:'Fully customizable'}];
+        return cards.map(function(c) {
+            return '<div style="background:#fff;border:1px solid #E8ECF4;border-radius:10px;padding:16px;text-align:center;">' +
+                '<div style="width:36px;height:36px;background:' + color + '15;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:8px;">' +
+                '<i class="fa ' + c.i + '" style="color:' + color + ';font-size:14px;"></i></div>' +
+                '<div style="font-weight:600;font-size:13px;color:#14183E;margin-bottom:2px;">' + c.t + '</div>' +
+                '<div style="font-size:11px;color:#6B7A99;">' + c.d + '</div></div>';
+        }).join('');
+    }
+
+    function enableExportButtons() {
+        document.getElementById('btn-download').disabled = false;
+        document.getElementById('btn-save').disabled = false;
+        document.getElementById('btn-deploy').disabled = false;
+    }
+
+    function addToHistory(prompt) {
+        var entry = {
+            id: 'd' + Date.now(),
+            prompt: prompt,
+            template: IremeDesigner.selectedTemplate || 'Custom',
+            date: new Date().toLocaleDateString(),
+            icon: 'fa-palette',
+            html: IremeDesigner.currentDesign,
+        };
+        IremeDesigner.history.unshift(entry);
+        if (IremeDesigner.history.length > 20) IremeDesigner.history = IremeDesigner.history.slice(0, 20);
+        try { localStorage.setItem('ireme-design-history', JSON.stringify(IremeDesigner.history.map(function(h) { return { id: h.id, prompt: h.prompt, template: h.template, date: h.date, icon: h.icon }; }))); } catch(e) {}
+        IremeDesigner.renderHistory();
+    }
+
+    function loadHistory(id) {
+        var entry = IremeDesigner.history.find(function(h) { return h.id === id; });
+        if (entry && entry.html) {
+            IremeDesigner.currentDesign = entry.html;
+            document.getElementById('preview-placeholder').style.display = 'none';
+            document.getElementById('preview-frame').style.display = '';
+            document.getElementById('preview-content').innerHTML = entry.html;
+            document.getElementById('designer-prompt').value = entry.prompt;
+            enableExportButtons();
+        }
+    }
+
+    function downloadDesign() {
+        if (!IremeDesigner.currentDesign) return;
+        var fullHTML = '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>My Website</title>\n<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">\n<style>body{margin:0;font-family:Open Sans,sans-serif;}*{box-sizing:border-box;}</style>\n</head>\n<body>\n' + IremeDesigner.currentDesign + '\n</body>\n</html>';
+        var blob = new Blob([fullHTML], { type: 'text/html' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'my-website.html';
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
+
+    function saveDesign() {
+        if (!IremeDesigner.currentDesign) return;
+        alert('Design saved to your projects! (Feature coming soon)');
+    }
+
+    function deployDesign() {
+        if (!IremeDesigner.currentDesign) return;
+        alert('Deploy to Vercel coming soon! Download the HTML and deploy manually for now.');
+    }
+
+    function toggleFullscreen() {
+        var panel = document.getElementById('preview-panel');
+        if (panel.requestFullscreen) panel.requestFullscreen();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        IremeDesigner.init();
+    });
+    </script>
+</body>
+</html>
